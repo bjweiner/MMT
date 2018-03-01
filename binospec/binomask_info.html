@@ -1,0 +1,374 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>BinoMask: slit mask design for Binospec</title>
+</head>
+
+<body>
+<h1>BinoMask: Binospec slitmask design software</h1>
+<p>
+
+Multislit masks for the <a href="binospec_info.html">Binospec
+spectrograph</a> at the <a href="http://www.mmto.org/">MMT
+telescope</a> will be designed by the proposers using BinoMask, a web
+based package written by Sean Moran at CfA.
+<p>
+
+This page has a tutorial / walkthrough on using BinoMask.  For
+now this is a walkthrough of a slitmask design, notes written by Ben
+Weiner, with screenshots of the process. We will update this page as needed
+and add a video walkthrough before the 2018A semester slitmask deadline in
+late January 2018.
+To access BinoMask, go to  <a
+href="http://scheduler.mmto.arizona.edu/BinoMask/">scheduler.mmto.arizona.edu/BinoMask/</a>
+<p>
+
+<h3>Before you begin mask design</h3>
+<p>
+
+You will need to have:
+<ul>
+<li> Your mask center coordinates (RA, Dec; or object name if NED/SIMBAD can resolve it).
+<li> Any constraints on PA, observing date, slit sizes, and other parameters.
+<li> A catalog of targets, ideally on the GAIA or GSC2 astrometric system. See below under "Target List" for the file format.
+<li> If your catalog is not on GAIA/GSC2 then you will need to provide a separate catalog of guide stars.
+</ul>
+<p>
+
+The BinoMask software is web based, so you need an Internet connection and a modern browser,
+but don't have to download/install anything.
+<p>
+
+<h2>BinoMask walkthrough</h2>
+
+<h3> Contents</h3>
+<ul>
+  <li> Log in to the queue system and launch BinoMask
+  <li> Mask configuration
+  <li> Reference (background) image
+  <li> Loading a target list
+  <li> Selecting guide star catalog
+  <li> Generate slits on objects
+  <li> Submitting the mask to your queue area
+  <li> Adding the target (observing block) to your queue catalog
+</ul>
+<p>
+  
+
+<h3> 1. Log in and launch BinoMask </h3>
+<p>
+
+When you get Binospec time, the MMT/Binospec queue will send you a link
+to sign in and administer your program. Or you can go to <a
+href="http://scheduler.mmto.arizona.edu/">http://scheduler.mmto.arizona.edu/</a>
+and log in. Then click through: Queue Observing Form &gt; Access Catalog
+Editor &gt; New Target.  This will open a "wizard" to help you 
+specify the type of observation. Try clicking Mask &gt; Create New
+Mask &gt; Launch BinoMask.  (If it gives you a warning about leaving
+the page without saving data, click ok to leave the page.)
+This will start the BinoMask design software running on scheduler.mmto.arizona.edu.
+<p>
+
+The BinoMask page has a header saying "BinoMask  MMT Observatory   [observer name]",
+a list of actions in the left column, and a main sky image window in lower right.
+If you get a JS9 error message and/or the sky window is blank, try clicking the 
+"BinoMask" at upper left to start it.  Scrolling down in the sky window will 
+show the assigned target table, which at first is empty.
+<p>
+
+<h3>2. Mask Configuration</h3><p>
+
+To begin designing a mask, click Mask Configuration at top of the left column.
+A data entry window will pop out to the right. 
+Enter a mask name; then enter RA/Dec, or try lookup by name (likely to work on names
+resolvable by NED/SIMBAD, e.g. NGC galaxies), observation date,
+grating and central wavelength, and click "Update Display."
+The image window should update to show your field. Note you may need to scroll up/down
+to see everything in the Mask Configuration pop-out. To close it click the X in 
+upper right corner.
+<p>
+
+<img src="binomask_maskconfig.png">
+The tab for setting up your mask configuration: name, coordinates, PA, etc.
+<p>
+
+
+Overlaid on the sky image, there is a red oval at the center of the Bino field. You can 
+click and drag it to move the Binospec pointing center. Clicking the red oval will show a
+red "handle" point - dragging this will rotate the Binospec pointing.  Large green boxes 
+show the Binospec fields of view, small yellow boxes show the alignment star regions, 
+and a large blue box to the side shows the guider/WFS patrol region.
+If you drag the field toward the edge and want to refresh the background image,
+go to the Mask Configuration tab and click Update Display to recenter
+on the current mask center.
+<p>
+
+<img src="binomask_fieldview.png">
+With the Mask Configuration tab closed, you can see the Binospec field
+of view on the sky, and click the red oval at center to move and
+rotate the field. The position and PA in the Mask Configuration tab
+will update to reflect your changes.
+<p>
+
+The Mask Configuration tab is also where you set slit width and
+length. At present, these are global values. As an aid, the MMT web site
+states that the median seeing is in the range of 0.77" - 0.85" based
+on data from 2003 to the present. 1 arcsecond wide slits are a good
+starting point, and 6 arcseconds is a good minimum length to ensure
+sky subtraction.
+<p>
+
+
+<h3>3. Reference (background) Image</h3><p>
+
+Under the "Reference Image" heading in the left column, there are tools for: 
+uploading a local image to use as backdrop; refreshing the mask overlay of the
+Bino field; and show/hide control buttons in the image window.  The
+image control buttons are DS9-ish
+file, view, zoom, scale, color, regions, WCS, analysis, help.  You
+can, for example, zoom out if your catalog contains objects over a
+larger area than the default view.  If you're happy with the default, you don't need
+to change anything in this tab.
+<p>
+
+<h3>4. Loading a Target List</h3><p>
+
+Clicking "Target List" on the left pops out a window to upload a list of targets.
+The first line should be a header with column names selected from (lowercase only):
+<pre>name,ra,dec,magnitude,priority,pm-ra,pm-dec,epoch,type </pre>
+Only ra and dec are required, but name, magnitude, priority are recommended.
+Priorities are 1-highest, 2-next, ....  You then choose comma or tab delimited for the
+table.  The RA, Dec can be in either HMS or decimal degrees,
+i.e. (1) hh:mm:ss, dd:mm:ss ; or (2) ddd.dddd,  dd.dddd . Type should
+be 1 (or “target”), 2 (“sky”) or 3 (“standard”). You can use types 2
+and 3 to designate slits as blank sky, or standard stars (TBD: is this
+used in the reduction process?) The targets
+will be plotted as red points.  Once your target list is loaded, you
+can scroll down in the tab to see it under the heading "Current Target List."
+<p>
+
+Note that the target table must be comma or
+tab delimited, and currently must not include any extra whitespace in
+the header line - so
+'name,ra,dec,mag' works, but 'name, ra, dec, mag' won't.  We will fix
+this to ignore extra whitespace in the near future.  (I think that
+whitespace in the catalog lines is ok, just not in the header line.)
+<p>
+
+<h4>Very Important! Catalog reference frame</h4>
+
+If your target catalog is in the GAIA reference frame (or optionally GSC2), then BinoMask
+can find suitable guide and WFS stars for you. If not, you must create a second
+catalog with such stars on the same coordinate system as your targets,
+extending to at least 0.4 degree in radius from the center of your
+target field. For guide stars, please select a magnitude range of
+r=14-18; for WFS stars, magnitude r=11-14.  This is very important
+because if you don't get the catalog reference frame right, the mask
+alignment using the guide stars will not get the slits onto your targets.
+<p>
+
+This star catalog must include
+the magnitude column or guide selection will fail. (If absolutely
+necessary, you can fake this by setting all WFS stars to mag=13 and
+all guide stars to mag=15, but you should have the magnitudes that you
+used to select the stars anyway.) You'll load this catalog in the next step.
+<p>
+
+TODO: we will find some resources for transforming catalogs from
+common reference frames to the GAIA frame and provide links here.
+For the moment, one way to address this is to take stars from your catalog and 
+cross-match them to the GAIA catalog. The CDS has a <a href="http://cdsxmatch.u-strasbg.fr/xmatch">
+table cross matching web service</a> (may be slow to render) and 
+the University of Heidelberg's <a href="http://gaia.ari.uni-heidelberg.de/">GAIA DR1
+page</a> gives an example of how to do a 
+<a href="http://gaia.ari.uni-heidelberg.de/help.html#tapUpload">GAIA-to-user table crossmatch</a>
+with a client such as TOPCAT.
+<p>
+
+<img src="binomask_loadtargetlist.png">
+The tab for loading your target list.
+<p>
+<img src="binomask_targetlist.png">
+Scrolled down to show a target list after loading it.
+<p>
+<img src="binomask_catalog.png">
+The beginning of my target catalog text file, to show the format - CSV
+in this case.
+<p>
+
+A forthcoming feature will be to import a catalog broadcast over SAMP from e.g. TOPCAT, with mostly
+similar format requirements, but this is not yet working with https.
+<p>
+
+<h3>5. Selecting/Providing a Guide Star catalog</h3><p>
+
+The "Guide Box" pop out allows you to load stars from GAIA or GSC2
+catalogs; you must choose the catalog whose reference frame matches
+your target catalog.  You can also load guide stars
+from a file, change guide box size, or disable strict checking if absolutely 
+necessary.  Click "Retrieve" to get a list of guide stars. The guide
+stars will be plotted as blue points.  You have to scroll down in the
+tab to see the list of guide stars after it was retrieved.
+<p>
+
+<img src="binomask_guidestars.png">
+The tab for selecting a guide star catalog.
+<p>
+<img src="binomask_guidelist.png">
+Scrolled down to show the list of guide stars after it was generated
+by BinoMask (using GAIA coordinates).
+<p>
+
+<h3>6. Generate Slits on objects</h3><p>
+
+The "Generate Slits" pop out will assign slits to objects in your catalog.
+You can let it vary the instrument PA freely, specify a range of PA to allow,
+or fix it to the current value. You can also let it vary the mask center
+position in RA and Dec.  You can choose the goal to optimize: most uniform
+wavelength coverage, maximum slit packing, or fully random selection.
+Click the "Place Slits" button to start the process. Once it has produced
+slit assignments, it will populate the "Targets Assigned" table below the sky 
+view. You have to scroll down in the Generate Slits tab to see this
+"Targets Assigned" table. The selected targets and guide stars will now be colored cyan
+points on the image.
+<p>
+
+<img src="binomask_generateslits.png">
+The tab for generating slits, in which Binomask selects objects to be
+placed on slits, maximizing criteria that you select.
+<p>
+<img src="binomask_slitsplaced1.png">
+A display of the first trial of generated slits. Here I let it vary
+the PA but not the pointing center, and selected the maximum
+wavelength coverage option.
+<p>
+<img src="binomask_assignedtarg1.png">
+Scrolled down to show the table of targets assigned to slits in the
+first trial.
+<p>
+<img src="binomask_slitsplaced2.png">
+Second trial of generated slits. Here I let it vary
+the PA and allow the pointing center to shift by 1 arcmin in both RA
+and Dec, and selected the maximum
+number of objects option.
+<p>
+<img src="binomask_assignedtarg2.png">
+Scrolled down to show the table of targets assigned to slits in the
+second trial.
+<p>
+
+If you want to get a summary of how many objects in each priority were
+assigned to slits, use your browser to copy/paste the target table
+into a text file named e.g. "targetlist". Then run this unix command:
+<pre>
+  awk '{print $7}' targetlist | sort | uniq -c
+</pre>
+This should work if the copy/paste preserved rows so that the priority
+is in column 7 of the text file.
+<p>
+
+<ul>
+  <li>It would be useful to download the selected targets table as a csv or similar 
+and this feature is slated for addition.
+
+<li> It may be helpful to show the parallactic angle in this panel where we
+can choose the PA range, although since there is an ADC, the
+  parallactic effect is mostly differential across the field rather
+  than dispersing light out of each slit.
+</ul>
+<p>
+
+Slit widths are also set by the user. As an aid, the MMT web site
+states that the median seeing is in the range of 0.77" - 0.85" based
+on data from 2003 to the present. 1 arcsecond slits are a good
+starting point.
+<p>
+
+You may get the error “slits can not be made” which often occurs
+because the rotator setting is not correct. Try adding or subtracting
+180 from the present setting.
+<p>
+
+
+Note that if you redesign a mask repeatedly and allow it to vary the
+mask center each time, the center can wander away from the original
+coordinates. To recenter it, go back to the Mask Configuration tab.
+<p>
+
+<h3>7. Submitting Your Mask</h3><p>
+
+Finally, click the "Submit Mask" header to get a pop out that allows you to
+submit the mask design.  You can also use this pop out to: make another mask
+using unassigned targets from your catalog; clear and start over ; or to save
+and load mask files to local disk. Note that you can save an unsubmitted 
+mask, load it and submit, but you can't edit/change it before submission.
+<p>
+
+After submitting, you can choose to design more masks, or be sent back
+to the MMT Queue Catalog page.
+<p>
+
+<img src="binomask_submit.png">
+The tab for submitting your mask to the queue. After submission it
+will show up on your queue management page.
+<p>
+
+<h3>8. Adding your mask as a target to the queue catalog</h3><p>
+
+For each observation, you need to add it as a catalog target. This
+will define the observing block(s) that are actually executed.
+This is
+done on your Queue Observing page. Choose "New Target" or 
+"Add New" under the listing of Catalog Target Fields. For observation
+type pick Mask, and then click
+Already Submitted or Existing Mask and choose the name of the mask
+that you made. The software will extract the RA/Dec from
+the mask file for you. You then specify the grating and central wavelength,
+and on the next dialog box you specify the exposure time, number of exposures,
+and number of visits. For example you could ask for 2x1800 sec exposures x 4 visits
+to get a total exp time of 4 hours, with the minimum visit always containing
+a pair of exposures. This would be easier to schedule than asking for
+8x1800 sec exposures in 1 visit.  (Need to clarify meaning of the "1 visit
+per night" question.)
+<p>
+
+Note there is a distinction between "mask" and "target." A target is
+basically an observing block definition. You could use
+the same physical mask for more than one target. For example, you
+might choose to observe the same mask at two different central
+wavelength settings. Each would be a distinct "target" in the queue.
+<p>
+
+<h3> Notes </h3>
+
+From the Queue Catalog page, if you click the name of a mask, it will
+reopen BinoMask with fewer options. This will show a Mask
+Configuration tab and a Save Mask tab. From Save Mask, you can click
+Save Mask to File. This will download a file called mask.json (on
+Safari it doesn't offer a choice of name/location, just instantly
+downloads mask.json to my Downloads folder).  This is a text file
+without any breaks - if you want to view it in a nice tree format, it
+can be uploaded to an online JSON viewer, or parsed by standard JSON
+parsing libraries.
+<p>
+
+Reopening / reusing older mask designs is under development, so some
+aspects of that interface may change.
+<p>
+
+Note that
+the differential atmospheric refraction across the 15 arcminute field
+is significant, so that the location of slitlets depends on the hour
+angle at which the mask is observed. In practice this means that the
+mask machining would change slightly depending on whether the mask is
+observed when HA is East or West. Thus the date and time of
+observation specified during mask design are significant. Observable
+hour angles will be taken into account during queue scheduling. 
+<p>
+
+
+<hr>
+Page created by
+<address>Benjamin Weiner, bjw@mmto.org</address> 
+
+<!-- hhmts start --> Last modified: Fri Jan 19 15:31:49 MST 2018 <!-- hhmts end -->
+</body> </html>

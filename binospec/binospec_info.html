@@ -1,0 +1,484 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>
+MMT/Binospec: preliminary information
+</title>
+
+<!-- <link type="text/css" rel="stylesheet" media="all"
+href="/themes/marinelli/dropdown.css?v" />
+<link type="text/css" rel="stylesheet" media="all" href="marinelli_layout.css" />
+<link type="text/css" rel="stylesheet" media="all" href="marinelli_graphics.css" />
+<link type="text/css" rel="stylesheet" media="all" href="marinelli_typography.css" />
+<link type="text/css" rel="stylesheet" media="all" href="marinelli_links.css" />
+<link type="text/css" rel="stylesheet" media="all"
+href="/themes/marinelli/giordani/giordani.css?v" />
+<link type="text/css" rel="stylesheet" media="all" href="mmt.css"
+/> -->
+
+<!-- Try to make consistent with MMTO website style? But doesn't look nice yet. -->
+
+
+<!-- <link type="text/css" rel="stylesheet" media="all" href="simplified_mmt.css"
+/> -->
+
+</head>
+
+<body>
+<h1>MMT/Binospec: preliminary information
+</h1>
+
+<p>
+The <a href="https://www.cfa.harvard.edu/mmti/binospec.html">Binospec
+spectrograph</a> has been commissioned at the MMT telescope in fall 2017. Binospec
+is a multislit imaging spectrograph with two 8' x 15' fields of view,
+wide wavelength coverage, and high efficiency.
+There are two identical all-refractive spectrographs, one for each
+field. Each channel has several gratings and filters.  
+<p>
+
+This page provides preliminary information about Binospec for potential 
+users and proposers. Binospec was successfully commissioned in fall
+2017 and is scheduled for shared-risk science
+observing in spring 2018.
+<p>
+
+<h3>MMT / Binospec Resources:</h3>
+
+<ul>
+  <li><a href="http://www.mmto.org">MMT Observatory</a>
+  <!-- <li><a
+  href="https://www.cfa.harvard.edu/mmti/binospec.html">Binospec</a>
+  spectrograph page at SAO/CfA -->
+  <li><a href="https://www.mmto.org/node/60">Binospec page at
+  MMTO</a>, to be updated.
+  <li><a href="binomask_info.html">Information on BinoMask slitmask
+  design software</a>.
+   <li><a href="http://scheduler.mmto.arizona.edu/">MMT queue
+  scheduling interface</a>
+</ul>
+<p>
+
+<h3>Contents</h3>
+<ul>
+  <li><a href="#basics">Binospec basics</a>
+  <li><a href="#spectral">Spectral properties</a>
+  <li><a href="#sensitivity">Sensitivity</a>
+  <li><a href="#etc">Exposure time calculator</a>
+  <li><a href="#configuration">Physical/optical configuration</a>
+  <li><a href="#observing">Observing procedures</a>
+  <li><a href="#acquisition">Target acquisition and coordinates</a>
+  <li><a href="#slitmask">Slitmask design</a>
+  <li><a href="#queue">Queue observing</a>
+  <li><a href="#data">Data reduction</a>
+  <li><a href="#images">Example images</a>
+</ul>
+<p>
+  
+
+<h3 id="basics">Binospec overview: basics</h3>
+
+Binospec is installed at the f/5 Cassegrain focus of the MMT. It 
+has two fields of view that are 8' x 15' with a 
+gap of 3.2'. Two sheet metal slit masks held in a machined frame cover
+the fields of view. Each slit mask can hold over 150 slitlets,
+parallel to the long side of the masks. Each spectrograph has 3 gratings and 4 <i>griz</i> filters, and a 4K x 4K CCD detector. 
+Two guiders and a wavefront sensor are used for guiding and image
+control.  Guiding and alignment are done through stars 
+viewed through holes at each end of the slit mask.   
+The spectrographs have active flexure compensation by moving
+the CCDs.
+<p>
+
+Each side has a 4K x 4K deep depleted E2V CCD detector with 15 micron pixels and a scale of
+0.24 arcsec/pixel.  The resolution per pixel is tabulated below. The wavelength coverage of a slitlet depends on
+the distance from slitlet to optical axis along the X direction (along
+the short side of the masks).  From near (central) side of the mask to
+the far side,
+the change in coverage is approximately 900 A to the blue for the 600
+gpm grating.
+<p>
+
+Slitmasks will be machined by a laser cutter at the MMT. Slitmasks
+will be configured by software written at SAO and running on a server
+hosted at the MMT. Users will log into a web interface to
+interactively design masks and submit them. Masks must be configured
+ahead of time to allow time for machining. Masks with long slits are also
+provided; the widths available are 0.75", 1.0", 1.25", 1.5", and 5".
+One long-slit mask will always be loaded, typically the 1.0". If
+different long-slit widths are needed, please
+request these widths in your target catalog submission so they can be
+loaded ahead of time. 10 slitmasks can be loaded
+simultaneously. Masks can be changed during the daytime (and
+potentially during the night pending approval of this mode and
+training of staff).
+<p>
+
+<h3 id="spectral">Spectral properties</h3>
+
+Binospec has 3 gratings for each spectrograph. The grating
+resolution, approximate simultaneous wavelength coverage, and other properties including blaze, anamorphic demagnification,
+and pixel scale are given in
+this table for the 270, 600, and 1000 lines/mm gratings.  The 600 line
+grating is shown at three different tilts. 
+The wavelengths used for the flexure control system limit the usable central wavelength settings to those given in the second table.
+The pixel scale along the slit is the normal 0.24 arcsec/pixel; due to anamorphic demagnification, the pixels per slit in the spectral direction are larger, so a 1 arcsec slit projects onto approx 3.2-3.7 pixels depending on the grating and tilt. The resolution listed is a FWHM (R = lambda/dlambda).
+<p>
+
+<!-- <img src="bino_grating_table.png" alt="Grating table"> -->
+
+<table align="center" border="1" width="90%">
+  <tbody>
+    <tr rowspan="2"><th>Grating lines/mm</th> <th>Order</th> <th>Blaze angle</th>
+    <th>Angle of incidence</th> <th>Anamorph Demag.</th> <th>Coverage (A)</th>
+    <th>Dispersion (A/pixel)</th> <th>Pixels per 1'' slit</th>
+    <th>Resolution in 1'' slit</th> </tr>
+    
+   <tr><td>270</td> <td>1</td> <td>5.5</td>
+   <td>28.0</td> <td>1.08</td> <td>3900-9240</td>
+   <td>1.30</td> <td>3.75</td> <td>1340</td></tr>
+
+   <tr><td>600</td> <td>1</td> <td>16.0</td>
+   <td>33.2</td> <td>1.17</td> <td>4500-6960</td>
+   <td>0.60</td> <td>3.47</td> <td>2740</td></tr>
+
+   <tr><td>600</td> <td>1</td> <td>16.0</td>
+   <td>36.1</td> <td>1.22</td> <td>6000-8480</td>
+   <td>0.61</td> <td>3.32</td> <td>3590</td></tr>
+
+   <tr><td>600</td> <td>1</td> <td>16.0</td>
+   <td>38.5</td> <td>1.27</td> <td>7255-9750</td>
+   <td>0.61</td> <td>3.20</td> <td>4360</td></tr>
+   
+   <tr><td>1000</td> <td>1</td> <td>13.75</td>
+   <td>37.1</td> <td>1.24</td> <td>3900-5400</td>
+   <td>0.36</td> <td>3.27</td> <td>3900</td></tr>
+  </tbody>
+</table>
+<br>
+
+<table align="center" border="1" width="90%">
+  <tbody>
+    <tr><th>Grating lines/mm</th> <th>Allowable central
+  wavelengths</th> </tr>
+  
+   <tr><td>270</td> <td> 5501 - 7838 A</td> </tr>
+   <tr><td>600</td> <td> 5146 - 8783 A</td> </tr>
+   <tr><td rowspan="3">1000</td> <td> 4108-4683, 5181-7273, 7363-7967, 8153-8772,
+   8897-9279 </td> </tr>
+        <tr><td>Ghosts may be troublesome with 1000 gpm grating at
+ central wavelengths 5600-8500 A, worst near 7100 A.<br>
+	  
+       Throughput of 1000 gpm grating will be low in the red.</td></tr>
+
+       <!-- <tr><td>Ghosts may be troublesome with 1000 gpm grating at
+ central wavelengths 5600-8500 A, worst near 7100 A.</td></tr>
+       <tr><td>Throughput of 1000 gpm grating will be low in the
+   red.</td></tr> -->
+ 
+
+  </tbody>
+</table>
+<br>
+
+
+<h3 id="sensitivity">Sensitivity / exposure times</h3>
+
+<p>
+Binospec is expected to be several times more efficient than Hectospec
+due to throughput and improved sky subtraction.
+Here are on-sky throughput measurements made with the three gratings
+during commissioning, which should be taken as lower limits as the sky was not completely photometric. Three central wavelength settings are included for the 600gpm grating. 
+<p>
+
+<img src="throughput_commissioning.png" alt="Throughput measurements">
+<p>
+
+<!--
+This plot shows the
+calculated throughput as a function of wavelength for the 600 lines/mm
+grating. It will be updated when there are on-sky measurements from
+commissioning.
+<p>
+
+<img src="bino_600lpm_expected_throughput.png" alt="Expected throughput plot">
+<p>
+-->
+
+<h3 id="etc">Exposure time calculator</h3>
+
+<p>
+SAO has built an exposure time / sensitivity calculator for Binospec
+and Hectospec.  A preliminary version is available at this link:
+<a href="http://tdc-www.harvard.edu/software/ETC.html">
+<b>Binospec exposure time calculator</b> </a>, which also gives you an
+option to download the package.
+<p>
+
+A direct link to the spectroscopic exposure time calculator for
+spectra is:
+<a
+href="http://hopper.si.edu/etc-cgi/TEST/sao-etc">http://hopper.si.edu/etc-cgi/TEST/sao-etc</a>
+.
+For imaging see this calculator (select MMTcam):
+<a
+href="http://www.cfa.harvard.edu/mmti/megacam/obs_manual/exptime.html">http://www.cfa.harvard.edu/mmti/megacam/obs_manual/exptime.html</a>
+<p>
+
+
+
+<h3 id="configuration">Binospec configuration</h3>
+
+<p>
+A model of the optical train of Binospec is shown below, illustrating
+the single slitmask at the top, and the paired spectrographs, filters,
+gratings, and detectors.
+<p>
+
+<img src="bino_optical_train.png" alt="optical layout">
+<p>
+Optical train of Binospec.
+<p>
+
+The paired fields of view on the sky are shown below in green - the
+separation between them is 3.2 arcmin.  The yellow boxes are the
+guider patrol regions, and the blue box is the wavefront sensor
+patrol region.
+The slitmasks cover the guider regions
+and holes are machined into into the masks at the location of guide
+stars, to allow for slitmask alignment and guiding.
+<p>
+
+<!-- <img src="bino_ccds_on_sky.png" alt="Fields of CCDs and guiders"> -->
+<img src="bino_fields_on_sky.png" alt="Fields of CCDs and guiders
+shown on a sky image">
+<p>
+Binospec on the sky. Green rectangles are the spectroscopic fields, yellow are the allowed positions for guide stars. The blue rectangle shows the wavefront-sensor patrol area. Red dots are targets; blue are guide stars; short cyan lines show the slits assigned to targets.
+<p>
+
+
+
+<h3 id="observing">Observing procedures</h3>
+
+<p>
+Binospec observations will be done in a queue, similar to Hectospec
+and MMIRS.  The queue will be administered by MMT staff and the
+instrument will usually be operated by MMT queue observers. PIs/guest
+observers will typically not come to the telescope.  PIs will submit
+observing catalogs and mask designs through the  <a
+href="http://scheduler.mmto.arizona.edu/">MMT queue scheduling
+interface</a>. Prior to the run, PIs will get an email asking them to
+log in to the queue scheduler to upload catalogs and observation details.
+<p>
+
+Binospec can hold 10 slitmasks, and these can be changed out freely
+during the day (unlike MMIRS), and potentially at nght.
+However, there is a lead time for
+machining masks.
+<p>
+
+The grating tilt controls wavelength coverage.
+We anticipate that a limited number of standard grating tilts will
+usually/initially be used, to ease calibration requirements and configuration
+changes during the night.
+The instrument can be changed from spectroscopic to imaging mode
+quickly, and will have <i>g, r, i, z</i> filters for each side. We do
+not anticipate initially offering mixed observing between the sides
+(ie imaging + spectra, or two different gratings).
+<p>
+
+
+<h3 id="acquisition">Target acquisition and coordinates</h3>
+
+<p>
+Binospec uses guiders offset from the main field of view, patrolling
+the yellow box regions in the figure above. Guide stars can be
+selected automatically from GAIA (preferred) or GSC2 catalogs. Thus,
+<b>it is necessary to supply coordinates that are on the GAIA or GSC2
+system. The correct coordinate system is critically important for both
+longslit and slitmask spectroscopy</b>.
+<p>
+
+Targets for longslit spectroscopy will be offset onto the slit by
+acquiring
+stars onto the guiders, whose positions have been calibrated relative
+to the slit.  Thus, your target position needs to be on the same
+system as the guide stars. The pointing can be tuned up by tilting the
+grating to zeroth order and taking a direct image of the target
+through the slit.  This should work for objects brighter than some
+magnitude (R~21). For faint targets, PIs should provide a nearby
+offset star on the same coordinate system as the target. <b>Offset star
+coordinates and any other useful information about the target can be
+entered in the "notes" section of your observing catalog.</b>
+<p>
+
+Acquiring using a slit-viewing camera requires a "mirrored" slit mask
+whose use has not yet been commissioned, so good coordinates that
+allow the above procedure to work are a requirement.
+<p>
+
+For multi-slit masks, the PI will provide a list of targets on GAIA or
+GSC2 coordinate systems. The BinoMask slitmask design program will add
+suitable guide stars and cut alignment holes in the slitmask, through
+which the guiders will image the stars and tune up the alignment of
+the mask.
+<p>
+
+<h3 id="slitmask">Slitmask design</h3>
+
+<p>
+Slitmask design will be done by PIs using the BinoMask web based interface.
+Masks will be machined with a laser cutter on
+the mountain by SAO staff. Masks will need to be submitted well in
+advance of the start of queue observations for a semester.
+<p>
+
+Please see the <a href="binomask_info.html">BinoMask slitmask design
+interface tutorial</a> webpage for a more detailed walkthrough of using the
+software.
+<p>
+
+You will be running a web-based mask making program called <b>BinoMask</b> which
+will take a text file as input, containing your targets to be
+observed.  If your objects are on the GAIA coordinate system, binomask
+can add guide and wavefront-sensor stars for you.  If not, you must create a second
+catalog with such stars on the same coordinate system as your targets,
+extending to at least 0.4 degree in radius from the center of your
+target field. For guide stars, please select a magnitude range of
+r=14-18; for WFS stars, magnitude r=11-14.
+<p>
+
+The format for the catalogs is an ASCII file with columns. You may separate entries either with a comma or a tab. The first line of the file is a header:
+<pre>name, ra, dec, magnitude, priority, pm-ra, pm-dec, epoch, type</pre>
+The following lines contain entries for those columns.
+<p>
+
+Only ra and dec are required, but name, magnitude, & priority are also recommended. (1=highest priority, then 2, 3, etc). Coordinates may be in decimal degrees or sexagesimal.  Type should be 1 (or “target”), 2 (“sky”) or 3 (“standard”).
+<p>
+
+A queue scheduling interface similar to the MMIRS user interface allows PIs to
+submit mask designs and track their program progress.
+The materials/machining cost for slitmasks will be determined at a later date.
+<p>
+
+Mask making is integrated with telescope scheduling software. Thus if
+you have been granted time, you will receive an email from
+scheduler@mmto.org with instructions to log in, make masks, and submit
+catalogs. You may also use
+the mask making software outside of that framework. To run the BinoMask
+software visit <a
+href="http://scheduler.mmto.arizona.edu/BinoMask/">scheduler.mmto.arizona.edu/BinoMask/</a>.
+
+Slit widths are also set by the user. As an aid, the MMT web site
+states that the median seeing is in the range of 0.77" - 0.85" based
+on data from 2003 to the present. 1 arcsecond slits are a good
+starting point.
+<p>
+
+Note that
+the differential atmospheric refraction across the 15 arcminute field
+is significant, so that the location of slitlets depends on the hour
+angle at which the mask is observed. In practice this means that the
+mask machining would change slightly depending on whether the mask is
+observed when HA is East or West. Thus the date and time of
+observation specified during mask design are significant. Observable
+hour angles will be taken into account during queue scheduling. 
+<p>
+
+You may get the error “slits can not be made” which often occurs
+because the rotator setting is not correct. Try adding or subtracting
+180 from the present setting.
+<p>
+
+<h3 id="queue">Queue scheduling</h3>
+
+<p>
+In order to obtain the maximum scientific impact from Binospec, we
+will to continue the queue scheduling that has proven successful with
+Hectospec, Hectochelle and MMIRS.  Queue scheduling offers the
+considerable advantage that we can flexibly adapt the observing
+program to the current conditions.  We will reserve conditions of
+perfect transparency and superb seeing for those projects that can
+take best advantage of excellent conditions.   Queue scheduling also
+allows observations to be obtained at low air-mass and allows
+continuous observation of high priority objects.  The instrumeht will
+be operated by MMT staff queue observers, and proposers are not
+generally expected to travel to the telescope.
+<p>
+
+
+<h3 id="data">Data reduction</h3>
+
+<p>
+Binospec will have a data pipeline, written in IDL by SAO staff and
+publicly available, that is similar to the <a
+href="http://tdc-www.harvard.edu/software/mmirs_pipeline.html">MMIRS
+pipeline</a>.  The SAO TDC is anticipated to return reduced data to
+the PIs. The timescale for data reduction is TBD.  Availability of
+quick look reductions or quickly returning raw and reduced data are
+recognized as desirable for some programs and will be addressed. A
+quicklook for queue observers to assess data quality is in progress.
+<p>
+
+The raw data are stored as multiextension fits files; each CCD has 4
+amplifiers, each of which is stored as an extension. Data taken are
+archived at the CfA. A pipeline under development (in late 2017) will
+be used to process the data and provide wavelength calibrated,
+relative-flux corrected spectra.
+In progress: the archive data system will send you a notification the day after any of your
+data is taken, at which time you may download the raw data. A few days
+later, you will receive another message concerning the reduced data.
+We are also developing an addition to the MMT queue catalog management
+pages that will allow you to view available data files and download
+them from your catalog page.
+<p>
+
+<h3 id="images">Example images</h3>
+
+<p>
+These images were taken during Binospec commissioning in fall 2017.
+<p>
+
+<img src="exposure_single.jpg" alt="Single exposure">
+<p>
+A multislit single exposure of 600 sec. Blue wavelengths are toward
+the center; red is to the left in the left frame and to the right in
+the right frame. Note the cosmic ray hits.
+<p>
+
+<img src="exposure_combined.jpg" alt="Combined exposure">
+<p>
+Combination of 4 exposures.  Ca H and K absorption
+lines are visible as a doublet near the blue end of several spectra.
+<p>
+
+<img src="exposure_shortslits.jpg" alt="exposure with many short slits">>
+<p>
+A 600 sec single exposure on a mask with many short, 2 arcsec long
+slits, using the 600 gpm grating
+<p>
+
+<img src="exposure_direct_g.jpg" alt="direct g band exposure">
+<p>
+A direct imaging exposure, 50 sec in g band.
+<p>
+
+
+<p>
+
+<p>
+
+<h4>Other questions? </h4>
+
+<p>
+We will update this page as information is finalized during Binospec
+commissioning and preparations for the first semester of operations in
+2018A. 
+Please contact Benjamin Weiner, bjw@mmto.org, for further information.
+<p>
+
+<hr>
+Page created by
+<address>Benjamin Weiner, bjw@mmto.org</address> with contributions
+from Nelson Caldwell.
+<!-- hhmts start --> Last modified: Fri Jan 26 15:40:41 MST 2018 <!-- hhmts end -->
+</body> </html>
