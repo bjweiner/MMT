@@ -1,0 +1,30 @@
+
+To plot an individual spectrum from a spHect file:
+
+idl
+fname = 'spHect-2016.0609_1_batch1.fits'
+
+lam = mrdfits(fname,0)
+object =  mrdfits(fname,1)
+ivar = mrdfits(fname,2)
+pixmask = mrdfits(fname, 4) + mrdfits(fname,3)
+
+; lam, object, ivar, pixmask are images 4608 x 300 pixels
+
+; adjust this if you want to cut down the plot range or use pixel masks
+toplot = where(lam[*,0] gt 3500 and lam[*,0] lt 9500)
+
+; to plot the 100th spectrum, 0-based
+i=99
+plot, lam[toplot, i], object[toplot, i]
+
+; to overplot the errors. Color may not work
+oplot, lam[toplot, i], 1.0/sqrt(ivar[toplot, i]), color=blue
+
+; to set y-limits
+plot, lam[toplot, i], object[toplot, i], yrange=[-1, 30]
+
+; to plot a smoothed spectrum and error
+nsmooth=9
+plot, lam[toplot, i], smooth(object[toplot, i], nsmooth)
+oplot, lam[toplot, i], 1.0/sqrt(ivar[toplot, i])/sqrt(nsmooth), color=blue

@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>
+MMT/Hectospec: data reduction and common problems
+</title>
+</head>
+
+<body>
+<h1>MMT/Hectospec: data reduction and common problems
+</h1>
+<p>
+
+<h4>Benjamin Weiner, MMT Observatory</h4>
+<p>
+
+The <a href="https://www.cfa.harvard.edu/mmti/hectospec.html">Hectospec fiber spectrograph</a> on the MMT telescope obtains 300
+fiber spectra at a time over a 1 degree field of view.  This page is
+intended to compile some notes on data reduction and issues that
+occasionally cause problems in reduction.
+<p>
+
+<h3>Resources:</h3>
+
+<ul>
+  <li><a href="http://www.mmto.org">MMT Observatory</a>
+  <li><a
+  href="https://www.cfa.harvard.edu/mmti/hectospec.html">Hectospec</a> spectrograph
+  <li><a
+  href="https://www.cfa.harvard.edu/mmti/hectospec/hecto_software_manual.htm">Hectospec
+  observers manual</a>, includes instructions on making fiber configurations
+  with xfitfibs
+  <li><a href="https://www.mmto.org/node/536">HSRED reduction
+  software</a>, uses IDL
+</ul>
+<p>
+
+<h3>How to run HSRED</h3>
+
+See the  <a href="https://www.mmto.org/node/536"> HSRED page </a> for
+how to run HSRED v2 using a wrapper to run all the reduction steps. I
+also strongly recommend reading the <a
+href="http://mmto.org/~rcool/hsred/hsred_reductions.html">older HSRED
+instructions</a>. These tell you what the individual steps are doing.
+
+<p>
+
+<h3>Common problems</h3>
+
+<ul>
+  <li> Fits files that don't belong
+  <li> Mix of 270 and 600-line grating data
+  <li> Missing skyflats
+  <li> No standard stars on config?
+  <li> Restarting a reduction halfway through
+  <li> Detecting completed but problematic data
+</ul>
+<p>
+
+<h4>Fits files that don't belong</h4>
+
+HSRED will usually attempt to reduce all the *.fits files in your
+directory. If there are fits files that it should not touch, it will
+run into problems. Generally, every *.fits data file should have an
+accompanying *_map file, a text file that describes the fiber
+assignments. If there is no map file, an error will occur in
+HS_MAPTOPLUG.
+<p>
+
+<ul>Actions:
+<li>Move all skycam fits files to a subdirectory. See the
+  prune_skycam_600.sh file linked below.
+  <li>Move all extraneous files away. In particular, if you have any
+  "ring250*.fits" files, remove those.
+  <li>You should usually have only bias, comp, dark, domeflat, sflat,
+  and science images. The science images will have the name of your
+  configuration. (Possibly also images of other fields like a
+  standard? but typically just your data.)
+</ul>
+<p>
+
+<h4>Mix of 270 and 600-line grating data</h4>
+
+Hectospec has two gratings, 270-line and 600-line. The 270 is more
+commonly used. If your directory has a mix of 270 and 600 data, the
+reduction will run and may complete, but the data will look
+terrible. The most common issue is that there are some 600-line comps
+(arc lamps) or flats mixed in with your comps and flats.
+<p>
+
+<ul>Action:
+  <li>Run this script: <tt>sh prune_skycam_600.sh</tt> linked here: <a
+  href="prune_skycam_600.sh">prune_skycam_600.sh</a> in your data
+  directory. This will find all *skycam.fits files and move them to a
+  tmp_skycam subdirectory, and look in the image headers to find any
+  files with DISPERSE = 600_gpm and move those to a tmp_600grating
+  directory. It uses pyraf to list the image headers to a file.
+</ul>
+
+If you don't have pyraf, you can use anything that looks at the fits
+header of extension 1 or 2 for the DISPERSE keyword to find the files
+with 600_gpm. If you are reducing 600-line data and need to get rid of
+the 270-line files, just change all the 600 references to 270.
+<p>
+
+Note that if there are data with multiple wavelength settings (only
+likely with the 600-line grating), you also need to sort those into
+one wavelength setting per reduction directory.
+<p>
+
+<h4>Missing skyflats</h4>
+
+If there are no skyflats, HSRED will balk and issue an error partway
+through the reduction.  Sometimes there may not be any skyflats named
+sflat.*.fits in your data directory, if for example the weather was
+bad at sunset. 
+<p>
+
+<ul>Action:
+  <li>Borrow skyflats from another night within the same Hectospec
+  run. Either copy the sflat.*.fits files into your directory, or
+  if you have an already reduced directory with sky flats, you can
+  just copy the list of files: e.g.
+  <pre>
+  mkdir 2016.1001/lists
+  cp 2016.1005/lists/sflat.list 2016.1001/lists/
+  </pre>
+  If you only have one night of data and there are no skyflats
+  included, then 
+  contact the TDC (Telescope Data Center) at SAO, from which you
+  normally download your data, and they should be
+  able to give you access to some flats.
+</ul>
+
+<p>
+
+<h4>No standard stars on config</h4>
+
+If you try to reduce a configuration with the /uberextract option to get flux
+calibration, and you don't have any standard stars on the config,
+HSRED will complain. If you did put F stars on the config, you need to
+add them and their magnitudes to HSRED's list of standard stars in
+$HSRED_DIR/etc/standardstars.dat, described at the <a
+href="http://mmto.org/~rcool/hsred/hsred_reductions.html">older HSRED
+instructions</a>.
+
+<ul>Action:
+  <li>Add the standard stars to standardstars.dat and rerun. If you
+  didn't have any F stars, don't use /uberextract. Next time, select
+  some standard stars, e.g. from SDSS use the
+  SPECTROPHOTOMETRIC_STANDARD flag and some magnitude criteria (about
+  17th mag?).
+</ul>
+  <p>
+
+<h4> Restarting a reduction halfway through</h4>
+
+I find that if the pipeline crashes for some reason, you fix the
+problem, and try to run it again without making changes, the end data
+are often garbled - this may include bad sky subtractions, or a SNR vs
+magnitude plot with a lot of scatter.  One issue is that HSRED detects
+whether files have been processed and doesn't redo them, e.g. if
+you've run HS_CALIBPROC and made all of the files in the calibration
+subdirectory, running HS_CALIBPROC again will not reprocess them. To
+avoid this, start 
+over from the beginning with a new rerun number. Your first run will
+probably be number 0000. You can start over by giving the optional
+command <tt>rerun='0100'</tt> (or 0200, 0300, etc) to commands such as HS_PIPELINE_WRAP,
+HS_CALIBPROC, HS_EXTRACT, HS_REDUCE1D.
+<p>
+
+
+<h4> Detecting completed but problematic data </h4>
+
+One tool for checking whether your data are sensible is to make a SNR
+vs magnitude plot.  You can do this by running HS_SNR on the spHect
+output file.  In IDL, run commands like these:
+<p>
+
+<pre>
+fname = 'reduction/0000/spHect-2016.1001_1.fits'
+lam = mrdfits(fname,0)
+object =  mrdfits(fname,1)
+plugmap = mrdfits(fname,5)
+hs_snr, lam, object, plugmap, snr=snr
+</pre>
+<p>
+
+This should pop up a plot with continuum SNR measured from the spectra vs.
+magnitudes from your input catalog.  If your magnitudes are good,
+there should be a decent correlation with modest scatter. For galaxies
+with SDSS photometry, I typically see a number like SNR ~ 2-3 at r=21
+in about 1-2 hours of Hectospec exposure. If there are
+a few outliers, it may indicate problems with some of your targets -
+for example, low surface brightness objects will be low SNR outliers
+for their magnitude.  If it's a total scatterplot with no correlation,
+then something may have gone wrong in the reduction. This has happened
+to me a couple of times with the mixed 270 and 600-line files, or with
+a reduction that crashed halfway through and was restarted without a
+new rerun.
+<p>
+
+<h4>Other problems?</h4>
+
+If you have a Hectospec data reduction issue that isn't covered here,
+please contact me at bjw@mmto.org.  If you have suggestions to add to
+this page, contributions are welcome!
+<p>
+
+<hr>
+<address>Benjamin Weiner, bjw@mmto.org</address>
+<!-- hhmts start --> Last modified: Wed Apr 12 17:26:46 MST 2017 <!-- hhmts end -->
+</body> </html>
