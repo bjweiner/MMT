@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 # Read RA, Dec, PA columns from file as strings, return as lists
+# RA and Dec must be something that pyephem understands, so hh:mm:ss works,
+# but decimal RA in degrees doesn't
 def read_coords(fname):
     names = []
     ra = []
@@ -229,7 +231,7 @@ def main():
     if len(sys.argv) >= 2:
         fname = sys.argv[1]
     else:
-        fname = raw_input('Enter filename with name,ra,dec,pa: ')
+        fname = raw_input('Enter filename with name, ra, dec, pa (space delimited, hh:mm:ss): ')
     names, ra, dec, pa = read_coords(fname)
     plot_angle_loop(names, ra, dec, pa)
     return
