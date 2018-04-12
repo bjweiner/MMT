@@ -3,7 +3,7 @@
 #  For checking whether observations at a given PA (like Binospec masks)
 #  will have a problem with the rotator limits
 #  prompt for an observation date
-#  Read a table of RA, Dec, PA
+#  Read a table of Name, RA, Dec, PA  columns (space-delimited)
 #  make plots of airmass, parallactic angle, and rotator angle
 
 # requires pyephem
@@ -215,7 +215,9 @@ def plot_angles(body, observatory, timestart, rotlimits, plotnum=0, pdf_file='')
 def plot_angle_loop(names,ra,dec,pa):
     observatory = set_observatory()
     tstart = get_a_time()
-    rotlimits = [-174, + 171]
+    #rotlimits = [-174, +171]
+    # Binospec has a 8 deg rotator offset that shifts the limits.
+    rotlimits = [-166, +179]
     pdfname = 'rotangle_plots.pdf'
     pdffile = PdfPages(pdfname)
     nobj = len(ra)
