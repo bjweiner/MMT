@@ -5,6 +5,15 @@
 #  prompt for an observation date
 #  Read a table of Name, RA, Dec, PA  columns (space-delimited)
 #  make plots of airmass, parallactic angle, and rotator angle
+#  Calling:
+#    python rotator_angle.py <masks_name_radec_pa.dat> <instname>
+#  where masks_name_radec_pa.dat is the name of your file with data
+# and instname is 'binospec' or 'mmirs' (default binospec)
+# If you omit the arguments, then it will prompt for the filename,
+# but then you can't specify instrument.
+
+# Ben Weiner Feb -April 2018
+
 
 # requires pyephem
 
@@ -210,14 +219,23 @@ def plot_angles(body, observatory, timestart, rotlimits, plotnum=0, pdf_file='')
     return hourtime, parang, rotang, airmass
 
 # Loop through sets of coordinates making plots
-# Rotator limits are hard coded
+# Rotator limits are hard coded; now switchable on instrument name
 
-def plot_angle_loop(names,ra,dec,pa):
+def plot_angle_loop(names,ra,dec,pa,instname):
     observatory = set_observatory()
     tstart = get_a_time()
-    #rotlimits = [-174, +171]
-    # Binospec has a 8 deg rotator offset that shifts the limits.
-    rotlimits = [-166, +179]
+    rotlimits_raw = [-174, +171]
+    # Binospec has a -8 deg rotator offset that shifts the limits to -166,+179
+    # MMIRS is +7,; limits are tabulated as -174,+165 in doc database,
+    # so it doesn't work to apply the offset to the same raw limits.
+    binospec_limits = [-166, +179]
+    mmirs_limits = [-174, +165]
+    if instname.lower() == 'binospec':
+        rotlimits = binospec_limits
+    elif instname.lower() == 'mmirs':
+        rotlimits = mmirs_limits
+    else:
+        rotlimits = binospec_limits
     pdfname = 'rotangle_plots.pdf'
     pdffile = PdfPages(pdfname)
     nobj = len(ra)
@@ -234,8 +252,12 @@ def main():
         fname = sys.argv[1]
     else:
         fname = raw_input('Enter filename with name, ra, dec, pa (space delimited, hh:mm:ss): ')
+    if len(sys.argv) >= 3:
+        instname = sys.argv[2]
+    else:
+        instname = 'binospec'
     names, ra, dec, pa = read_coords(fname)
-    plot_angle_loop(names, ra, dec, pa)
+    plot_angle_loop(names, ra, dec, pa, instname)
     return
 
 # This is the standard boilerplate that calls the main() function.
