@@ -15,12 +15,12 @@ based package written by Sean Moran at CfA.
 
 This page has a tutorial / walkthrough on using BinoMask.  For
 now this is a walkthrough of a slitmask design, notes written by Ben
-Weiner, with screenshots of the process. We will update this page as needed
-and add a video walkthrough before the 2018A semester slitmask deadline in
-late January 2018.
+Weiner, with screenshots of the process. We are updating this page as needed
+and will add a video walkthrough in mid-2018.
 To access BinoMask, go to  <a
 href="http://scheduler.mmto.arizona.edu/BinoMask/">scheduler.mmto.arizona.edu/BinoMask/</a>
-<p>
+<p>.  Note that you will need to be logged into your MMTO catalog submission account to 
+actually submit a mask design.
 
 <h3>Before you begin mask design</h3>
 <p>
@@ -267,13 +267,13 @@ is in column 7 of the text file.
 <p>
 
 <ul>
-  <li>It would be useful to download the selected targets table as a csv or similar 
+  <li>It would be useful to download the selected targets table as a csv or similar,
 and this feature is slated for addition.
 
 <li> It may be helpful to show the parallactic angle in this panel where we
-can choose the PA range, although since there is an ADC, the
-  parallactic effect is mostly differential across the field rather
-  than dispersing light out of each slit.
+can choose the PA range, although since there is an ADC (atmospheric dispersion compensator),
+  the parallactic effect is mostly differential across the field rather
+  than dispersing light out of each slit. We are working on how to visualize this.
 </ul>
 <p>
 
@@ -305,6 +305,17 @@ mask, load it and submit, but you can't edit/change it before submission.
 
 After submitting, you can choose to design more masks, or be sent back
 to the MMT Queue Catalog page.
+<p>
+
+If you want to design multiple masks to tile a field or to overlap for 
+greater coverage (eg second mask gets targets that could not be assigned on the first mask),
+then you should make the first mask, submit it, and choose "Make Another."
+This will send you back to the beginning. Choose your new mask center and 
+go through the steps, and <it>keep the existing target catalog</it> rather than loading
+it again. BinoMask keeps track of what objects have already been assigned, and
+it will make the second mask using only objects that were not on the first mask
+(and similarly if you make a third mask, etc). So you can design multiple masks
+to cover a field, as long as you do them all in the same design session.
 <p>
 
 <img src="binomask_submit.png">
