@@ -155,6 +155,20 @@ this to ignore extra whitespace in the near future.  (I think that
 whitespace in the catalog lines is ok, just not in the header line.)
 <p>
 
+<h4>Target List Best Practices</h4>
+
+<ul>
+<li>Objects need to be on a common astrometric frame, and this frame needs to be 
+either compatible with Gaia (SDSS is close enough), or you need to supply a catalog 
+of guide stars on this frame (see below).
+<li>Objects should span a limited range of magnitudes, otherwise bright targets will 
+bleed into fainter targets on adjacent slits, and possibly even saturate.
+<li>Objects should have a bright magnitude limit - exact value depends on exposure length,
+but g or r mag of 15-16 is probably a good starting point.
+<li> (To be updated based on further experience with data processing.)
+</ul>
+<p>
+
 <h4>Very Important! Catalog reference frame</h4>
 
 If your target catalog is in the GAIA reference frame (or optionally GSC2), then BinoMask
