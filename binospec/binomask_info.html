@@ -51,6 +51,7 @@ but don't have to download/install anything.
   <li> Generate slits on objects
   <li> Submitting the mask to your queue area
   <li> Adding the target (observing block) to your queue catalog
+  <li> Troubleshooting
 </ul>
 <p>
   
@@ -66,7 +67,9 @@ Editor &gt; New Target.  This will open a "wizard" to help you
 specify the type of observation. Try clicking Mask &gt; Create New
 Mask &gt; Launch BinoMask.  (If it gives you a warning about leaving
 the page without saving data, click ok to leave the page.)
-This will start the BinoMask design software running on scheduler.mmto.arizona.edu.
+This will start the BinoMask design software running on
+scheduler.mmto.arizona.edu.  (If you have difficulty here, see the
+"Troubleshooting" section at bottom of the page.)
 <p>
 
 The BinoMask page has a header saying "BinoMask  MMT Observatory   [observer name]",
@@ -153,6 +156,15 @@ the header line - so
 'name,ra,dec,mag' works, but 'name, ra, dec, mag' won't.  We will fix
 this to ignore extra whitespace in the near future.  (I think that
 whitespace in the catalog lines is ok, just not in the header line.)
+<p>
+
+Object priorities can be 1-most important, 2-next most, and so on. The
+mask designer will try to optimize the sum of N_rank * 10^-rank, so a
+priority 1 object counts 10 times as much as a priority 2 object, and
+so on. Using all-integer priorities will work; using all-float
+priorities may work (to be tested); and mixing integers and floats in
+the priority column currently will cause an error during slit
+placement.
 <p>
 
 <h4>Target List Best Practices</h4>
@@ -245,6 +257,21 @@ slit assignments, it will populate the "Targets Assigned" table below the sky
 view. You have to scroll down in the Generate Slits tab to see this
 "Targets Assigned" table. The selected targets and guide stars will now be colored cyan
 points on the image.
+<p>
+
+Varying the PA: Binomask will take account of what PAs are observable
+when your field is up and will avoid PAs that take your mask too close
+to the rotator limits. So it's generally a good idea to let Binomask
+optimize the PA. If you need to constrain the PA, it may complain
+if the PAs are too close to the rotator limits.
+<p>
+
+Varying the mask center: Binomask can try a grid search of 5x5 centers
+in RA/Dec over a range you specify (eg 2x2 arcmin) to optimize the
+number of targets placed on slits. However, this slows down the slit
+placing step by a
+factor of 25 and currently may lead to timeout errors if you have a
+large target catalog.
 <p>
 
 <img src="binomask_generateslits.png">
@@ -365,6 +392,7 @@ wavelength settings. Each would be a distinct "target" in the queue.
 <p>
 
 <h3> Notes </h3>
+<p>
 
 From the Queue Catalog page, if you click the name of a mask, it will
 reopen BinoMask with fewer options. This will show a Mask
@@ -391,10 +419,44 @@ observation specified during mask design are significant. Observable
 hour angles will be taken into account during queue scheduling. 
 <p>
 
+<h3> Troubleshooting </h3>
+<p>
+
+<b> Can't access Binomask</b>:  Normally you start from your queue
+catalog page and click "New Target" and "Launch Binomask." If this
+takes you back to the scheduler homepage rather than starting
+Binomask, the problem is a stale browser cookie that keeps track of
+your login. We are working on fixing this. In the meantime, you can
+fix it by either: 1. launching a private/incognito browser session and
+accessing your catalog; or 2. clearing cookies in your browser for the hostname
+"https://scheduler.mmto.arizona.edu"; the tokens to clear are "token"
+and "PHPESSID".
+<p>
+
+<b>Load target catalog fails</b>: Check your catalog to make sure that
+the field names in the header are exactly as shown here:
+<tt>name,ra,dec,magnitude,priority,type</tt> and so on.
+<p>
+
+<b>Placing slits fails</b>: Check your catalog to make sure that
+your priority column uses either all integer priorities, or all
+floats. Mixing datatypes can cause an error.
+<p>
+
+<b>"Problem connecting to backend server" error during slit placement</b>: This means that the web
+process is failing to talk to the server that is actually doing the
+computation of allowable slit placement and optimization of number of
+targets and priorities. It may happen if the computational load is
+high or the slit placement is very demanding / takes a long
+time. Large input target catalogs can cause this to happen. One option is to fix the mask center position: set the "Vary
+Center By" RA and Dec numbers to 0 and place slits again. This speeds
+up the computation by a factor of 25.
+<p>
+
 
 <hr>
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> 
 
-<!-- hhmts start --> Last modified: Fri Jan 19 15:31:49 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Mon May 21 17:50:29 MST 2018 <!-- hhmts end -->
 </body> </html>
