@@ -224,7 +224,12 @@ For imaging see this calculator (select MMTcam):
 href="http://www.cfa.harvard.edu/mmti/megacam/obs_manual/exptime.html">http://www.cfa.harvard.edu/mmti/megacam/obs_manual/exptime.html</a>
 <p>
 
-
+For standard stars and similar calibrations, be careful not to
+saturate the detector. A preliminary suggestion is an exposure of 15
+seconds for a typical spectrophotometric standard at V=11. Please be
+aware that accurate coordinates in the Gaia frame and proper motions
+are necessary for standards; many standards have high proper motions.
+<p>
 
 <h3 id="configuration">Binospec configuration</h3>
 
@@ -302,14 +307,27 @@ Targets for longslit spectroscopy will be offset onto the slit by
 acquiring
 stars onto the guiders, whose positions have been calibrated relative
 to the slit.  Thus, your target position needs to be on the same
-system as the guide stars. The pointing can be tuned up by tilting the
-grating to zeroth order and taking a direct image of the target
-through the slit.  This should work for objects brighter than some
-magnitude (R~21). For faint targets, PIs should provide a nearby
-offset star on the same coordinate system as the target. <b>Offset star
-coordinates and any other useful information about the target can be
-entered in the "notes" section of your observing catalog.</b>
+system as the guide stars.  If you provide a target position that is
+on the Gaia system, the guiders can bring the target directly onto
+the slit without any extra effort. This is strongly preferred as the
+way of acquiring a target.  The
+preferred method of acquisition is very accurate, but <b>your
+coordinates must be good and on the Gaia system</b>.  If the target
+has significant proper motion, these <b>must</b> be provided!  Many
+standard stars have high proper motions.
 <p>
+
+It may be possible in future to tune the pointing up
+by tilting the
+grating to zeroth order and taking a direct image of the target
+through the slit.  This would work for objects brighter than some
+magnitude (R~21).  For faint targets, PIs could provide a nearby
+offset star on the same coordinate system as the target.  However,
+these modes are not in common use now and providing Gaia-frame
+coordinates
+is preferred.
+Finding charts and other useful information about the target can be
+entered in the "notes" section of your observing catalog.  <p>
 
 Acquiring using a slit-viewing camera requires a "mirrored" slit mask
 whose use has not yet been commissioned, so good coordinates that
@@ -387,6 +405,18 @@ hour angles will be taken into account during queue scheduling.
 You may get the error “slits can not be made” which often occurs
 because the rotator setting is not correct. Try adding or subtracting
 180 from the present setting.
+<p>
+
+
+It is good practice to avoid mask position angles that run into the
+rotator limits (which are near +180/-180). Binomask will try to avoid
+PAs that hit the limits in the middle of your observing window.
+In practice, the limits mean that to avoid hitting the limit at
+transit,
+for masks that are north of the MMT
+(Dec &gt; +33), you should avoid position angles near 0, and for masks
+south of the MMT (Dec &lt; +33), you should avoid PAs near +180 or
+-180.
 <p>
 
 <h3 id="queue">Queue scheduling</h3>
@@ -480,5 +510,5 @@ Please contact Benjamin Weiner, bjw@mmto.org, for further information.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> with contributions
 from Nelson Caldwell.
-<!-- hhmts start --> Last modified: Fri Jan 26 15:40:41 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Thu Jun  7 23:30:47 MST 2018 <!-- hhmts end -->
 </body> </html>
