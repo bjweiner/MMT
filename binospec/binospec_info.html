@@ -69,8 +69,10 @@ observing in spring 2018.
   <li><a href="#acquisition">Target acquisition and coordinates</a>
   <li><a href="#slitmask">Slitmask design</a>
   <li><a href="#queue">Queue observing</a>
-  <li><a href="#data">Data reduction</a>
-  <li><a href="#images">Example images</a>
+  <li><a href="#datared">Data reduction</a>
+  <li><a href="#dataformat">Data formats</a>
+  <li><a href="#dataanalysis">Data analysis</a>
+<li><a href="#images">Example images</a>
 </ul>
 <p>
   
@@ -265,15 +267,16 @@ Binospec on the sky. Green rectangles are the spectroscopic fields, yellow are t
 <h3 id="observing">Observing procedures</h3>
 
 <p>
-Binospec observations will be done in a queue, similar to Hectospec
-and MMIRS.  The queue will be administered by MMT staff and the
-instrument will usually be operated by MMT queue observers. PIs/guest
-observers will typically not come to the telescope.  PIs will submit
+Binospec observations are done in a queue, similar to Hectospec
+and MMIRS.  The queue is administered by MMT staff and the
+instrument is usually operated by MMT queue observers. PIs/guest
+observers will typically not need to come to the telescope.  PIs will submit
 observing catalogs and mask designs through the  <a
 href="http://scheduler.mmto.arizona.edu/">MMT queue scheduling
 interface</a>. Prior to the run, PIs will get an email asking them to
 log in to the queue scheduler to upload catalogs and observation details.
-<p>
+During the run, PIs can log in to see progress on their programs and
+download data.<p>
 
 Binospec can hold 10 slitmasks, and these can be changed out freely
 during the day (unlike MMIRS), and potentially at nght.
@@ -374,7 +377,7 @@ Only ra and dec are required, but name, magnitude, & priority are also recommend
 <p>
 
 A queue scheduling interface similar to the MMIRS user interface allows PIs to
-submit mask designs and track their program progress.
+submit mask designs, track their program progress, and download raw data.
 The materials/machining cost for slitmasks will be determined at a later date.
 <p>
 
@@ -436,31 +439,106 @@ generally expected to travel to the telescope.
 <p>
 
 
-<h3 id="data">Data reduction</h3>
+<h3 id="datared">Data reduction and download</h3>
 
 <p>
-Binospec will have a data pipeline, written in IDL by SAO staff and
-publicly available, that is similar to the <a
+Binospec raw data (fitsraw) and minimally processed data (fitsproc, overscan subtracted)
+are available shortly after an observing block is completed and can be
+downloaded from the PI's queue catalog interface.  An observed target 
+will show a small blue folder icon; clicking this icon brings up a
+window to select files for download.  Imaging data can be reduced
+using standard astronomical techniques (IRAF, astropy/ccdproc, etc).
+
+<p>
+The Binospec spectroscopic pipeline is written in IDL by SAO staff, primarily
+Igor Chilingarian and Sean Moran, and is now
+publicly available.  The pipeline code repository is at
+<a href="https://bitbucket.org/chil_sai/binospec">Binospec pipeline on
+Bitbucket</a>. A brief description of running the pipeline and of the
+output data formats is at the <a
+href="https://bitbucket.org/chil_sai/binospec/wiki/Home">Binospec
+pipeline repository wiki</a>.
+
+<p>
+The pipeline uses some similar algorithms to the <a
 href="http://tdc-www.harvard.edu/software/mmirs_pipeline.html">MMIRS
 pipeline</a>.  The SAO TDC is anticipated to return reduced data to
-the PIs. The timescale for data reduction is TBD.  Availability of
+the PIs. The timescale for data reduction is TBD.  SAO and MMT staff
+are currently working on having the data quickly reduced and reduced
+data made available through the MMT queue observing catalog interface,
+similar to the way that raw data are downloadable. PIs will get an
+email when their reduced data is ready. 
+
+<p>
+Availability of
 quick look reductions or quickly returning raw and reduced data are
-recognized as desirable for some programs and will be addressed. A
+recognized as desirable for some programs.  The pipeline includes a
+quick reduction routine, <tt>binospec_quicklook</tt>. A
 quicklook for queue observers to assess data quality is in progress.
 <p>
 
-The raw data are stored as multiextension fits files; each CCD has 4
-amplifiers, each of which is stored as an extension. Data taken are
-archived at the CfA. A pipeline under development (in late 2017) will
-be used to process the data and provide wavelength calibrated,
-relative-flux corrected spectra.
-In progress: the archive data system will send you a notification the day after any of your
-data is taken, at which time you may download the raw data. A few days
-later, you will receive another message concerning the reduced data.
-We are also developing an addition to the MMT queue catalog management
-pages that will allow you to view available data files and download
-them from your catalog page.
+<h3 id="dataformat">Data format</h3>
+
 <p>
+Binospec raw data are stored as multiextension fits files; each CCD has 4
+amplifiers, each of which is stored as an extension. Data taken are
+archived at the CfA. The spectroscopic pipeline (now in a preliminary
+release), is used to process the data and provide wavelength calibrated,
+relative-flux corrected spectra.
+Currently, the queue observing system will send the PI a notification the day after any of your
+data is taken, at which time the PI may login to their queue observing
+page and download the raw data.
+<p>
+
+When the pipeline has been run and reduced data are available, the 
+PI will receive another email.
+The data files are accessible through the MMT queue catalog management
+pages: each target that has been observed has a blue folder
+icon. Clicking the folder icon allows the PI to view available data files and download
+them.  
+Imaging data are in a fairly standard format and will not be reduced
+by the pipeline, but can be reduced by standard techniques (eg IRAF,
+mscred, etc). The format of the pipeline-reduced spectrosopic data is
+described at the <a
+href="https://bitbucket.org/chil_sai/binospec/wiki/Home">Binospec
+pipeline repository wiki</a>.  Example code to read the data is in progress.
+<p>
+
+<h3 id="dataanalysis">Data analysis/visualization</h3>
+
+We are exploring adapting the <a
+href="http://specproc.caltech.edu">Specpro IDL GUI for analyzing
+spectra</a>, written by Dan Masters, to view and fit redshifts to
+Binospec data.  This is in development by Ben Weiner.  Currently, you can try
+following this procedure:
+<ul>
+  <li>download and install Specpro from the  <a
+href="http://specproc.caltech.edu">Specpro website</a>
+  <li>download a <a
+  href="https://github.com/bjweiner/MMT/blob/master/binospec/convert_binospec_to_specpro.pro">convert_binospec_to_specpro
+  procedure</a> to convert Binospec data into the Specpro format
+  <li>download a <a
+  href="https://github.com/bjweiner/MMT/blob/master/binospec/bjw_specpro.pro">bjw_specpro,
+  a lightly
+  modified version of the main Specpro routine</a> and put it in the
+  Specpro directory
+  <li>set up Specpro environment variables as described on the Specpro
+  download page
+  <li>make a subdirectory under your reduced data to hold the
+  Specpro-format files and run, in IDL, <tt>convert_binospec_to_specpro
+  spec1dfile spec2dfile outdir=your_subdirectory</tt>, substituting
+  the appropriate filenames
+  <li><tt>cd,'your_subdirectory'</tt> and run <tt>bjw_specpro, 1,
+  /basic</tt>
+</ul>
+<p>
+
+This should let you look at 1-d and 2-d data, smooth it, enter
+trial redshifts, enter redshift quality estimates, and save output.
+Fitting for the best redshift generally does not work yet.
+<p>
+  
+
 
 <h3 id="images">Example images</h3>
 
@@ -510,5 +588,5 @@ Please contact Benjamin Weiner, bjw@mmto.org, for further information.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> with contributions
 from Nelson Caldwell.
-<!-- hhmts start --> Last modified: Thu Jun  7 23:30:47 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Aug  1 17:58:35 MST 2018 <!-- hhmts end -->
 </body> </html>
