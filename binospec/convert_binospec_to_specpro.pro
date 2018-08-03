@@ -4,6 +4,14 @@
 ; see http://specpro.caltech.edu/specpro_formats.html
 ; and http://specpro.caltech.edu/
 
+; Arguments:
+;   file1d: name of the file with extracted 1d spectra, eg
+;   'obj_counts_slits_extr.fits'
+;   file2d: name of the file with linearized 2d slit spectra, eg
+;   'obj_counts_slits_lin.fits'
+;   outdir (optional): name of a directory to write the output files
+;   into. The directory must already exist.
+
 ; The output will be individual files like 
 ; spec1d.<maskname>.<slitnumber>.<targetnumber>.fits
 ; spec2d.<maskname>.<slitnumber>.<targetnumber>.fits
@@ -13,15 +21,16 @@
 ; needed to make it work better, perform redshift fitting, etc.
 ; These mods will have to be released separately.
 
-; Normally one will run the convert code on the Binospec output files:
-; 1-d file, e.g. obj-sky_slits_extr.fits
-; 2-d file, e.g. obj-sky_slits_lin.fits
-; Could use a not-linearized 2-d file obj-sky_slits.fits, but we
-; would need a 2-d map of the wavelength at each pixel
+; Normally one will run the convert code on the Binospec pipeline 
+; output files:
+; 1-d file, e.g. obj_counts_slits_extr.fits
+; 2-d file, e.g. obj_counts_slits_lin.fits
+; Could use not-linearized 2-d files obj_counts_slits.fits, but we
+; would need a 2-d map of the wavelength at each pixel.
 
 ; outdir argument specifies where to write the data. Because this
 ; will write 3 x (number of slits) files, it can easily write
-; up to ~400-500 files per mask
+; up to ~400-500 files per mask.
 
 ; There is very little error-trapping in this code at the moment.
 
@@ -29,7 +38,7 @@
 ; resample postage stamps,
 ; allow passing in photometry and photo-z files
 
-; Benjamin Weiner, 25 July 2018
+; Benjamin Weiner, 25 July - 2 August 2018
 
 pro convert_binospec_to_specpro, spec1dfile, spec2dfile, outdir=outdir
 
@@ -46,7 +55,9 @@ pro convert_binospec_to_specpro, spec1dfile, spec2dfile, outdir=outdir
 end
 
 
-; Get mask header structures from FITS tables in 1d file
+; Get mask header structures from FITS tables in 1d file. This
+; assumes the mask structures are always in extensions 4 and 5 of
+; the 1d file.
 pro get_mask_headers, spec1dfile, header_a, header_b
   header_a = mrdfits(spec1dfile, 4)
   header_b = mrdfits(spec1dfile, 5)
@@ -118,6 +129,7 @@ pro write_spec1d_file, fname, flux1d_all, error1d_all, iobj, hdr1d_all, outdir=o
   if not keyword_set(wmax) then wmax=10500.0
   mindata = -200.0
   maxdata = 1000.0
+  ; Don't let minivar be too small? Likely to fail in flux units
   minivar = 1.0e-6
   maxivar = 1.0e6
   ctype1 = sxpar(hdr1d_all,'ctype1')
