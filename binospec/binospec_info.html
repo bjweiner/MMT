@@ -521,9 +521,10 @@ href="http://specpro.caltech.edu">Specpro website</a>, and its
   IDL procedure</a> to convert Binospec data into the Specpro format
   and put that in a directory in your IDL path.
   <li>download <a
-  href="https://github.com/bjweiner/MMT/blob/master/binospec/bjw_specpro.pro">bjw_specpro,
-  a lightly
-  modified version of the main Specpro routine</a> and put it in the
+  href="https://github.com/bjweiner/MMT/blob/master/binospec/bjw_specpro.pro">bjw_specpro.pro</a>,
+  and <a
+  href="https://github.com/bjweiner/MMT/blob/master/binospec/zfindspec.pro">zfindspec.pro</a>,
+   modified versions of two main Specpro routines and put them in the
   <tt>specpro/code</tt> directory.
   <li>set up Specpro environment variables as described on the Specpro
   download page before starting IDL.
@@ -545,10 +546,15 @@ href="http://specpro.caltech.edu">Specpro website</a>, and its
 
 This should let you look at 1-d and 2-d data, smooth it, enter
 trial redshifts, enter redshift quality estimates, save output,
-and step through the slits. 
-Fitting for the best redshift generally does not work yet - it works
-sometimes if you zoom in on a 1-d spectral region containing emission
-or absorption features.
+and step through the slits. Read the tutorial and manual on the
+Specpro website to understand the GUI features.
+Fitting for the best redshift now works with the revised
+zfindspec.pro.
+If you don't get a good redshift result or if the spectrum has bad
+data at the ends, redshift fitting can be improved if you
+click-and-drag  in the 1-d spectrum plot window to zoom
+in on a 1-d spectral region containing emission
+or absorption features and excluding data problems.
 <p>
   
 
@@ -601,5 +607,5 @@ Please contact Benjamin Weiner, bjw@mmto.org, for further information.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> with contributions
 from Nelson Caldwell.
-<!-- hhmts start --> Last modified: Thu Aug  2 19:11:28 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Tue Aug  7 14:23:55 MST 2018 <!-- hhmts end -->
 </body> </html>
