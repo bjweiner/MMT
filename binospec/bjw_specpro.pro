@@ -142,22 +142,34 @@
 ; in make2dplot: if extractwidth = 0, make the line marks take up
 ;    only as much space as if it were 2.5"
 ; in makeplot: trap null xzoomregion error
-; in previous_file, next_file: don't require initials to trigger save file
+; in previous_file, next_file, select_slit: don't require initials
+;    to trigger saving file. Issue a warning if no zqual is filled in
 ; in save_output_to_file: don't pop up dialog box if a file has
 ;    already been selected
 ; in makeplot: simplify normalization of template to spectrum so that
 ;    normfac doesn't become -NaN, preventing template from
 ;    being plotted. is there something wrong with ivar?
+; in save_1d_to_file: write in append mode so you can't overwrite
+;    a previous result (or redshift file if you hit the save 1d rather 
+;    than save redshift button)
+; Also changed zfindspec to check for and zero out NaNs in the
+;    log-lambda binned spectrum - unclear where these come from
+; in quit_application: trigger saving redshift if z and zconf exist
+
 
 ; TODO: 
-; makeplot: make xzoomregion more reliable
+; makeplot: make xzoomregion more reliable?
 ; auto_find_z / zfindspec / zcompute : fix redshift fitting,
 ; it's often returning the first redshift tried, unless the data
-; region is highly limited and it works for some reason.
-; find why the template is not showing up in 1-d plot
+; region is highly limited and it works. This was due to NaNs - 
+; screening NaNs in zfindspec makes it work better.
+; Possibly add trimming the ends of the spectrum.
+; find why the template normalization is NaN in 1-d plot
 ; 
 ; Make saving to file quicker; default to previous filename, auto-save
-; select_slit and previous/next should save the z/zqual; this doesn't work?
+; select_slit and previous/next should save the z/zqual; this
+; didn't work if initials were not entered, now fixed.
+
 ; specpro: Add tags to the info structure in /basic so that it is
 ;  closer to /small ? (and doesn't crash due to absence of
 ;  sed_fit_flag or other issues)
@@ -1313,8 +1325,12 @@ pro select_slit, event, info, prevnext = prevnext, init=init
     widget_control, info.zoutput_id, get_value=zval
     widget_control, info.zconfidence_id, get_value=conf
     widget_control, info.initials_id, get_value=initials
-    if zval ne '' and conf ne '' and initials ne '' then  $
+    ; BJW - don't require initials to save.
+    ; if zval ne '' and conf ne '' and initials ne '' then  $
+    if zval ne '' and conf ne '' then  $
         save_output_to_file, event, info, /default
+    if zval ne '' and conf eq '' then $
+       print, "Warning at slit ",info.slitnumber," need to set a zconf to save z"
   endif
 
   ;reset outputdatasaved flag
@@ -2654,6 +2670,8 @@ pro next_slit, event, info
     ; if zval ne '' and conf ne '' and initials ne '' then  $
     if zval ne '' and conf ne '' then  $
        save_output_to_file, event, info, /default
+    if zval ne '' and conf eq '' then $
+       print, "Warning at slit ",info.slitnumber," need to set a zconf to save z"
   endif
   
   ;Set updated slit number
@@ -2681,8 +2699,10 @@ pro previous_slit, event, info
     widget_control, info.initials_id, get_value=initials
     ; BJW - don't require initials to save.
     ; if zval ne '' and conf ne '' and initials ne '' then  $
-    if zval ne '' and conf ne '' then  $
+    if zval ne '' and conf ne '' then $
        save_output_to_file, event, info, /default
+    if zval ne '' and conf eq '' then $
+       print, "Warning at slit ",info.slitnumber," need to set a zconf to save z"
   endif
 
   ;Set updated slit number
@@ -2717,6 +2737,21 @@ end
 ;-----------------------------------------------------------------------
 pro quit_application, event, info
   specpro_get_state, event, info
+
+  ; BJW - added this to trigger saving the last slit's data
+  if info.outputdatasaved eq 0 then begin
+    ;if output fields are filled in, save to default file
+    widget_control, info.zoutput_id, get_value=zval
+    widget_control, info.zconfidence_id, get_value=conf
+    widget_control, info.initials_id, get_value=initials
+    ; BJW - don't require initials to save.
+    ; if zval ne '' and conf ne '' and initials ne '' then  $
+    if zval ne '' and conf ne '' then $
+       save_output_to_file, event, info, /default
+    if zval ne '' and conf eq '' then $
+       print, "Warning at slit ",info.slitnumber," need to set a zconf to save z"
+  endif
+
   widget_control, event.top, get_uvalue=infoptr
   ;Deallocate pointers
   ptr_free, info.spec2Dptr 
@@ -3263,7 +3298,10 @@ pro save_1d_to_ascii, event, info
   outfile = dialog_pickfile(/WRITE, title='Save spec1D to ascii', file='spec1d.dat')
 
   if outfile ne '' then begin
-    openw, lun, outfile, /get_lun
+    ; BJW - we should confirm overwrite if the file exists, but 
+    ; in lieu of that, write in append mode.
+    ; openw, lun, outfile, /get_lun
+    openw, lun, outfile, /get_lun, /append
     for i=0,n_elements(idxkeep)-1 do begin
        printf, lun, alllambda(idxkeep[i]), allspec(idxkeep[i]), format = '(d9.3, 2x, e)'
     endfor
@@ -3314,7 +3352,7 @@ pro save_output_to_file, event, info, default=default
      info.outfilename = outfile
      info.outputfilesaved = 1
   endif else begin
-     ; BJW - if an ouput file has been selected, why are we popping
+     ; BJW - if an ouput file has been selected this session, don't pop
      ; up the dialog again?
      ; outfile = dialog_pickfile(/WRITE, title='Select file for writing', file=info.outfilename)
      outfile = info.outfilename
@@ -4555,18 +4593,20 @@ pro make2Dplot, z, linetemplates, showspecpos, specpos, $
            if linelambda[i]*(1.0+z) gt minlambda and linelambda[i]*(1.0+z) lt maxlambda then begin
              ;get pixel destination for this wavelength
              if extractwidth ne 0 then begin
+                ; BJW - make region to exclude indicator lines larger
+                linemargin = extractwidth * 3.5
                 pix = fix(float(where(abs(lambda-linelambda[i]*(1.0+z)) eq min(abs(lambda-linelambda[i]*(1.0+z))))))
-                plots,[xstart+pix,xstart+pix],[ystart,ystart+fix(float(specpos-extractwidth/2.)/yrebin)],thick=2.0, $
+                plots,[xstart+pix,xstart+pix],[ystart,ystart+fix(float(specpos-linemargin/2.)/yrebin)],thick=2.0, $
                       linestyle=0,color=color,/device
-                plots,[xstart+pix,xstart+pix],[ystart+fix(float(specpos+extractwidth/2.)/yrebin),ystart+newypix], $
+                plots,[xstart+pix,xstart+pix],[ystart+fix(float(specpos+linemargin/2.)/yrebin),ystart+newypix], $
                       thick=2.0,linestyle=0,color=color,/device
              endif else begin
-                ; BJW - if extractwidth is 0, use 2.5 so that the 
+                ; BJW - if extractwidth is 0, use 3.5 so that the 
                 ; line marks don't encroach on the spectrum
                 pix = fix(float(where(abs(lambda-linelambda[i]*(1.0+z)) eq min(abs(lambda-linelambda[i]*(1.0+z))))))
-                plots,[xstart+pix,xstart+pix],[ystart,ystart+fix(float(specpos-2.5/2.)/yrebin)],thick=2.0, $
+                plots,[xstart+pix,xstart+pix],[ystart,ystart+fix(float(specpos-3.5/2.)/yrebin)],thick=2.0, $
                       linestyle=1,color=color,/device
-                plots,[xstart+pix,xstart+pix],[ystart+fix(float(specpos+2.5/2.)/yrebin),ystart+newypix], $
+                plots,[xstart+pix,xstart+pix],[ystart+fix(float(specpos+3.5/2.)/yrebin),ystart+newypix], $
                       thick=2.0,linestyle=1,color=color,/device
              endelse
    
