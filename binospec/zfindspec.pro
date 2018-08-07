@@ -117,7 +117,10 @@ function zfindspec, eigenfile, event, info, eigendir=eigendir, $
   stardloglam = (alog10(lambdamax)-alog10(lambdamin)) / npoints
 
   ; BJW - debugging, print wavelength spacing of template and data
-  print, "zfindspec: stardloglam, dloglam: ", stardloglam, dloglam
+  ; There are often NaNs here even when spectrum is zoomed in. Why?
+  ; print, "zfindspec: stardloglam, dloglam: ", stardloglam, dloglam
+  ; test = where(finite(ss1d.spec,/nan), icount)
+  ; print, "zfindspec: pre-bin ss1d flux NaN at ", icount," elements"
 
   ; Force resolution of template and data to match
   ; BJW: what this does is interpolate onto the lower-resolution 
@@ -141,7 +144,9 @@ function zfindspec, eigenfile, event, info, eigendir=eigendir, $
   starloglam0 = starloglam[0]
 
   ; BJW - debugging
-  print, "zfindspec: stardloglam, dloglam: ", stardloglam, dloglam
+  ; print, "zfindspec: stardloglam, dloglam: ", stardloglam, dloglam
+  ; test = where(finite(ss1d.spec,/nan), icount)
+  ; print, "zfindspec: post-log-bin ss1d flux NaN at ", icount," elements"
   
   ;change, dcm 10/2/11
   ;width = (n_elements(starloglam)/20)
@@ -166,8 +171,14 @@ function zfindspec, eigenfile, event, info, eigendir=eigendir, $
   ;if this is not enough points (low res) then set to a minimum number
   ;if width lt 10 then width=10
 
+  ; BJW - the djs_median generates errors, why?  Could the median_width 
+  ; cause issues, esp. if <1000 A of data?
+  ; print, 'zfindspec: smoothing continuum: Npix, width: ',n_elements(objflux), median_width
   objcont = djs_median(objflux, width=median_width, boundary='reflect')
+  ; print, 'zfindspec: median of flux, continuum: ',median(objflux), median(objcont)
   objflux = objflux - double(objcont)
+  test = where(finite(objflux,/nan), icount)
+  ; print, "zfindspec: cont-sub flux NaN at ", icount," elements"
 
 ; check if we need to trim the input spectrum to just a subregion.
   if n_elements(wvmin) gt 0 then wvmin = wvmin[0] else wvmin = -1
@@ -228,7 +239,25 @@ function zfindspec, eigenfile, event, info, eigendir=eigendir, $
    endif
 
    ; BJW - debugging
-   print,"zfindspec: poffset, pmin, pmax: ",poffset,pmin,pmax
+   ; print,"zfindspec: poffset, pmin, pmax: ",poffset,pmin,pmax
+   ; try to make a separate plot window
+   wset, 0
+   device, decomposed=1
+   plot, loglam, objflux, xtitle='log lambda',ytitle='zfindspec flux + error'
+   ; ,xrange=[3.6,4.0]
+   oplot, loglam, 1.0/sqrt(objivar)
+   ; ,color='00ff00'
+
+  ; BJW - debug
+  test = where(finite(objflux,/nan), icount)
+  ; print, "zfindspec: zcompute flux NaN at ", icount," elements"
+  ; try filtering the NaNs by setting any point with NaN flux or ivar
+  ; to have zero flux and large variance. This helps a lot
+  ibad = where(finite(objflux,/nan) or finite(objivar,/nan), icount)
+  if icount gt 0 then begin
+     objflux[ibad] = 0.0
+     objivar[ibad] = 1.0e-10
+  endif
 
    ;call zcomputespec to find the redshift
    zans = zcompute(objflux, objivar, templateflux, poffset=poffset, $
