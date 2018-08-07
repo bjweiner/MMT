@@ -128,10 +128,10 @@ pro write_spec1d_file, fname, flux1d_all, error1d_all, iobj, hdr1d_all, outdir=o
   if not keyword_set(wmin) then wmin=3600.0
   if not keyword_set(wmax) then wmax=10500.0
   mindata = -200.0
-  maxdata = 1000.0
-  ; Don't let minivar be too small? Likely to fail in flux units
-  minivar = 1.0e-6
-  maxivar = 1.0e6
+  maxdata = 10000.0
+  ; Don't let ivar be too small/large? Likely to fail in flux units
+  minivar = 1.0e-10
+  maxivar = 1.0e8
   ctype1 = sxpar(hdr1d_all,'ctype1')
   cunit1 = sxpar(hdr1d_all,'cunit1')
   crpix1 = sxpar(hdr1d_all,'crpix1')
@@ -172,9 +172,9 @@ pro write_spec2d_file, fname, data2d, hdr2d, outdir=outdir, wmin=wmin, wmax=wmax
   if not keyword_set(wmin) then wmin=3600.0
   if not keyword_set(wmax) then wmax=10500.0
   mindata = -200.0
-  maxdata = 1000.0
-  minivar = 1.0e-6
-  maxivar = 1.0e6
+  maxdata = 10000.0
+  minivar = 1.0e-10
+  maxivar = 1.0e8
   ctype1 = sxpar(hdr2d,'ctype1')
   cunit1 = sxpar(hdr2d,'cunit1')
   crpix1 = sxpar(hdr2d,'crpix1')
