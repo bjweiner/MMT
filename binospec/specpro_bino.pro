@@ -165,6 +165,8 @@
 ; screening NaNs in zfindspec makes it work better.
 ; Possibly add trimming the ends of the spectrum.
 ; find why the template normalization is NaN in 1-d plot
+; Check redshifts against known objects to verify correctness and
+; to check air vs vacuum wavelengths (possible offset of ~2.7e-4 in z)
 ; 
 ; Make saving to file quicker; default to previous filename, auto-save
 ; select_slit and previous/next should save the z/zqual; this
