@@ -528,8 +528,17 @@ href="http://specpro.caltech.edu">Specpro website</a>, and its
    modified versions of two main Specpro routines and put them in the
   <tt>specpro/code</tt> directory.
   <li>set up Specpro environment variables as described on the Specpro
-  download page before starting IDL.
-  <li>make a subdirectory (e.g. 'specfiles') under your reduced data to hold the
+  download page before starting IDL. If you use csh, these should look like:
+  <pre>
+   setenv SPECPRO_DIR /Users/bjw/idl/specpro
+   setenv IDL_PATH :+${SPECPRO_DIR}/code:$IDL_PATH
+   setenv IDL_PATH :+${SPECPRO_DIR}/external:$IDL_PATH
+   setenv SPVIEW ${SPECPRO_DIR}/templates
+  </pre>
+  but replace "/Users/bjw/idl/specpro" with the directory where you
+  installed specpro. If you use bash, use <tt>export SPECPRO_DIR=...</tt> instead
+  of setenv.
+ <li>make a subdirectory (e.g. 'specfiles') under your reduced data to hold the
   Specpro-format files and run, in IDL,
   <pre>convert_binospec_to_specpro 'obj_counts_slits_extr.fits' 'obj_counts_slits_lin.fits' outdir='specfiles'
   </pre>
@@ -608,5 +617,5 @@ Please contact Benjamin Weiner, bjw@mmto.org, for further information.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> with contributions
 from Nelson Caldwell.
-<!-- hhmts start --> Last modified: Tue Aug  7 14:23:55 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Mon Sep 10 16:53:57 MST 2018 <!-- hhmts end -->
 </body> </html>
