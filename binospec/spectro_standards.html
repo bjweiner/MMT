@@ -7,6 +7,9 @@
 <h1>MMT/ESO Spectrophotometric Standards with Gaia Positions</h1>
 <p>
 
+<em>Benjamin Weiner, MMT Observatory</em>
+<p>
+
 These are the stars from the ESO Spectrophotometric Standards webpage
 at <a
 href="https://www.eso.org/sci/observing/tools/standards/spectra.html">https://www.eso.org/sci/observing/tools/standards/spectra.html</a>. Because
@@ -31,8 +34,8 @@ finding chart position.
 
 Positions on this page are epoch 2015.5, in equinox 2000.
 A Javascript
-calculator will be provided so that you can compute the position at
-any epoch (page bottom, not yet functional). For observing, you will often want to compute the position
+calculator is provided at page bottom, so that you can compute the position at
+any epoch. For observing, you will often want to compute the position
 at the current epoch (and in equinox 2000).
 <p>
 
@@ -46,11 +49,11 @@ observation, eg where the star was at year 2015.5.
 Motions</h2>
 <p>
 
-<table border="0">
+<table border="1">
 <tbody>
-<tr><th>No.</th> <th>Name</th> <th>RA Dec (epoch 2015.5)</th>
-<th>RA, deg</th> <th>Dec, deg</th> <th>pm_RA, mas/yr</th> <th>pm_Dec,
-  mas/yr</th> <th>parallax, mas</th> <th>g mag</th>  <th>SpecType</th>
+<tr><th>No.</th> <th>Name</th> <th>RA and Dec (epoch 2015.5)</th>
+<th align="right">RA, deg</th> <th align="right">Dec, deg</th> <th align="right">pm_RA, mas/yr</th> <th align="right">pm_Dec,
+  mas/yr</th> <th align="right">parallax, mas</th> <th>g mag</th>  <th>SpecType</th>
   <th>Note</th> <th>ESO webpage</th>  <th>Gaia ID</th> </tr>
 
 <tr><td> 1</td> <td>HR9087</td> <td>00h01m49.4666s -03d01m39.1728s</td> <td>   0.45611</td> <td>  -3.02755</td> <td>  18.840</td> <td>  -9.700</td> <td>   7.140</td> <td> 5.06</td> 
@@ -361,10 +364,13 @@ function radec_deg_to_hmsdms(radeg,decdeg) {
    var decminint = Math.floor(decmin)
    var decsec = (decmin-decminint)*60.0
    if (decsign<0) 
-      var decsignstr = '-' ;
+      {var decsignstr = '-' }
    else 
-      var decsignstr = '+' ;
-   var radec_string = String.Format("{0} {1} {2:F2} ,  {3}{4} {5} {6:F2}", rahrint,raminint,rasec,decsignstr,decdegint,decminint,decsec)
+      {var decsignstr = '+' }
+   //alert("radec convert 1")
+   //var radec_string = String.Format("{0} {1} {2:F2} ,  {3}{4} {5} {6:F2}", rahrint,raminint,rasec,decsignstr,decdegint,decminint,decsec)
+   var radec_string = rahrint.toFixed(0) + " " + raminint.toFixed(0) + " " + rasec.toFixed(2) + "  " + decsignstr + decdegint.toFixed(0) + " " + decminint.toFixed(0) + " " +decsec.toFixed(2)
+  //alert("radec convert 2, " + radec_string)
    return radec_string
 }
 
@@ -373,22 +379,31 @@ function new_position(ra,dec,epoch1,pm_ra,pm_dec,epoch2) {
    var dyr = epoch2-epoch1
    var new_ra = ra + pm_ra/1000.0 * dyr / (3600.0 / Math.cos(dec*3.14159/180.0))
    var new_dec = dec + pm_dec/1000.0 *dyr / 3600.0
+   //alert("New position, " + ra + dec)
    return [new_ra, new_dec]
 }
 
 // compute new position from form input
 function calc_new_radec(form) {
-   var ra = parseFloat(form.ra.value)
+  var ra = parseFloat(form.ra.value)
    var dec = parseFloat(form.dec.value)
    var pm_ra = parseFloat(form.pm_ra.value)
    var pm_dec = parseFloat(form.pm_dec.value)
    var epoch_new = parseFloat(form.epoch_new.value)
+   // alert("Called calc with " + String.Format("{0:F4} {1:F4}",ra,dec))
+   //alert("Called calc with " + ra.toFixed(4) + " " + dec.toFixed(4))
    var epoch0 = 2015.5
    var newpos = new_position(ra,dec,epoch0,pm_ra,pm_dec,epoch_new)
    var newpos_string = radec_deg_to_hmsdms(newpos[0],newpos[1])
-   form.new_ra.value = round5(newpos[0])
-   form.new_dec.value = round5(newpos[1])
+   //alert("New pos string: " + newpos_string)
    form.newpos_string.value = newpos_string
+   //form.new_ra.value = round5(newpos[0])
+   //form.new_dec.value = round5(newpos[1])
+   form.new_ra.value = newpos[0].toFixed(6)
+   form.new_dec.value = newpos[1].toFixed(6)
+   //form.new_ra.value = newpos[0]
+   //form.new_dec.value = newpos[1]
+   //alert("Finished!")
 }
 
 </script>
@@ -396,10 +411,10 @@ function calc_new_radec(form) {
 <h2> Proper motion calculator </h2>
 <p>
 
-This calculator is not yet functional; when it is, it will accept a
-star's proper motion data
-from the table and calculate a coordinate for the epoch that you
-input.
+This calculator takes as input a
+star's RA, Dec at epoch 2015.5, proper motion data
+from the table, and the desired new epoch,
+and calculates the new coordinates for that epoch.  In future, it will add a lookup table to auto-fill the fields by selecting a star number/name.
 <p>
 
 <form name="pmform">
@@ -417,16 +432,16 @@ input.
    <td>PM_Dec </td>
 <td> <input name="pm_dec" size="11" value=" " type="text"></td>
    <td>Epoch </td>
-<td> <input name="epoch_new" size="11" value=" " type="text"></td>
-  <td><input value="Compute new position" onclick="calc_new_radec(this.form)" type="button"></td>
+<td> <input name="epoch_new" size="11" value="2019.0" type="text"></td>
+  <td><input value="Compute new position" onClick="calc_new_radec(this.form)" type="button"></td>
 </tr>
 <tr>
   <td>New RA </td>
-  <td input name="new_ra" size="11" value=" " disabled="true" type="text"></td>
+  <td> <input name="new_ra" size="11" value=" " disabled="true" type="text"></td>
   <td>New Dec </td>
-   <td input name="new_dec" size="11" value=" " disabled="true" type="text"></td>
+   <td> <input name="new_dec" size="11" value=" " disabled="true" type="text"></td>
   <td>New Ra/Dec (hms) </td>
-   <td input name="newpos_string" size="28" value=" " disabled="true" type="text"></td>
+   <td colspan="3"> <input name="newpos_string" size="28" value=" " disabled="true" type="text"></td>
    </tr>
  </tbody>
 </table>
@@ -453,5 +468,5 @@ Observatory</a>.
 
 <hr>
 <address></address>
-<!-- hhmts start --> Last modified: Fri Sep 21 21:34:01 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Sat Sep 22 02:59:58 MST 2018 <!-- hhmts end -->
 </body> </html>
