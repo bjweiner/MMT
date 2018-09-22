@@ -45,11 +45,14 @@ the reference frame of the coordinate system; epoch is the time of
 observation, eg where the star was at year 2015.5. 
 <p>
 
+<hr>
+<p>
+
 <h2> Table of Spectrophotometric Standard Star Positions and Proper
 Motions</h2>
 <p>
 
-<table border="1">
+<table border="1" style='font-family: Courier, monospace; font-size:80%; text-align:right'>
 <tbody>
 <tr><th>No.</th> <th>Name</th> <th>RA and Dec (epoch 2015.5)</th>
 <th align="right">RA, deg</th> <th align="right">Dec, deg</th> <th align="right">pm_RA, mas/yr</th> <th align="right">pm_Dec,
@@ -345,12 +348,12 @@ NOT be used for flux calibration over this range. Bohlin & Lindler
 <script language="JavaScript">
 <!-- Javascript calculator functions -->
 
-// round a number to 5 decimal places
+// round a number to 5 decimal places. Can just use .toFixed(5) instead.
 function round5(x) {
    return Math.round(x*10000)/10000 
 }
 
-// convert decimal RA/Dec deg coords to a string
+// convert decimal RA/Dec deg coords to a HMS DMS string. Properly handle the -dec case
 function radec_deg_to_hmsdms(radeg,decdeg) {
    var rahr = radeg/15.0
    var rahrint = Math.floor(rahr)
@@ -367,80 +370,80 @@ function radec_deg_to_hmsdms(radeg,decdeg) {
       {var decsignstr = '-' }
    else 
       {var decsignstr = '+' }
-   //alert("radec convert 1")
-   //var radec_string = String.Format("{0} {1} {2:F2} ,  {3}{4} {5} {6:F2}", rahrint,raminint,rasec,decsignstr,decdegint,decminint,decsec)
+   // javascript string formatting is very primitive
    var radec_string = rahrint.toFixed(0) + " " + raminint.toFixed(0) + " " + rasec.toFixed(2) + "  " + decsignstr + decdegint.toFixed(0) + " " + decminint.toFixed(0) + " " +decsec.toFixed(2)
-  //alert("radec convert 2, " + radec_string)
    return radec_string
 }
 
-// advance decimal position given new epoch and PMs
+// advance decimal-degree position from old to new epoch, given epochs and PMs
 function new_position(ra,dec,epoch1,pm_ra,pm_dec,epoch2) {
    var dyr = epoch2-epoch1
    var new_ra = ra + pm_ra/1000.0 * dyr / (3600.0 / Math.cos(dec*3.14159/180.0))
    var new_dec = dec + pm_dec/1000.0 *dyr / 3600.0
-   //alert("New position, " + ra + dec)
    return [new_ra, new_dec]
 }
 
-// compute new position from form input
+// compute new position from form input. Assume the old epoch was 2015.5
+// fill into the new position boxes of the form by setting their values
 function calc_new_radec(form) {
-  var ra = parseFloat(form.ra.value)
+   var ra = parseFloat(form.ra.value)
    var dec = parseFloat(form.dec.value)
    var pm_ra = parseFloat(form.pm_ra.value)
    var pm_dec = parseFloat(form.pm_dec.value)
+   var epoch0 = parseFloat(form.epoch_old.value)
    var epoch_new = parseFloat(form.epoch_new.value)
-   // alert("Called calc with " + String.Format("{0:F4} {1:F4}",ra,dec))
    //alert("Called calc with " + ra.toFixed(4) + " " + dec.toFixed(4))
-   var epoch0 = 2015.5
    var newpos = new_position(ra,dec,epoch0,pm_ra,pm_dec,epoch_new)
    var newpos_string = radec_deg_to_hmsdms(newpos[0],newpos[1])
-   //alert("New pos string: " + newpos_string)
    form.newpos_string.value = newpos_string
    //form.new_ra.value = round5(newpos[0])
    //form.new_dec.value = round5(newpos[1])
-   form.new_ra.value = newpos[0].toFixed(6)
-   form.new_dec.value = newpos[1].toFixed(6)
-   //form.new_ra.value = newpos[0]
-   //form.new_dec.value = newpos[1]
-   //alert("Finished!")
+   form.new_ra.value = newpos[0].toFixed(5)
+   form.new_dec.value = newpos[1].toFixed(5)
 }
 
 </script>
 
+<hr>
+<p>
 <h2> Proper motion calculator </h2>
 <p>
 
 This calculator takes as input a
-star's RA, Dec at epoch 2015.5, proper motion data
-from the table, and the desired new epoch,
-and calculates the new coordinates for that epoch.  In future, it will add a lookup table to auto-fill the fields by selecting a star number/name.
+star's RA, Dec at a previous epoch (default 2015.5), its proper motion data,
+and the desired new epoch,
+and calculates the new coordinates for that epoch. Fill in the boxes in the upper row, click Compute, and the star's new position will appear in the lower row. To be added: filling in the RA,Dec, PM fields from the table above by selecting the number of the star (requires an internal lookup table).  The calculator should work offline if you save this page as HTML to your computer.
 <p>
 
 <form name="pmform">
-<table border="2">
+<table border="0" frame="box" style="border-spacing: 2px 6px">
  <tbody>
-   <th colspan="4"> RA/Dec, epoch 2015.5</th>  <th colspan="4">PMs,
+   <th colspan="4"> RA/Dec at first epoch</th> <th colspan="2"> Previous epoch</th> <th colspan="4">PMs,
      mas/yr</th> <th colspan="2">New epoch</th> 
      <tr>
    <td>RA (deg)</td>
   <td> <input name="ra" size="11" value=" " type="text"></td>
   <td>Dec (deg)</td>
-   <td> <input name="dec" size="11" value=" " type="text"></td>
-   <td>PM_RA </td>
+  <td> <input name="dec" size="11" value=" " type="text"></td>
+  <td>Epoch</td>
+  <td> <input name="epoch_old" size="10" value="2015.5" type="text"></td>
+  <td>PM_RA </td>
  <td> <input name="pm_ra" size="11" value=" " type="text"></td>
    <td>PM_Dec </td>
 <td> <input name="pm_dec" size="11" value=" " type="text"></td>
    <td>Epoch </td>
 <td> <input name="epoch_new" size="11" value="2019.0" type="text"></td>
-  <td><input value="Compute new position" onClick="calc_new_radec(this.form)" type="button"></td>
+</tr>
+<tr>
+  <td colspan="2"><input value="Compute new position" onClick="calc_new_radec(this.form)" type="button"></td>
 </tr>
 <tr>
   <td>New RA </td>
   <td> <input name="new_ra" size="11" value=" " disabled="true" type="text"></td>
   <td>New Dec </td>
-   <td> <input name="new_dec" size="11" value=" " disabled="true" type="text"></td>
-  <td>New Ra/Dec (hms) </td>
+  <td> <input name="new_dec" size="11" value=" " disabled="true" type="text"></td>
+  <!-- <td colspan=2> </td> -->
+  <td colspan="2">New Ra/Dec (hms) </td>
    <td colspan="3"> <input name="newpos_string" size="28" value=" " disabled="true" type="text"></td>
    </tr>
  </tbody>
@@ -468,5 +471,5 @@ Observatory</a>.
 
 <hr>
 <address></address>
-<!-- hhmts start --> Last modified: Sat Sep 22 02:59:58 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Sat Sep 22 14:40:50 MST 2018 <!-- hhmts end -->
 </body> </html>
