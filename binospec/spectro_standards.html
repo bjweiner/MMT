@@ -12,10 +12,13 @@
 
 These are the stars from the ESO Spectrophotometric Standards webpage
 at <a
-href="https://www.eso.org/sci/observing/tools/standards/spectra.html">https://www.eso.org/sci/observing/tools/standards/spectra.html</a>. Because
+href="https://www.eso.org/sci/observing/tools/standards/spectra.html">https://www.eso.org/sci/observing/tools/standards/spectra.html</a>.  Well-measured spectrophotometric standard stars are needed for astronomical flux calibration, throughput measurements, and so on. However, because they need to be placed on a slit or fiber of small angular size, accurate positions are important.
+<p>
+
+Because
 many spectrophotometric standards have high proper motions, up to and
 over 0.5-1 arcsec per year, many of
-the stars have moved significantly from their epoch 2000 coordinates,
+these stars have moved significantly from their epoch 2000 coordinates,
 and if you try to slew to them in absolute coordinates or your
 instrument has a small field of view, you will not find the star.
 Thus, I have compiled the stars' updated
@@ -24,17 +27,17 @@ positions and proper motions from <a
 href="https://gea.esac.esa.int/archive/">Gaia DR2</a>. For the 3
 bright stars at g<3, proper motions were taken from the
 <a href="http://simbad.u-strasbg.fr/simbad/">SIMBAD database at
-CDS</a> and positions were advanced to 2015.5 to match Gaia.
+CDS</a> and their positions were advanced to 2015.5 to match Gaia.
 <p>
 
 Links are provided back to the ESO compilation of spectra and finding
-charts. Because some stars have high PMs, they will have moved from the
-finding chart position.
+charts. However, because some stars have high PMs, they will have moved
+somewhat from the finding chart position.
 <p>
 
-Positions on this page are epoch 2015.5, in equinox 2000.
+Star positions on this page are given for epoch 2015.5, in equinox 2000.
 A Javascript
-calculator is provided at page bottom, so that you can compute the position at
+calculator is provided at page bottom, so that you can compute the star's position at
 any epoch. For observing, you will often want to compute the position
 at the current epoch (and in equinox 2000).
 <p>
@@ -341,6 +344,7 @@ NOT be used for flux calibration over this range. Bohlin & Lindler
 (1992) gives more details.
 <p>
 
+
 <!--
 
 -->
@@ -410,9 +414,12 @@ function calc_new_radec(form) {
 <p>
 
 This calculator takes as input a
-star's RA, Dec at a previous epoch (default 2015.5), its proper motion data,
+star's RA, Dec at a previous epoch (default 2015.5), its proper motion in RA and Dec in milli-arcsec per year,
 and the desired new epoch,
-and calculates the new coordinates for that epoch. Fill in the boxes in the upper row, click Compute, and the star's new position will appear in the lower row. To be added: filling in the RA,Dec, PM fields from the table above by selecting the number of the star (requires an internal lookup table).  The calculator should work offline if you save this page as HTML to your computer.
+and calculates the new coordinates for that epoch. Fill in the boxes in the upper row, click Compute, and the star's new position will appear in the lower row.
+<p>
+
+To be added: auto-filling in the RA, Dec, PM fields from the table above by selecting the number of the star (requires an internal lookup table).  This calculator uses Javascript ebedded in the webpage, and it should work offline if you save this page as HTML to your computer (useful if your observatory's internet is down).
 <p>
 
 <form name="pmform">
@@ -450,11 +457,19 @@ and calculates the new coordinates for that epoch. Fill in the boxes in the uppe
 </table>
 
 </form>
+<p>
 
    
 <!--
 -->
 
+<hr>
+<p>
+
+A special note for MMT observers: the 
+<a href="http://www.mmto.org/node/269">MMT catalog tool</a> used with Blue/Red Channel spectrographs does not take proper motions in milli-arcsec per year, but rather in pm_RA = seconds of time per century and pm_Dec = seconds of arc per century. These differ from the mas/yr values by a factor of 10 and an arcsec to time conversion.  Also, the catalog tool only wants epoch 2000 coordinates, not epoch 2015.5. 
+<p>
+<hr>
 
 
 Questions? Please contact Benjamin Weiner, bjw @ mmto.org.
@@ -471,5 +486,5 @@ Observatory</a>.
 
 <hr>
 <address></address>
-<!-- hhmts start --> Last modified: Sat Sep 22 14:40:50 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Sun Sep 23 01:59:28 MST 2018 <!-- hhmts end -->
 </body> </html>
