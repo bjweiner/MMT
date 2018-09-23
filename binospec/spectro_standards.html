@@ -36,8 +36,9 @@ somewhat from the finding chart position.
 <p>
 
 Star positions on this page are given for epoch 2015.5, in equinox 2000.
-A Javascript
-calculator is provided at page bottom, so that you can compute the star's position at
+A
+<a href="#calculator">proper motion Javascript
+calculator</a> is provided at page bottom, so that you can compute the star's position at
 any epoch. For observing, you will often want to compute the position
 at the current epoch (and in equinox 2000).
 <p>
@@ -357,7 +358,8 @@ function round5(x) {
    return Math.round(x*10000)/10000 
 }
 
-// convert decimal RA/Dec deg coords to a HMS DMS string. Properly handle the -dec case
+// convert decimal RA/Dec deg coords to a HMS DMS string.
+// Properly handle the -dec case including -0 deg.
 function radec_deg_to_hmsdms(radeg,decdeg) {
    var rahr = radeg/15.0
    var rahrint = Math.floor(rahr)
@@ -380,9 +382,12 @@ function radec_deg_to_hmsdms(radeg,decdeg) {
 }
 
 // advance decimal-degree position from old to new epoch, given epochs and PMs
+// convert pm to arcsec/yr, multiply by years, convert to degrees of arc
+// dividing by 3600, then convert deg of arc to deg of RA, 
+// larger diff in RA at higher Dec.
 function new_position(ra,dec,epoch1,pm_ra,pm_dec,epoch2) {
    var dyr = epoch2-epoch1
-   var new_ra = ra + pm_ra/1000.0 * dyr / (3600.0 / Math.cos(dec*3.14159/180.0))
+   var new_ra = ra + pm_ra/1000.0 * dyr / 3600.0 / Math.cos(dec*3.14159/180.0) 
    var new_dec = dec + pm_dec/1000.0 *dyr / 3600.0
    return [new_ra, new_dec]
 }
@@ -410,7 +415,7 @@ function calc_new_radec(form) {
 
 <hr>
 <p>
-<h2> Proper motion calculator </h2>
+<h2 id="calculator"> Proper motion calculator </h2>
 <p>
 
 This calculator takes as input a
@@ -419,8 +424,6 @@ and the desired new epoch,
 and calculates the new coordinates for that epoch. Fill in the boxes in the upper row, click Compute, and the star's new position will appear in the lower row.
 <p>
 
-To be added: auto-filling in the RA, Dec, PM fields from the table above by selecting the number of the star (requires an internal lookup table).  This calculator uses Javascript embedded in the webpage, and it should work offline if you save this page as HTML to your computer (useful if your observatory's internet is down).
-<p>
 
 <form name="pmform">
 <table border="0" frame="box" style="border-spacing: 2px 6px">
@@ -445,18 +448,21 @@ To be added: auto-filling in the RA, Dec, PM fields from the table above by sele
   <td colspan="2"><input value="Compute new position" onClick="calc_new_radec(this.form)" type="button"></td>
 </tr>
 <tr>
-  <td>New RA </td>
+  <td>New RA (deg)</td>
   <td> <input name="new_ra" size="11" value=" " disabled="true" type="text"></td>
-  <td>New Dec </td>
+  <td>New Dec (deg)</td>
   <td> <input name="new_dec" size="11" value=" " disabled="true" type="text"></td>
   <!-- <td colspan=2> </td> -->
-  <td colspan="2">New Ra/Dec (hms) </td>
+  <td colspan="2">New Ra/Dec (hms dms) </td>
    <td colspan="3"> <input name="newpos_string" size="28" value=" " disabled="true" type="text"></td>
    </tr>
  </tbody>
 </table>
 
 </form>
+<p>
+
+To be added: auto-filling in the RA, Dec, PM fields from the table above by selecting the number of the star (requires an internal lookup table).  This calculator uses Javascript embedded in the webpage, and it should work offline if you save this page as HTML to your computer (useful if your observatory's internet is down).
 <p>
 
    
@@ -467,7 +473,7 @@ To be added: auto-filling in the RA, Dec, PM fields from the table above by sele
 <p>
 
 A special note for MMT observers: the 
-<a href="http://www.mmto.org/node/269">MMT catalog tool</a> used with Blue/Red Channel spectrographs does not take proper motions in milli-arcsec per year, but rather in pm_RA = seconds of time per century and pm_Dec = seconds of arc per century. These differ from the mas/yr values by a factor of 10 and an arcsec to time conversion.  Also, the catalog tool only wants epoch 2000 coordinates, not epoch 2015.5. 
+<a href="http://www.mmto.org/node/269">MMT catalog tool</a> used with Blue/Red Channel spectrographs does not take proper motions in milli-arcsec per year, but rather in pm_RA = seconds of time per century and pm_Dec = seconds of arc per century. These differ from the mas/yr values by a factor of 10 and an arcsec to time conversion.  Also, the catalog tool only accepts epoch 2000 coordinates, not epoch 2015.5. 
 <p>
 <hr>
 
@@ -486,5 +492,5 @@ Observatory</a>.
 
 <hr>
 <address></address>
-<!-- hhmts start --> Last modified: Sun Sep 23 02:02:25 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Sun Sep 23 15:16:20 MST 2018 <!-- hhmts end -->
 </body> </html>
