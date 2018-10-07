@@ -62,8 +62,8 @@ Motions, in RA order</h2>
 <tbody>
 <tr><th>No.</th> <th>Name</th> <th>RA and Dec (epoch 2015.5)</th>
 <th align="right">RA, deg</th> <th align="right">Dec, deg</th> <th align="right">pm_RA, mas/yr</th> <th align="right">pm_Dec,
-  mas/yr</th> <th align="right">parallax, mas</th> <th>g mag</th>  <th>SpecType</th>
-  <th>Note</th> <th>ESO webpage</th>  <th>Gaia ID</th> </tr>
+ mas/yr</th> <th align="right">parallax, mas</th> <th>g mag</th>  <th>SpecType</th>
+ <th>Note</th> <th>ESO webpage</th>  <th>Gaia ID</th> </tr>
 
 <tr><td> 1</td> <td>HR9087</td> <td>00h01m49.467s -03d01m39.173s</td> <td>   0.45611</td> <td>  -3.02755</td> <td>  18.840</td> <td>  -9.700</td> <td>   7.140</td> <td> 5.06</td> 
  <td>     B7III</td> <td>     -</td> 
@@ -338,6 +338,10 @@ Motions, in RA order</h2>
  <td><a href="https://www.eso.org/sci/observing/tools/standards/spectra/gd248.html">gd248</a></td>  
  <td>2814629409239942272</td> </tr> 
 
+<tr><th>No.</th> <th>Name</th> <th>RA and Dec (epoch 2015.5)</th>
+<th align="right">RA, deg</th> <th align="right">Dec, deg</th> <th align="right">pm_RA, mas/yr</th> <th align="right">pm_Dec,
+ mas/yr</th> <th align="right">parallax, mas</th> <th>g mag</th>  <th>SpecType</th>
+ <th>Note</th> <th>ESO webpage</th>  <th>Gaia ID</th> </tr>
 </tbody></table><p>
 
 Notes (from original ESO table): Stars with "Model" in the Notes column
@@ -473,8 +477,28 @@ To be added: auto-filling in the RA, Dec, PM fields from the table above by sele
 <hr>
 <p>
 
-A special note for MMT observers: the 
-<a href="http://www.mmto.org/node/269">MMT catalog tool</a> used with Blue/Red Channel spectrographs does not take proper motions in milli-arcsec per year, but rather in pm_RA = seconds of time per century and pm_Dec = seconds of arc per century. These differ from the mas/yr values by a factor of 10 and an arcsec to time conversion.  Also, the catalog tool only accepts epoch 2000 coordinates, not epoch 2015.5. 
+<h4>A special note for MMT observers</h4>
+<p>
+
+The legacy 
+<a href="http://www.mmto.org/node/269">MMT catalog tool</a> used with
+Blue/Red Channel spectrographs does not take proper motions in
+milli-arcsec per year, but rather in pm_RA = seconds of time per
+century and pm_Dec = seconds of arc per century. These differ from the
+mas/yr values:
+<pre>
+pm_RA (sec of time/century) = pm_RA(mas/yr) / [10 * 15 * cos(Dec)]
+
+pm_Dec (sec of arc/century) = pm_Dec(mas/yr) / 10
+</pre>
+Also, the catalog tool for Blue/Red Channel only accepts epoch 2000 coordinates, not epoch
+2015.5, so you should back propagate the coordinates to epoch
+2000.
+<p>
+
+The MMT queue observing interface used with MMIRS and Binospec
+requires the same funky per-century units, but <em>does</em> allow
+input of different epochs.
 <p>
 <hr>
 
@@ -493,5 +517,5 @@ Observatory</a>.
 
 <hr>
 <address></address>
-<!-- hhmts start --> Last modified: Mon Sep 24 12:01:27 EDT 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Sat Oct  6 22:03:03 MST 2018 <!-- hhmts end -->
 </body> </html>
