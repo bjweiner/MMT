@@ -85,8 +85,9 @@ gap of 3.2'. Two sheet metal slit masks held in a machined frame cover
 the fields of view. Each slit mask can hold over 150 slitlets,
 parallel to the long side of the masks. Each spectrograph has 3 gratings and 4 <i>griz</i> filters, and a 4K x 4K CCD detector. 
 Two guiders and a wavefront sensor are used for guiding and image
-control.  Guiding and alignment are done through stars 
-viewed through holes at each end of the slit mask.   
+control.  For multi-slit masks, guiding and alignment are done through stars 
+viewed through holes at each end of the slit mask.  For imaging and
+longslit, the guiders are moved to acquire guide stars.
 The spectrographs have active flexure compensation by moving
 the CCDs.
 <p>
@@ -100,19 +101,26 @@ the change in coverage is approximately 900 A to the blue for the 600
 gpm grating.
 <p>
 
-Slitmasks will be machined by a laser cutter at the MMT. Slitmasks
-will be configured by software written at SAO and running on a server
-hosted at the MMT. Users will log into a web interface to
+Slitmasks are machined by a laser cutter at SAO (eventually
+to be relocated to the MMT). Slitmasks
+are designed by users with the BinoMask software, written at SAO, and running on a server
+hosted at the MMT. Users log into a web interface to
 interactively design masks and submit them. Masks must be configured
-ahead of time to allow time for machining. Masks with long slits are also
+ahead of a Binospec run to allow time for machining.
+Premade masks with long slits are also
 provided; the widths available are 0.75", 1.0", 1.25", 1.5", and 5".
 One long-slit mask will always be loaded, typically the 1.0". If
 different long-slit widths are needed, please
 request these widths in your target catalog submission so they can be
-loaded ahead of time. 10 slitmasks can be loaded
-simultaneously. Masks can be changed during the daytime (and
+loaded ahead of time.  The longslit masks have one slit for each side
+of the instrument, so typically your target will be in one side while
+the other slit is pointed somewhere about 10 arcminutes away.
+10 slitmasks can be loaded
+simultaneously, but two slots will always be occupied by imaging and
+longslit. Masks can be changed during each afternoon.
+<!-- (and
 potentially during the night pending approval of this mode and
-training of staff).
+training of staff). -->
 <p>
 
 <h3 id="spectral">Spectral properties</h3>
@@ -123,7 +131,16 @@ and pixel scale are given in
 this table for the 270, 600, and 1000 lines/mm gratings.  The 600 line
 grating is shown at three different tilts. 
 The wavelengths used for the flexure control system limit the usable central wavelength settings to those given in the second table.
-The pixel scale along the slit is the normal 0.24 arcsec/pixel; due to anamorphic demagnification, the pixels per slit in the spectral direction are larger, so a 1 arcsec slit projects onto approx 3.2-3.7 pixels depending on the grating and tilt. The resolution listed is a FWHM (R = lambda/dlambda).
+The pixel scale along the slit is the normal 0.24 arcsec/pixel; due to
+anamorphic demagnification, the pixels per slit in the spectral
+direction are larger, so a 1 arcsec slit projects onto approx 3.2-3.7
+pixels depending on the grating and tilt. The resolution listed is a
+FWHM (R = lambda/dlambda).
+<p>
+
+Using a typical/standard wavelength setting will help in obtaining
+standards and calibrations. For wide wavelength coverage, the 270 line
+grating with a central wavelength of 6500 A is a good choice.
 <p>
 
 <!-- <img src="bino_grating_table.png" alt="Grating table"> -->
@@ -228,7 +245,8 @@ href="http://www.cfa.harvard.edu/mmti/megacam/obs_manual/exptime.html">http://ww
 
 For standard stars and similar calibrations, be careful not to
 saturate the detector. A preliminary suggestion is an exposure of 15
-seconds for a typical spectrophotometric standard at V=11. Please be
+seconds for a typical spectrophotometric standard at V=11. Please
+be
 aware that accurate coordinates in the Gaia frame and proper motions
 are necessary for standards; many standards have high proper motions.
 Please see the <a href="spectro_standards.html">MMT spectrophotometric
@@ -274,7 +292,7 @@ Binospec on the sky. Green rectangles are the spectroscopic fields, yellow are t
 Binospec observations are done in a queue, similar to Hectospec
 and MMIRS.  The queue is administered by MMT staff and the
 instrument is usually operated by MMT queue observers. PIs/guest
-observers will typically not need to come to the telescope.  PIs will submit
+observers will typically not need to come to the telescope.  PIs submit
 observing catalogs and mask designs through the  <a
 href="http://scheduler.mmto.arizona.edu/">MMT queue scheduling
 interface</a>. Prior to the run, PIs will get an email asking them to
@@ -283,7 +301,7 @@ During the run, PIs can log in to see progress on their programs and
 download data.<p>
 
 Binospec can hold 10 slitmasks, and these can be changed out freely
-during the day (unlike MMIRS), and potentially at nght.
+during the day (unlike MMIRS).
 However, there is a lead time for
 machining masks.
 <p>
@@ -295,7 +313,9 @@ changes during the night.
 The instrument can be changed from spectroscopic to imaging mode
 quickly, and will have <i>g, r, i, z</i> filters for each side. We do
 not anticipate initially offering mixed observing between the sides
-(ie imaging + spectra, or two different gratings).
+(ie imaging + spectra, or two different gratings). Because the sides
+are pointed at separate fields on the sky, there is not a 
+simultaneous-observation advantage for mixed modes.
 <p>
 
 
@@ -305,7 +325,7 @@ not anticipate initially offering mixed observing between the sides
 Binospec uses guiders offset from the main field of view, patrolling
 the yellow box regions in the figure above. Guide stars can be
 selected automatically from GAIA (preferred) or GSC2 catalogs. Thus,
-<b>it is necessary to supply coordinates that are on the GAIA or GSC2
+<b>it is absolutely necessary to supply coordinates that are on the GAIA or GSC2
 system. The correct coordinate system is critically important for both
 longslit and slitmask spectroscopy</b>.
 <p>
@@ -329,6 +349,10 @@ stars" with
 up to date Gaia proper motions.
 <p>
 
+Currently, it is not possible to acquire targets by a blind offset
+from
+a star. Rather, you can provide accurate coordinates in the Gaia
+system and Binospec will set accurately directly to your target.
 It may be possible in future to tune the pointing up
 by tilting the
 grating to zeroth order and taking a direct image of the target
@@ -346,19 +370,30 @@ whose use has not yet been commissioned, so good coordinates that
 allow the above procedure to work are a requirement.
 <p>
 
-For multi-slit masks, the PI will provide a list of targets on GAIA or
-GSC2 coordinate systems. The BinoMask slitmask design program will add
-suitable guide stars and cut alignment holes in the slitmask, through
-which the guiders will image the stars and tune up the alignment of
+For multi-slit masks, the PI provides a list of targets on GAIA
+(preferred) or
+GSC2 coordinate systems. The BinoMask slitmask design program adds
+suitable guide stars and cuts alignment holes in the slitmask, through
+which the guiders image the stars to tune up the alignment of
 the mask.
+<p>
+
+Note that Binospec is behind the f/5 ADC (atmospheric dispersion
+compensator). Thus, you do not need to observe at the parallactic
+angle for longslits or for slitmasks. For longslits, you are free to specify a
+desired position angle on the sky in your observing catalog. For
+slitmasks, the PA will be determined during mask design, and when you
+create an observing target from the slitmask, the RA, Dec, and PA in
+your catalog will
+be read from the mask design file.
 <p>
 
 <h3 id="slitmask">Slitmask design</h3>
 
 <p>
-Slitmask design will be done by PIs using the BinoMask web based interface.
-Masks will be machined with a laser cutter on
-the mountain by SAO staff. Masks will need to be submitted well in
+Slitmask design is done by PIs using the BinoMask web based interface.
+Masks will be machined with a laser cutter at SAO (in future, on
+the mountain) by SAO staff. Masks need to be submitted well in
 advance of the start of queue observations for a semester.
 <p>
 
@@ -491,7 +526,14 @@ quicklook for queue observers to assess data quality is in progress.
 <p>
 Binospec raw data are stored as multiextension fits files; each CCD has 4
 amplifiers, each of which is stored as an extension. Data taken are
-archived at the CfA. The spectroscopic pipeline (now in a preliminary
+archived at the CfA. The raw and lightly processed (overscan and
+trimmed) data can be downloaded from your observing catalog.  The
+processed data typically will have 2 fits extensions, one for each side of
+the instrument.  For longslit data, your object will typically be in
+side 2 (extension 2).
+<p>
+
+The spectroscopic pipeline (now in a preliminary
 release), is used to process the data and provide wavelength calibrated,
 relative-flux corrected spectra.
 Currently, the queue observing system will send the PI a notification the day after any of your
@@ -625,5 +667,5 @@ Please contact Benjamin Weiner, bjw@mmto.org, for further information.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> with contributions
 from Nelson Caldwell.
-<!-- hhmts start --> Last modified: Fri Sep 21 21:37:16 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Nov 14 15:06:26 MST 2018 <!-- hhmts end -->
 </body> </html>
