@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Using the MMT Queue Catalog</title>
+</head>
+
+<body>
+<h1>The MMT Queue Catalog Interface</h1>
+<p>
+
+PIs of MMT programs that will be observed in the MMIRS or Binospec
+ queues
+manage their catalogs through a web interface. This page documents the interface.
+
+<h2 id="access">Accessing your catalog</h2>
+<p>
+
+Each program has an email contact address, and the contact person will get an
+email some time before the observing run, with a link to log in to the
+catalog. Logging in takes you to a page that shows the deadlines for
+slitmask submission and catalog submission before the run, typically
+about 2 weeks and 1 week before the run starts.  You must check a box
+acknowledging the instructions and submit this form to access the
+catalog editor.
+
+<b>The mask and catalog 
+deadlines are important to get your masks made and targets verified
+before the run starts.</b> If your mask designs are not in on time, the
+masks cannot be machined and shipped to the MMT in time for the run
+(and MMIRS masks must be loaded into the mask dewar before it is
+cooled down). Even for imaging and longslit targets, your targets
+must be added to the catalog by the target deadline before the run so
+that the instrument scientist and queue observers can check for problems
+and run queue scheduling software. PIs of ToO programs must contact
+the MMT instrument scientist to discuss their catalog and the
+procedures for triggering a ToO.
+<p>
+
+<h2 id="view">Catalog view</h2>
+<p>
+
+
+The middle of the catalog page shows a table of your targets. To create new entries
+in the target table, use the new, copy, or upload buttons just above
+the table. In the upper right of the window is
+a list of masks that you have designed. There is a distinction between
+"target" and "mask." A target defines an observation, so you can
+have two targets that use the same mask, for example, short and 
+long exposure times, or observations in two different semesters.
+<p>
+
+<h3>Screenshot of the target table:</h3>
+<img src="queue_target_table.png">
+<br>
+The queue catalog window showing the target table.
+<p>
+
+Below the catalog window is a summary of your requested time including
+estimated overheads.  Overheads include wavefront sensing, acquisition
+time, readout, and calibrations. The queue observers will typically
+keep an accounting of the actual overhead time used during an observation.
+<p> 
+
+You must assign a priority 1, 2, or 3 to each observation. These help
+us understand which observations are most important to you and
+prioritize data taking. Please assign priorities so that roughly 1/3rd
+of your time is in each category. If you have a small number of
+targets, splitting in thirds may be difficult - just try to assign
+priorities reasonably. We look at the overall completion percentage of a
+program to split time fairly among programs, so assigning priority 1
+to all of your programs won't get you more data, it just makes it
+harder to tell which targets are most important (so don't do that).
+<p>
+
+<h3>Screenshot of the time allocation summary:</h3>
+<img src="queue_time_summary.png"><br>
+The lower part of the queue catalog window showing the time allocation
+summary.
+<p>
+
+The columns of the target table are mostly self-explanatory. A few
+useful icons include: clicking the location pin on the left will open a sky
+visualization of the target; when data is taken, folder and box icons
+appear in the Raw and Reduced columns for data download; and clicking
+the clock icon on the extreme right brings up the history of the
+observing block, including time of observation and observer's notes.
+<p>
+
+Above the target table is a gray bar labeled "MMTCATVIZ." Clicking
+this will expand a sky visualization of the location of the
+targets. To hide it, click the bar again.
+<p>
+
+<h2 id="mask">Designing a mask</h2>
+<p>
+
+To design a new mask, click the "New Target" button/text either in the
+catalog panel or the mask list on upper right. This will open a new
+target wizard (series of dialog boxes). Click "mask" and then "create
+new mask." This should open mask design software for Binospec or
+MMIRS. Descriptions of the mask designers are available separately for
+<a href="binomask_info.html">BinoMask</a> and for MMIRS (link TBD).
+When done designing the mask, you will return to the catalog page,
+click "New Target" again, and choose "Already Submitted or Existing
+Mask." This will load the parameters RA, Dec, PA from the mask design
+file, and then let you choose exposure time, etc to create an entry in
+the target table.
+<p>
+
+It's a good idea to give your mask a memorable name, after
+your target, program, or PI, eg "ngc5894_v1_mask1" or "JSmith_field2",
+etc. A unique ID number is appended to the mask name, but having masks
+with generic names e.g. "Mask3" makes it harder to keep track. Also,
+if you reuse masks in another semester you'll be glad for informative
+names.
+<p>
+
+The queue catalog keeps track of masks that have been previously
+designed by a PI, so when you make a target with "Already Submitted or
+Existing Mask," you should get a list that allows you to choose masks that you designed in
+previous semesters.  If you need to find a mask that is not in the
+list, 
+or if you need to use a mask designed by another person,
+contact the MMT instrument scientists.
+<p>
+
+Often, designing slitmasks takes some trial and error, and you may
+wind up designing a second version of your slitmasks. It helps to
+add a "_v2" suffix or similar to the names. If you do this, it's not
+currently possible to delete mask designs, but please contact your
+MMT instrument scientist to request that the extra masks not be
+machined.
+<p>
+
+<h2 id="target">Creating or modifying a target</h2>
+<p>
+
+To create a target, use the new, copy, or upload buttons. Clicking on an
+existing target name lets you edit it. For a new target, the catalog
+target wizard dialog boxes will appear, and prompt to choose one of
+the three types of targets: imaging, longslit, or slitmask.
+For a mask, you then choose from your designed masks, and the RA, Dec,
+and PA are read from the mask file.  For imaging and longslit targets,
+you fill in the RA, Dec, and PA.
+<p>
+
+You will fill in typical catalog
+details: name, RA, Dec, and so on. Use an informative name that is
+likely to be distinct from other targets in the queue: eg
+"Virgo_dwarf_galaxy" is better than "Virgo1". The input boxes will
+show help text if input is not in the correct format. Some notes on
+input formats:
+<p>
+
+<ul>
+  <li> RA and Dec must be in hh:mm:ss.s and dd:mm:ss.s.
+  <li> Priority should be 1, 2, or 3.
+  <li> Proper motions are not in mas/yr, but must be in PM_RA =
+  seconds of time/century, and PM_Dec = seconds of are/century. These
+  can be converted by:
+  <pre>
+pm_RA (sec of time/century) = pm_RA(mas/yr) / [10 * 15 * cos(Dec)]
+pm_Dec (sec of arc/century) = pm_Dec(mas/yr) / 10
+  </pre>
+  <li> PA is degrees of East of North as usual. If you want
+  parallactic angle, write that in the notes. However, the f/5
+  instruments (Bino, MMIRS, Hecto) are behind an ADC, so the
+  parallactic angle is not required.
+  <li> Magnitude is for the queue observer's information, so they can
+  determine whether the data quality is good.
+  <li> Epoch is the time at which the RA/Dec coordinates are valid, e.g. 2015.5
+  for Gaia DR2. This matters for high proper-motion objects, including
+  some standard stars.
+  <li> For information about filters, gratings, wavelengths, etc see
+  the instrument webpages.
+</ul>
+<p>
+
+The next dialog box sets the exposure time.  The total exposure on
+your target will
+be
+<pre>
+total = (exposure length) x (number of exposures) x (number of visits)
+</pre>
+For example, if you want six hours on a single Binospec mask, you
+could enter 1200 sec exposures, 18 exposures, and 1 visit. For Binospec, 1200 sec is typically
+the longest recommended exposure time due to cosmic rays.  The queue
+software will break this up into 2-hour observing blocks for ease of
+scheduling. If you absolutely need contiguous observations, e.g. for a
+time sensitive observation such as a transit, put that and the time of
+the event in your target notes.
+<p>
+
+The purpose of the "visit" is to indicate splitting your exposure, e.g. for
+monitoring programs. So if you wanted to observe a target on six
+nights for one hour each night, you would specify 6 visits and one
+visit per night. For this or any other special constraint on observations,
+please give instructions in the target notes.
+<p>
+
+Special observation instructions including time constraints,
+weather/seeing constraints, requesting dithering, flux
+standards, or twilight flats should also go in the target notes.
+<p>
+
+Clicking on a target name in the target table will bring up a dialog
+box to edit the target parameters.  This box also allows you to delete
+a target, if needed.
+<p>
+  
+The target creation and edit windows allow you to specify offset stars
+and to upload a finding chart image.  MMIRS can use offset stars. Please note that Binospec
+doesn't use offset stars, but sets to your target directly; you must
+have coordinates on the Gaia reference system (SDSS is close enough)
+to accurately acquire the target.
+<p>
+
+<h3>Screenshot of the target editing dialog:</h3>
+<img src="queue_target_edit.png">
+<br>
+The dialog box that pops up to edit a target when you click on its
+name. The save/cancel/delete buttons and the finding chart can be
+reached
+by scrolling down.
+<p>
+
+
+<!-- <h3 id="allocation">Time allocation</h3>
+<p> -->
+
+
+
+<hr>
+<address></address>
+<!-- hhmts start --> Last modified: Fri Nov 16 15:45:36 MST 2018 <!-- hhmts end -->
+</body> </html>
