@@ -9,7 +9,10 @@
 
 PIs of MMT programs that will be observed in the MMIRS or Binospec
  queues
-manage their catalogs through a web interface. This page documents the interface.
+manage their catalogs through a web interface. This page documents the
+catalog management.  Most features of the web interface are 
+ easy to use; this page provides a reference, and documents some
+ special cases.
 
 <h2 id="access">Accessing your catalog</h2>
 <p>
@@ -30,9 +33,13 @@ masks cannot be machined and shipped to the MMT in time for the run
 cooled down). Even for imaging and longslit targets, your targets
 must be added to the catalog by the target deadline before the run so
 that the instrument scientist and queue observers can check for problems
-and run queue scheduling software. PIs of ToO programs must contact
-the MMT instrument scientist to discuss their catalog and the
-procedures for triggering a ToO.
+and run queue scheduling software.  The catalog will lock before the
+observing run, and any further changes require the PI to request that
+MMT staff unlock the catalog.
+PIs of ToO or time-variable programs must contact
+the MMT instrument scientist to discuss their catalog, unlock
+requests,
+and the procedures for triggering a ToO.
 <p>
 
 <h2 id="view">Catalog view</h2>
@@ -98,10 +105,17 @@ catalog panel or the mask list on upper right. This will open a new
 target wizard (series of dialog boxes). Click "mask" and then "create
 new mask." This should open mask design software for Binospec or
 MMIRS. Descriptions of the mask designers are available separately for
-<a href="binomask_info.html">BinoMask</a> and for MMIRS (link TBD).
-When done designing the mask, you will return to the catalog page,
+<a href="binomask_info.html">BinoMask</a> and for
+<a
+href="http://hopper.si.edu/wiki/mmti/MMTI/MMIRS/ObsManual/MMIRS+Mask+Making">MMIRS
+xfitmask</a>. For BinoMask, the mask designer communicates the design
+directly to the queue database, and for MMIRS, you will rn the design
+program and upload the files.
+<p>
+
+When done designing the mask, you return to the catalog page,
 click "New Target" again, and choose "Already Submitted or Existing
-Mask." This will load the parameters RA, Dec, PA from the mask design
+Mask." This will load the parameters of RA, Dec, PA from the mask design
 file, and then let you choose exposure time, etc to create an entry in
 the target table.
 <p>
@@ -231,5 +245,5 @@ by scrolling down.
 
 <hr>
 <address></address>
-<!-- hhmts start --> Last modified: Fri Nov 16 15:45:36 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Fri Nov 16 16:32:23 MST 2018 <!-- hhmts end -->
 </body> </html>
