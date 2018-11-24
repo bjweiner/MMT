@@ -107,13 +107,13 @@ targets. To hide it, click the bar again.
 To design a new mask, click the "New Target" button/text either in the
 catalog panel or the mask list on upper right. This will open a new
 target wizard (series of dialog boxes). Click "mask" and then "create
-new mask." This should open mask design software for Binospec or
-MMIRS. Descriptions of the mask designers are available separately for
+new mask." This should open mask design software in the browser for Binospec; for
+MMIRS, you run the xfitmask mask design software as a standalone program. Descriptions of the mask designers are available separately for
 <a href="binomask_info.html">BinoMask</a> and for
 <a
 href="http://hopper.si.edu/wiki/mmti/MMTI/MMIRS/ObsManual/MMIRS+Mask+Making">MMIRS
 xfitmask</a>. For BinoMask, the mask designer communicates the design
-directly to the queue database, and for MMIRS, you will rn the design
+directly to the queue database, and for MMIRS, you will run the design
 program and upload the files.
 <p>
 
@@ -143,17 +143,17 @@ contact the MMT instrument scientists.
 
 Often, designing slitmasks takes some trial and error, and you may
 wind up designing a second version of your slitmasks. It helps to
-add a "_v2" suffix or similar to the names. If you do this, it's not
-currently possible to delete mask designs, but please contact your
-MMT instrument scientist to request that the extra masks not be
+add a "_v2" suffix or similar to the names to keep track. If you iterate on mask designs, it's not
+currently possible to delete the old mask design files, but please contact your
+MMT instrument scientist to request that the unnecessary masks not be
 machined.
 <p>
 
 <h2 id="target">Creating or modifying a target</h2>
 <p>
 
-To create a target, use the new, copy, or upload buttons. Clicking on an
-existing target name lets you edit it. For a new target, the catalog
+To create a target, use the new, copy, or upload buttons above the table. Clicking on an
+existing target name in the table lets you edit it. For a new target, the catalog
 target wizard dialog boxes will appear, and prompt to choose one of
 the three types of targets: imaging, longslit, or slitmask.
 For a mask, you then choose from your designed masks, and the RA, Dec,
@@ -164,7 +164,14 @@ you fill in the RA, Dec, and PA.
 You will fill in typical catalog
 details: name, RA, Dec, and so on. Use an informative name that is
 likely to be distinct from other targets in the queue: eg
-"Virgo_dwarf_galaxy" is better than "Virgo1". The input boxes will
+"Virgo_dwarf_1" is better than "Virgo1".  If you copy a target,
+the software will generate a unique name by appending a long
+number. We strongly recommend editing your target names to some
+relatively short but unique set of names - long IDs that differ by
+only a few digits are harder for observers to read at 4 AM.
+<p>
+
+The catalog input boxes will
 show help text if input is not in the correct format. Some notes on
 input formats:
 <p>
@@ -188,8 +195,9 @@ pm_Dec (sec of arc/century) = pm_Dec(mas/yr) / 10
   <li> Epoch is the time at which the RA/Dec coordinates are valid, e.g. 2015.5
   for Gaia DR2. This matters for high proper-motion objects, including
   some standard stars.
-  <li> For information about filters, gratings, wavelengths, etc see
-  the instrument webpages.
+  <li> For information about filters, gratings, wavelengths, etc, see
+  the instrument webpages. If you have questions, contact your MMT
+  instrument scientist.
 </ul>
 <p>
 
@@ -202,7 +210,7 @@ total = (exposure length) x (number of exposures) x (number of visits)
 For example, if you want six hours on a single Binospec mask, you
 could enter 1200 sec exposures, 18 exposures, and 1 visit. For Binospec, 1200 sec is typically
 the longest recommended exposure time due to cosmic rays.  The queue
-software will break this up into 2-hour observing blocks for ease of
+software will break a long sequence up into 2-hour observing blocks for ease of
 scheduling. If you absolutely need contiguous observations, e.g. for a
 time sensitive observation such as a transit, put that and the time of
 the event in your target notes.
@@ -216,8 +224,8 @@ please give instructions in the target notes.
 <p>
 
 Special observation instructions including time constraints,
-weather/seeing constraints, requesting dithering, flux
-standards, or twilight flats should also go in the target notes.
+weather/seeing constraints, and requesting dithering, flux
+standards, or twilight flats, should also go in the target notes.
 <p>
 
 Clicking on a target name in the target table will bring up a dialog
@@ -243,6 +251,15 @@ by scrolling down.
 <hr>
 <p>
 
+For questions about entering your targets and
+designing your observations, please
+contact your MMT instrument scientist: for MMIRS, Joannah Hinz, andfor
+Binospec, Ben Weiner. The Hectospec queue is managed independently of
+this interface by Nelson Caldwell at CfA. The MMT queue catalog
+management web pages were implemented by
+Dallan Porter.
+
+<p>
 
 <!-- <h3 id="allocation">Time allocation</h3>
 <p> -->
@@ -251,5 +268,5 @@ by scrolling down.
 
 <hr>
 <address>Benjamin Weiner, bjw@mmto.org</address>
-<!-- hhmts start --> Last modified: Fri Nov 16 16:50:32 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Sat Nov 24 15:12:58 MST 2018 <!-- hhmts end -->
 </body> </html>
