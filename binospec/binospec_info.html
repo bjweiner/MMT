@@ -594,18 +594,20 @@ href="http://specpro.caltech.edu">Specpro website</a>, and its
   </pre>
   substituting
   the appropriate filenames as needed. This will make a 1-d file, 2-file, and
-  info file for each slitlet (it's a lot of files) in the subdirectory.
-  <li>In IDL, run
+  info file for each slitlet (it's a lot of files) in the subdirectory.  
+  If you put the convert_binospec_to_specpro.pro file in the current directory, or if you get an undefined procedure error when running it, compile it first with the IDL command:
+ <pre>
+ .com convert_binospec_to_specpro
+ </pre>
+then run the convert_binospec_to_specpro command.  As of Dec 2018 there is a new version on github that compiles all the subroutines when you run it, to avoid an undefined procedure error.
+  <li>In IDL, to examine the converted spectra, run
   <pre>
   cd,'specfiles'
   device, decomposed=1
   specpro_bino, 1, /basic
   </pre>
-  <li>If you put the convert_binospec_to_specpro.pro file in the current directory, or if you get an undefined procedure error when running it, compile it first with the IDL command:
- <pre>
- .com convert_binospec_to_specpro
- </pre>
- As of Dec 2018 there is a new version on github that compiles all the subroutines when you run it to avoid the undefined procedure error.
+  You only need to do the file conversion once per dataset, and can run then
+   specpro for as many sessions as you like.
 </ul>
 <p>
 
