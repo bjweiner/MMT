@@ -40,19 +40,6 @@
 
 ; Benjamin Weiner, 25 July - 2 August 2018
 
-pro convert_binospec_to_specpro, spec1dfile, spec2dfile, outdir=outdir
-
-  get_mask_headers, spec1dfile, maskheader_a, maskheader_b
-  nobj_a = n_elements(maskheader_a) 
-  nobj_b = n_elements(maskheader_b) 
-  nobj = nobj_a + nobj_b
-  print, "Found mask headers for ",nobj," objects"
-  maskheader = [maskheader_a, maskheader_b]
-  ; header1 = get_spec2d_header(spec2dfile,1)
-  maskid = maskheader_a[0].mask_id
-  loop_create_files, spec1dfile, spec2dfile, maskheader, maskid=maskid, outdir=outdir
-
-end
 
 
 ; Get mask header structures from FITS tables in 1d file. This
@@ -272,6 +259,21 @@ pro write_info_file, fname, maskstruct, hdr2d, iobj, outdir=outdir, outcatfilenu
   endif
 end
 
+; Main function at end to force compiling all the subroutines
+
+pro convert_binospec_to_specpro, spec1dfile, spec2dfile, outdir=outdir
+
+  get_mask_headers, spec1dfile, maskheader_a, maskheader_b
+  nobj_a = n_elements(maskheader_a) 
+  nobj_b = n_elements(maskheader_b) 
+  nobj = nobj_a + nobj_b
+  print, "Found mask headers for ",nobj," objects"
+  maskheader = [maskheader_a, maskheader_b]
+  ; header1 = get_spec2d_header(spec2dfile,1)
+  maskid = maskheader_a[0].mask_id
+  loop_create_files, spec1dfile, spec2dfile, maskheader, maskid=maskid, outdir=outdir
+
+end
 
 
   
