@@ -1,0 +1,64 @@
+
+How to Prep a Binospec Queue
+
+modeled after Joannah's How to Prep an MMIRS Queue
+
+The queue software, BinoMask, runs in the browser and communicates with the scheduler and dbshare computers, so the users don't have to update or download it.
+
+Discuss the run and deadlines with Sean Moran and Joe Zajac. We've typically set the mask deadline about 2 weeks before the start of the run and the catalog deadline about 1 week before, but this is dependent on Sean and Joe's availability. Watch for occasional collisions with e.g. important proposal deadlines (PIs are more likely to be late) and setting the mask deadline on a Monday means you may get requests for help over the weekend, etc.
+
+Set up run on MMTO Scheduler (similar to MMIRS):
+- create/adjust run dates
+- set mask and catalog deadlines
+- import programs into queue, set number of nights. Refer to MMT schedule to get the number of nights/program
+- PI info: check emails, change if necessary
+- send queue observing form emails 
+
+Info for new PIs?  (I haven't been sending them a FAQ but maybe should)
+
+As mask deadline approaches, check if PIs have acknowleged the email (status shown in run overview page).
+
+Look through the catalogs to see if there are any likely missing masks, or masks that were trial-run designed but shouldn't be machined - ask PIs if unsure. The mask design files will be resident on dbshare (?).  Sean gets the files directly from there so you don't need to touch the actual files. You can examine a mask by clicking it in the catalog page to open BinoMask. Sean will convert them and hand them off to Joe (typically Sean tries to get the mask files sorted by an East Coast afternoon, because Joe likes to machine them first thing the next morning).
+
+Remind PIs about target submission as needed. Some PIs design masks and then don't submit the targets right away.  Also, PIs may use masks from previous semesters.
+
+After targets are submitted, go through them looking for issues, eg oversubscribed time, targets at hard to observe RAs, special requests (twilight flats; contiguous or time-sensitive observations), long exposures (recommended max 20 min), many short exposures (high overhead), possibly bad coordinates (Binospec requires coordinates in Gaia DR2 frame; SDSS is close enough; offset stars are not useful).
+
+Watch for planet transits as these require special scheduling attention. Watch for errors related to UT date vs start of night MST date, and requested transit observing intervals that go outside twilight or below reasonable airmass ranges.
+
+Check masks for rotator limit problems. Binomask has the user specify an observing date and then usually designs the mask for either before or after transit (whichever has a longer time window), and respects the rotator limits. However, sometimes it would be useful to observe a mask at a different time, or a PI manages to design a mask at a PA that hits a rotator limit near transit, which really constrains its scheduling.
+
+In order to catch these issues, I wrote a Python script called
+"rotator_angle.py".  It is at 
+https://github.com/bjweiner/MMT/blob/master/binospec/rotator_angle.py
+and requires the pyephem package (in addition to numpy and matplotlib). You can make a text file with columns maskname, RA, Dec, PA, and then run it on the text file. It prompts for a start UT date/time, and then makes a PDF file with plots of airmass and rotator angle vs time for each mask. This is really useful for visualizing when masks can be observed and if any will go through the limits. I run this and then send the PDF to the queue observers, in addition to using it for my own planning. The rotator limit times will advance throughout the run at 4 minutes per day, per usual.
+
+
+Mask loading:
+A few days before the run starts, decide on an initial complement of masks. Imaging and Longslit1 should always be loaded, so there are 8 flexible slots to play with.
+
+A couple days before Bino is mounted, communicate to the responsible people the list of masks that should be installed. These include Mike Alegria, John DiMiceli, Will Goble, Ricardo Ortiz, and the queue observer. (Any more?)  Initially go with priority 1 masks spanning a range of RA.  During the run, communicate with Mike, John, the QO, and the TO about masks to be changed.
+
+Update the MMTO Scheduler to show which masks are installed. As the run goes on, you will be swapping out completed masks (and maybe uncompleted ones).  You can mark masks for removal/installation in the Scheduler, but in my experience the mountain staff aren't looking at this and you want to email them the list, ideally before noon each day. Typically you'll only change at most 2-3 masks per day - this probably takes less than 30 min.  It's possible to change all 8, it would just be time-consuming and usually not necessary. It takes at least 2 people to do the mask exchange with any kind of efficiency.
+
+Starting scheduler: try to run scheduler a day or two before the run starts so an up to date run is available on the first night. 
+
+Making schedules. I've been hand-making schedule with a ~5 minute level of detail. Relying on this for the future is undesirable, and that level of detail is unrealistic anyway. It could be possible to make a much simpler list of priority targets over a reasonable RA range and leave much of it up to the queue observers' judgment. 
+
+An issue with the scheduler / dispatcher output right now is that it tends to favor lots of short imaging / longslit observations, and the catalogs are a bit cluttered with these (standards, lots of transients, etc). This is both inefficient in terms of overhead and makes it hard to do longer mask observations, especially when PIs want deep integrations on a mask and we really need to start it early in the run to get enough time. Or if we want to complete masks so they can be changed out.  I need to experiment more with the scheduler variables and with marking standards as "unavailable" to see if the automated schedules can be cleaned up.
+
+Special observing modes to look out for:
+- slit-stepping (pseudo IFU) - needs to be specified in across the slit direction, not in compass directions
+- dithering (size of dither is limited; could this be increased with larger readout on guide cameras?)
+- questionable coordinates / use of offset stars
+
+"Twilight" flats are taken in the afternoon by opening the rear shutters slightly to illuminate the chamber. This is a time consuming process. Need to ask Igor if twilight flats taken a few days before/after the observations are still good. PIs should not ask for twilight flats unless they really need them. The critical application appears to be measuring velocity dispersions - need to understand why this is, possibly measuring the instrumental profile? But would that require measuring a line source rather than the continuum light?
+
+
+
+
+
+
+
+
+
