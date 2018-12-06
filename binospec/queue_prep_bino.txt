@@ -3,6 +3,8 @@ How to Prep a Binospec Queue
 
 modeled after Joannah's How to Prep an MMIRS Queue
 
+Ben Weiner
+
 The queue software, BinoMask, runs in the browser and communicates with the scheduler and dbshare computers, so the users don't have to update or download it.
 
 Discuss the run and deadlines with Sean Moran and Joe Zajac. We've typically set the mask deadline about 2 weeks before the start of the run and the catalog deadline about 1 week before, but this is dependent on Sean and Joe's availability. Watch for occasional collisions with e.g. important proposal deadlines (PIs are more likely to be late) and setting the mask deadline on a Monday means you may get requests for help over the weekend, etc.
@@ -16,7 +18,7 @@ Set up run on MMTO Scheduler (similar to MMIRS):
 
 Info for new PIs?  (I haven't been sending them a FAQ but maybe should)
 
-As mask deadline approaches, check if PIs have acknowleged the email (status shown in run overview page).
+As mask deadline approaches, check if PIs have acknowledged the email (status shown in run overview page).
 
 Look through the catalogs to see if there are any likely missing masks, or masks that were trial-run designed but shouldn't be machined - ask PIs if unsure. The mask design files will be resident on dbshare (?).  Sean gets the files directly from there so you don't need to touch the actual files. You can examine a mask by clicking it in the catalog page to open BinoMask. Sean will convert them and hand them off to Joe (typically Sean tries to get the mask files sorted by an East Coast afternoon, because Joe likes to machine them first thing the next morning).
 
