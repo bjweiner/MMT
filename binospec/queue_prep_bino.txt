@@ -26,12 +26,16 @@ After targets are submitted, go through them looking for issues, eg oversubscrib
 
 Watch for planet transits as these require special scheduling attention. Watch for errors related to UT date vs start of night MST date, and requested transit observing intervals that go outside twilight or below reasonable airmass ranges.
 
+I usually start off by running "skycalc" to get an almanac for the first night of the run to get an idea of LST range, moon position, etc.
+
 Check masks for rotator limit problems. Binomask has the user specify an observing date and then usually designs the mask for either before or after transit (whichever has a longer time window), and respects the rotator limits. However, sometimes it would be useful to observe a mask at a different time, or a PI manages to design a mask at a PA that hits a rotator limit near transit, which really constrains its scheduling.
 
 In order to catch these issues, I wrote a Python script called
 "rotator_angle.py".  It is at 
 https://github.com/bjweiner/MMT/blob/master/binospec/rotator_angle.py
 and requires the pyephem package (in addition to numpy and matplotlib). You can make a text file with columns maskname, RA, Dec, PA, and then run it on the text file. It prompts for a start UT date/time, and then makes a PDF file with plots of airmass and rotator angle vs time for each mask. This is really useful for visualizing when masks can be observed and if any will go through the limits. I run this and then send the PDF to the queue observers, in addition to using it for my own planning. The rotator limit times will advance throughout the run at 4 minutes per day, per usual.
+
+In principle, it's best to observe masks near the designed hour angle because of the field distortion induced by differential atmospheric refraction across the 15 arcmin field of view. The distortion is about 0.3" of compression in the altitude direction. This means that a mask designed to be observed say 2 hours east has the slits and alignment stars slightly off if you observe it 2 hours west. On the other hand, it's better to get data ... Anyway, the queue scheduler can penalize masks for being observed away from their design HA. The parameters controlling this are max_mask_angle, use_mask_angle_constraint, and possibly one or two others (use_meridian_constraint).  A problem with these constraints that we have not yet resolved is that applying them penalizes slitmasks and so the queue winds up being mostly imaging and longslit.
 
 
 Mask loading:
@@ -52,7 +56,9 @@ Special observing modes to look out for:
 - dithering (size of dither is limited; could this be increased with larger readout on guide cameras?)
 - questionable coordinates / use of offset stars
 
-"Twilight" flats are taken in the afternoon by opening the rear shutters slightly to illuminate the chamber. This is a time consuming process. Need to ask Igor if twilight flats taken a few days before/after the observations are still good. PIs should not ask for twilight flats unless they really need them. The critical application appears to be measuring velocity dispersions - need to understand why this is, possibly measuring the instrumental profile? But would that require measuring a line source rather than the continuum light?
+"Twilight" flats are taken in the afternoon by opening the rear shutters slightly to illuminate the chamber. This is a time consuming process. Need to ask Igor if twilight flats taken a few days before/after the observations are still good. PIs should not ask for twilight flats unless they really need them. 
+
+The critical application for twilight flats appears to be measuring velocity dispersions - need to understand why this is, possibly measuring the instrumental profile? But would that require measuring a line source rather than the continuum light?
 
 
 
