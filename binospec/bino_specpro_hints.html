@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>
+Using Specpro to review Binospec spectra
+</title>
+</head>
+
+<body>
+<h1>Using the Specpro GUI to inspect and fit redshifts to MMT/Binospec spectra
+</h1>
+
+<p>
+For general information about Binospec at the MMT, visit the <a
+href="binospec_info.html">Binospec preliminary information page</a>.
+
+<p>
+
+
+<h3 id="install">Installing Specpro to look at your reduced Binospec data</h3>
+
+We have adapted the <a
+href="http://specpro.caltech.edu">Specpro IDL GUI for analyzing
+spectra</a>, written by Dan Masters, to view and fit redshifts to
+Binospec data.  This is in development by Benjamin Weiner.  This
+assumes you have downloaded reduced Binospec data including the files
+'obj_counts_slits_extr.fits' and 'obj_counts_slits_lin.fits'.
+Currently, you can try
+following this procedure to run Specpro:
+<ul>
+  <li>download and install Specpro from the  <a
+href="http://specpro.caltech.edu">Specpro website</a>, and its
+  dependencies (the idlutils package). Install these somewhere in a
+  directory in your IDL path.  (If you are not experienced with IDL,
+  the IDL path is controlled by a environment variable IDL_PATH and
+  typically contains a directory such as $HOME/idl and its subdirectories.)
+  <li>download the <a
+  href="https://github.com/bjweiner/MMT/blob/master/binospec/convert_binospec_to_specpro.pro">convert_binospec_to_specpro
+  IDL procedure</a> to convert Binospec data into the Specpro format
+  and put that in a directory in your IDL path.  Please visit the
+  github page and click "Raw" on that page to download the actual
+  code file.
+  <li>download <a
+  href="https://github.com/bjweiner/MMT/blob/master/binospec/specpro_bino.pro">specpro_bino.pro</a>,
+  and <a
+  href="https://github.com/bjweiner/MMT/blob/master/binospec/zfindspec.pro">zfindspec.pro</a>,
+   modified versions of two main Specpro routines and put them in the
+  <tt>specpro/code</tt> directory. As in the previous step, please visit the github page and click "Raw" to download the actual IDL procedure (the .pro file). If you click "save as" you'll get an HTML file that won't work.
+  <li>set up Specpro environment variables as described on the Specpro
+  download page before starting IDL. If you use csh, these should look like:
+  <pre>
+   setenv SPECPRO_DIR /Users/bjw/idl/specpro
+   setenv IDL_PATH :+${SPECPRO_DIR}/code:$IDL_PATH
+   setenv IDL_PATH :+${SPECPRO_DIR}/external:$IDL_PATH
+   setenv SPVIEW ${SPECPRO_DIR}/templates
+  </pre>
+  but replace "/Users/bjw/idl/specpro" with the directory where you
+  installed specpro. If you use bash, use <tt>export SPECPRO_DIR=...</tt> instead
+  of setenv.
+ <li>make a subdirectory (e.g. 'specfiles') under your reduced data to hold the
+  Specpro-format files and run, in IDL,
+  <pre>convert_binospec_to_specpro, 'obj_counts_slits_extr.fits', 'obj_counts_slits_lin.fits', outdir='specfiles'
+  </pre>
+  substituting
+  the appropriate filenames as needed. This will make a 1-d file, 2-file, and
+  info file for each slitlet (it's a lot of files) in the subdirectory.  
+  If you put the convert_binospec_to_specpro.pro file in the current directory, or if you get an undefined procedure error when running it, compile it first with the IDL command:
+ <pre>
+ .com convert_binospec_to_specpro
+ </pre>
+then run the convert_binospec_to_specpro command.  As of Dec 2018 there is a new version on github that compiles all the subroutines when you run it, to avoid this undefined procedure error.
+  <li>In IDL, to examine the converted spectra, run
+  <pre>
+  cd,'specfiles'
+  device, decomposed=1
+  specpro_bino, 1, /basic
+  </pre>
+  You only need to do the file conversion once per dataset, and can run then
+   specpro for as many sessions as you like. You may get an error
+message after 'device, decomposed=1'; this message can be ignored.
+</ul>
+<p>
+
+That describes how to run Specpro. You can read the Specpro
+documentation for what the various controls do.  Here is an
+introduction to the workflow that I find useful.
+<p>
+
+<h3 id="setup">Setting up Specpro for Binospec data</h3>
+<p>
+
+Below the 1-d spectrum window, set bin=4, smooth=3.
+click "Emission" box to show location of common emission lines. You may
+also find "Elliptical (subset)" useful, and "QSO emission (subset)",
+"High-z", or "QSO absorption" useful depending on what types of
+objects are in your data.
+<p>
+
+Below the 2-d spectrum window, you can tick "Show extraction," but the
+extraction window is not easily computed from the Binospec reduced
+data and tends to default to the middle of the slitlet even if that's
+not the true location, so it can be misleading.
+
+<p>
+
+<h3 id="start">Starting to inspect a mask </h3>
+
+If you are starting a new mask, leave the slit number at upper left at
+1, but if you previously did up to e.g. slit 60, you can fill in 61 in
+this box and hit return to jump to the next unchecked slit. See below
+for how to set up the output file.
+<p>
+
+<h3 id="fitting">Fitting a redshift </h3>
+
+Pull down the "Template" menu under the 1-d spectrum and select a
+template. Choose a template that resembles your spectrum type roughly. I
+usually start with VVDS Spiral, VVDS Starburst, Green galaxy, or Blue
+galaxy. This will perform a 
+redshift fit using the selected template and populate the "Auto-z
+solution" pull-down. You can select from the different z solutions and
+the template and locations of features (emission, absorption) will
+adjust.
+<p>
+
+Often a given template will have multiple solutions that are all
+pretty close in redshift and you'll have to change to a different
+template to get some variety.  There are some general tendencies, eg
+VVDS Starburst or Blue Galaxy fit strong emission line galaxies, VVDS
+Spiral or Green Galaxy are useful for galaxies with some emission and
+absorption lines, etc.  I find that VVDS Elliptical and Red Galaxy
+impose a very old template with a strong red tilt; depending on your
+objects, you might find the S0 template more useful for absorption
+lines.
+<p>
+
+Important: frequently, the template fits are
+affected by low quality data or artifacts at the ends of the 1-d
+spectrum and will fail to yield a redshift. It helps a lot to zoom in on the spectrum by clicking and
+dragging in the 1-d plot window to eliminate the spectrum ends, then
+choosing a template from the pull-down menu to redo the fit. The fit
+will only use the x range of data that is visible in the 1-d plot
+window.  If you zoom in too much, use the "reset zoom" button to get back to
+the original range.  I am working on modifying the fit to ignore the
+very ends of the spectrum to mitigate this problem.
+<p>
+
+If you want to judge whether the features the template is fitting are
+real, try clicking and dragging over the feature in the 2-d plot
+window to open a zoom in window, e.g. at the location of emission
+lines. This will also recompute the contrast for the zoomed in window,
+helpful when the full 2-d plot has a bad stretch due to artifacts
+(which is pretty common).
+<p>
+
+<h3 id="grading">Checking/confidence grading a redshift </h3>
+
+If you find a redshift that you believe, click "Like z" in the bottom
+row of buttons and the redshift will appear in the redshift box at
+left. Type a quality code in the confidence box. I like to use the
+DEEP2 quality system: 0=hasn't been inspected; 1=no redshift/hopeless;
+2=dubious (keep but don't use for science);  3=95% confident (eg two
+weak features); 4=99% confident (eg two strong features).
+<p>
+
+If you didn't find a redshift that you liked, you can click "No z" at
+bottom and it will set redshift=-99 and confidence=0. I prefer to set
+these to z=0 and confidence=1, reserving confidence=0 for uninspected.
+<p>
+
+You can type any comments you like in the "Notes" box.  These will
+appear in the output file.
+<p>
+
+<h3 id="saving">Saving the redshift output file</h3>
+
+
+If this is the first redshift you have graded in a session, click the
+"Save Redshift" button. A file chooser dialog will come up and suggest
+saving to a file like "400_zinfo.dat" (for mask 400). I like to save
+these as 400_zinfo_v1.dat, then if I do a second session on mask save
+the results as 400_zinfo_v2.dat, and so on, to prevent
+overwriting. When finished I edit these files to combine them.
+<p>
+
+After you've chosen a filename, in that session specpro_bino will
+remember the filename and auto-save your file on every next slit,
+previous, jump to slit number, or quit event. You only have to click
+"save redshift" once per session. This is a change from original
+specpro, to make it less likely that you'll lose work.
+<p>
+
+The format of the output file is an ASCII file with columns:
+<pre>
+masknum slitnum ra dec catnum z zqual comments
+</pre>
+Because it appends, you may find duplicate lines if you re-opened the file, etc. If you
+eliminate duplicates and sort the file in slit number order, it should
+match the order of the slits/objects in the table that Binomask
+presented when you designed the mask.
+<p>
+
+Please contact Benjamin Weiner, bjw@mmto.org, for further information
+or questions.
+<p>
+<hr>
+<address>Benjamin Weiner, bjw@mmto.org</address>
+<!-- hhmts start --> Last modified: Sun Dec 30 01:00:11 EST 2018 <!-- hhmts end -->
+</body> </html>
