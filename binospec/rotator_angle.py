@@ -154,7 +154,9 @@ def compute_angle_timeloop(body, observatory, timestart, duration=12.0):
 
 def plot_angles(body, observatory, timestart, rotlimits, plotnum=0, pdf_file=''):
     # compute angles as function of time
-    hourtime, parang, rotang, airmass = compute_angle_timeloop(body, observatory, timestart)
+    # hourtime, parang, rotang, airmass = compute_angle_timeloop(body, observatory, timestart)
+    # for a longer plot in winter
+    hourtime, parang, rotang, airmass = compute_angle_timeloop(body, observatory, timestart, duration=14.0)
     # date for x label
     ymd_string = str(timestart).split()[0]
     # plot title with mask, ra, dec, pa. body._pa is just a float not an Angle for some reason.
