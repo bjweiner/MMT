@@ -284,7 +284,7 @@ Varying the mask center: Binomask can try a grid search of 5x5 centers
 in RA/Dec over a range you specify (eg 2x2 arcmin) to optimize the
 number of targets placed on slits. However, this slows down the slit
 placing step by a
-factor of 25 and currently may lead to timeout errors if you have a
+factor of 25, and currently may lead to timeout errors if you have a
 large target catalog.
 <p>
 
@@ -391,11 +391,21 @@ Already Submitted or Existing Mask and choose the name of the mask
 that you made. The software will extract the RA/Dec from
 the mask file for you. You then specify the grating and central wavelength,
 and on the next dialog box you specify the exposure time, number of exposures,
-and number of visits. For example you could ask for 2x1800 sec exposures x 4 visits
-to get a total exp time of 4 hours, with the minimum visit always containing
-a pair of exposures. This would be easier to schedule than asking for
-8x1800 sec exposures in 1 visit.  (Need to clarify meaning of the "1 visit
-per night" question.)
+and number of visits. The total exposure you are asking for will be the product
+of exposure time, exposures/visit, and number of visits.
+<p>
+
+If you don't have special requirements you can specify all the
+exposures in one visit. The queue scheduler will break long
+observations into 2 hour observing blocks anyway for practical
+scheduling reasons.
+The number of visits isn't critical but can be
+used to specify a monitoring program. For example if you wanted to get
+1 hour exposure on a target for each of 4 nights, and not have all 4
+hours on the same night, you could specify 3x1200 sec exposures x 4
+visits, and tick the "one visit per night" box. In practice, if you
+have special scheduling requirements, you should write them in the
+notes attached to the catalog target.
 <p>
 
 Note there is a distinction between "mask" and "target." A target is
@@ -457,6 +467,13 @@ your priority column uses either all integer priorities, or all
 floats. Mixing datatypes can cause an error.
 <p>
 
+<b>“Slits can not be made” error</b>: This error message in the
+generate slits stage may mean that your selected PA or PA range is
+not compatible with the rotator limits and observation time. Try
+removing any PA constraints, or adding/subtracting 180 degrees to
+your PA.
+<p>
+
 <b>"Problem connecting to backend server" error during slit placement</b>: This means that the web
 process is failing to talk to the server that is actually doing the
 computation of allowable slit placement and optimization of number of
@@ -472,5 +489,5 @@ up the computation by a factor of 25.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> 
 
-<!-- hhmts start --> Last modified: Thu Jun  7 16:59:49 MST 2018 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Jan 16 02:51:12 MST 2019 <!-- hhmts end -->
 </body> </html>
