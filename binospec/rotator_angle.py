@@ -17,17 +17,16 @@
 
 # requires pyephem
 
-# Hard-code the observatory location for the moment.
-
 import ephem
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-# Read RA, Dec, PA columns from file as strings, return as lists
-# RA and Dec must be something that pyephem understands, so hh:mm:ss works,
-# but decimal RA in degrees doesn't
+# Read RA, Dec, PA columns from file as strings, return as lists.
+# RA and Dec must be something that pyephem parses, so hh:mm:ss dd:mm:ss works,
+# but decimal RA in degrees doesn't. However decimal RA in hours and
+# decimal Dec in degrees do work.
 def read_coords(fname):
     names = []
     ra = []
@@ -44,6 +43,7 @@ def read_coords(fname):
     f.close()
     return names, ra, dec, pa
 
+# Hard-code the observatory location for the moment.
 # just set to Hopkins for now
 #
 def set_observatory():
