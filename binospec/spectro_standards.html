@@ -491,12 +491,33 @@ pm_Dec (sec of arc/century) = pm_Dec(mas/yr) / 10
 </pre>
 Also, the catalog tool for Blue/Red Channel only accepts epoch 2000 coordinates, not epoch
 2015.5, so you should back propagate the coordinates to epoch
-2000.
+2000.  An issue with this catalog tool is that it will use the same number
+for epoch and equinox, so if you want to apply proper motions you should do 
+one of two things:
+<ul>
+
+<li> Apply the proper motions to advance the object's RA, Dec to the
+epoch of observation, e.g. 2019.5. Then enter the object
+with <it>proper motions = zero</it> and epoch=equinox=2000. This is
+less confusing but the catalog entry will only be good for a year or
+so if your object has PM near 1 arcsec/year.
+
+<li> Back-propagate the proper motions to find the RA,Dec of the
+object at epoch 2000.0, then enter that RA, Dec, the proper motions,
+and epoch=equinox=2000. This should be good at all times but requires
+you to do extra work.
+</ul>
+
+If you are working with some other catalog that properly handles epoch and equinox separately, you don't have to worry about this.
+
 <p>
 
 The MMT queue observing interface used with MMIRS and Binospec
-requires the same funky per-century units, but <em>does</em> allow
-input of different epochs.
+requires the same funky per-century units, and is intended to allow
+input of different epochs, but we have had the same epoch=equinox issue 
+in some internal software, so you are safer advancing the RA/Dec 
+coordinates to the current time as described above.
+
 <p>
 <hr>
 
