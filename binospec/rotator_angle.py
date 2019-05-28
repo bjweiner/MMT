@@ -67,13 +67,7 @@ def set_observatory():
     lemmon.lat = '32.44257'
     lemmon.elevation = 2805
 
-    house = ephem.Observer()
-    house.lon = '-110:55.274'
-    house.lat = '32:13.846'
-    house.elevation = 753
-
 #    return bigelow
-#    return house
 #    return lemmon
     return hopkins
 #    return bok
