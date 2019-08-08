@@ -173,6 +173,8 @@
 ; Make saving to file quicker; default to previous filename, auto-save
 ; select_slit and previous/next should save the z/zqual; this
 ; didn't work if initials were not entered, now fixed.
+; BUG: if you open the save file dialog and then hit 'cancel', you 
+; can't re-open it and can't save.
 
 ; specpro: Add tags to the info structure in /basic so that it is
 ;  closer to /small ? (and doesn't crash due to absence of
