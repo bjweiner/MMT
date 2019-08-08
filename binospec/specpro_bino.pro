@@ -155,6 +155,8 @@
 ; Also changed zfindspec to check for and zero out NaNs in the
 ;    log-lambda binned spectrum - unclear where these come from
 ; in quit_application: trigger saving redshift if z and zconf exist
+; in make2dplot: expand the zoom plot by NxN pixels to screen pixels,
+;    and set contrast range based only on zoom region
 
 
 ; TODO: 
@@ -4323,8 +4325,10 @@ pro make2Dplot, z, linetemplates, showspecpos, specpos, $
 
   newxpix = xpix / xrebin
   newypix = ypix / yrebin
-  binnedspec = rebin(flux*ivar,newxpix,newypix)/ $
-        sqrt(rebin(ivar,newxpix,newypix))
+  ; BJW - try not weighting by ivar
+  ; binnedspec = rebin(flux*ivar,newxpix,newypix)/ $
+  ;      sqrt(rebin(ivar,newxpix,newypix))
+  binnedspec = rebin(flux,newxpix,newypix)
   ;interpolate wavelength solution
   lambda_map = congrid(lambda_map, newxpix, newypix)
 
@@ -4355,8 +4359,20 @@ pro make2Dplot, z, linetemplates, showspecpos, specpos, $
      if idx2 eq -1 then return
   endif
 
+  ; BJW - try to exclude the ends of spectrum from the contrast
+  ; range determination. This is not working well - because I don't
+  ; have subscripting the range with ixrange correct yet.  FIXTHIS
+  ixrange = fix( [0.05*newxpix, 0.95*newxpix] )
+  tmpspec = binnedspec[ixrange,*]
+  idx = where(finite(tmpspec) ne 0,count)
+  if count ge 1 then tmpspec = tmpspec[idx]
+  range2 = median(tmpspec) + [-3,info.upsigma]*stddev(tmpspec,/nan)
+
+  ; original
   range = median(binnedspec(idx2))+[-3,info.upsigma]*stddev(binnedspec(idx2))
-  
+  ; compare the ways of calculating contrast
+  ; print,"make2dplot stretch ranges: ",range2, range
+
   fullrange = range[1]-range[0]
   contrastmod = fullrange * (info.contrast2D / 200.)  
   image = bytscl(binnedspec,min=range[0]+contrastmod,max=range[1],top=(!d.table_size-1))
@@ -4404,10 +4420,11 @@ pro make2Dplot, z, linetemplates, showspecpos, specpos, $
      minypix = min([info.y2Dpress, info.y2Drelease])
      maxypix = max([info.y2Dpress, info.y2Drelease])
 
-     minx = (minxpix - xstart)*xrebin
-     maxx = (maxxpix - xstart)*xrebin
-     miny = (minypix - ystart)*yrebin
-     maxy = (maxypix - ystart)*yrebin    
+     ; BJW - make sure these are integers. Does it matter?
+     minx = fix( (minxpix - xstart)*xrebin )
+     maxx = fix( (maxxpix - xstart)*xrebin )
+     miny = fix( (minypix - ystart)*yrebin )
+     maxy = fix( (maxypix - ystart)*yrebin )
   
      specsize = size(spec2d.flux)
      xnumpix = specsize[1]
@@ -4420,14 +4437,35 @@ pro make2Dplot, z, linetemplates, showspecpos, specpos, $
 
      allspec = spec2d.flux
      
-     idxgood = where(allspec gt -1000)     
-     range = median(allspec(idxgood))+[-3,info.upsigma]*stddev(allspec(idxgood))
+     ; BJW - trim the image before determining the contrast range
+     ; idxgood = where(allspec gt -1000)     
+     ; range = median(allspec(idxgood))+[-3,info.upsigma]*stddev(allspec(idxgood))
+     zoomspec = allspec[minx:maxx, miny:maxy]
+     idxgood = where(zoomspec gt -1000)  
+     ; Use 2*info.upsigma here because it isn't always enough   
+     range = median(zoomspec(idxgood))+[-3,2*info.upsigma]*stddev(zoomspec(idxgood))
      fullrange = range[1]-range[0]
-     contrastmod = fullrange * (info.contrast2D / 200.)  
-     zoomimage = bytscl(allspec,min=range[0]+contrastmod,max=range[1],top=(!d.table_size-1))
-     window, xsize = round(1.5*(maxx-minx)), ysize = round(1.5*(maxy-miny)), $
-                 title = 'Unbinned zoom region'
-     tv, zoomimage[minx:maxx, miny:maxy], round(.25*(maxx-minx)), round(.25*(maxy-miny))
+     contrastmod = fullrange * (info.contrast2D / 200.) 
+     ; zoomimage = bytscl(allspec,min=range[0]+contrastmod,max=range[1],top=(!d.table_size-1))
+     ; window, xsize = round(1.5*(maxx-minx)), ysize = round(1.5*(maxy-miny)), $
+     ;            title = 'Unbinned zoom region'
+
+     ; BJW - allow expansion of zoomed region to be 1 spec pixel
+     ;  = nexpand screen pixels
+     nexpand = 3
+     nxnew = nexpand * (maxx-minx+1)
+     nynew = nexpand * (maxy-miny+1)
+     expandspec = rebin(zoomspec, nxnew, nynew)
+     zoomimage = bytscl(expandspec,min=range[0]+contrastmod,max=range[1],top=(!d.table_size-1))
+     ; BJW - define window size from array, with small margin
+     xmargin = 0.04 * nxnew
+     ymargin = 0.08 * nynew
+     window, xsize = round(nxnew+2*xmargin), ysize = round(nynew+2*ymargin), $
+             title = 'Unbinned zoom region'
+
+     ; tv, zoomimage[minx:maxx, miny:maxy], round(.25*(maxx-minx)), round(.25*(maxy-miny))
+     tv, zoomimage, round(xmargin), round(ymargin)
+
      widget_control, info.spec2d_id, get_value = wid
      wset, wid
   endif
