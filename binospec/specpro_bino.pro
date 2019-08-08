@@ -4362,18 +4362,25 @@ pro make2Dplot, z, linetemplates, showspecpos, specpos, $
   endif
 
   ; BJW - try to exclude the ends of spectrum from the contrast
-  ; range determination. This is not working well - because I don't
-  ; have subscripting the range with ixrange correct yet.  FIXTHIS
+  ; range determination. Have to also exclude pixels <-1000 to 
+  ; make this work right.
+  ; 
   ixrange = fix( [0.05*newxpix, 0.95*newxpix] )
-  tmpspec = binnedspec[ixrange,*]
-  idx = where(finite(tmpspec) ne 0,count)
+  ; tmpspec = binnedspec[ixrange,*]
+  tmpspec = binnedspec[ixrange[0]:ixrange[1],*]
+  idx = where(finite(tmpspec) ne 0 and tmpspec gt -1000,count)
   if count ge 1 then tmpspec = tmpspec[idx]
   range2 = median(tmpspec) + [-3,info.upsigma]*stddev(tmpspec,/nan)
 
   ; original
   range = median(binnedspec(idx2))+[-3,info.upsigma]*stddev(binnedspec(idx2))
   ; compare the ways of calculating contrast
-  ; print,"make2dplot stretch ranges: ",range2, range
+  ; print,"Diagnostic: make2dplot stretch ranges: "
+  ; print,"trimmed  median, stddev, range: ", median(tmpspec), stddev(tmpspec,/nan), range2
+  ; print,"original median, stddev, range: ", median(binnedspec(idx2)), stddev(binnedspec(idx2)), range
+
+  ; use the range of spectrum with ends trimmed
+  range = range2
 
   fullrange = range[1]-range[0]
   contrastmod = fullrange * (info.contrast2D / 200.)  
@@ -4440,17 +4447,24 @@ pro make2Dplot, z, linetemplates, showspecpos, specpos, $
      allspec = spec2d.flux
      
      ; BJW - trim the image before determining the contrast range
-     ; idxgood = where(allspec gt -1000)     
-     ; range = median(allspec(idxgood))+[-3,info.upsigma]*stddev(allspec(idxgood))
+     idxgood_orig = where(allspec gt -1000)     
+     range_orig  = median(allspec(idxgood_orig))+[-3,info.upsigma]*stddev(allspec(idxgood_orig))
      zoomspec = allspec[minx:maxx, miny:maxy]
      idxgood = where(zoomspec gt -1000)  
-     ; Use 2*info.upsigma here because it isn't always enough   
-     range = median(zoomspec(idxgood))+[-3,2*info.upsigma]*stddev(zoomspec(idxgood))
+     ; Use 1.5*info.upsigma here because it isn't always enough,
+     ; although info.upsigma is a user-set parameter  
+     range = median(zoomspec(idxgood))+[-3,1.5*info.upsigma]*stddev(zoomspec(idxgood))
      fullrange = range[1]-range[0]
      contrastmod = fullrange * (info.contrast2D / 200.) 
      ; zoomimage = bytscl(allspec,min=range[0]+contrastmod,max=range[1],top=(!d.table_size-1))
      ; window, xsize = round(1.5*(maxx-minx)), ysize = round(1.5*(maxy-miny)), $
      ;            title = 'Unbinned zoom region'
+
+
+     ; compare the ways of calculating contrast
+     ; print,"Diagnostic: 2dplot zoom stretch ranges: "
+     ; print,"trimmed  median, stddev, range: ", median(zoomspec(idxgood)), stddev(zoomspec(idxgood)), range
+     ; print,"original median, stddev, range: ",  median(allspec(idxgood_orig)), stddev(allspec(idxgood_orig)), range_orig
 
      ; BJW - allow expansion of zoomed region to be 1 spec pixel
      ;  = nexpand screen pixels
