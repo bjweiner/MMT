@@ -963,6 +963,27 @@ function imclip, image, PERCENT=PERCENT
 
 end
 
+; Function to return stats of an array, ignoring NaNs and pixels
+; below some min value. Used for scaling display of 2-d images.
+function med_stddev_trim, indata, minval=minval
+  if keyword_set(minval) then begin
+     idx = where(finite(indata) ne 0 and indata gt minval, count)
+  endif else begin
+     idx = where(finite(indata) ne 0, count)
+  endelse
+  if count ge 1 then begin
+     med = median(indata[idx])
+     std = stddev(indata[idx], /nan)
+  endif else begin
+     med = median(indata)
+     std = stddev(indata, /nan)
+     ; print, 'Warning: med_stddev_trim found no good pixels'
+  endelse
+  out = [med, std]
+  return, out
+end
+
+
 ;-----------------------------------------------------------------------
 pro get_serendip_radec, event, info, serendipra=serendipra, serendipdec=serendipdec
   ;Retrieve info structure
@@ -4366,14 +4387,12 @@ pro make2Dplot, z, linetemplates, showspecpos, specpos, $
   ; make this work right.
   ; 
   ixrange = fix( [0.05*newxpix, 0.95*newxpix] )
-  ; tmpspec = binnedspec[ixrange,*]
   tmpspec = binnedspec[ixrange[0]:ixrange[1],*]
-  idx = where(finite(tmpspec) ne 0 and tmpspec gt -1000,count)
-  if count ge 1 then tmpspec = tmpspec[idx]
-  range2 = median(tmpspec) + [-3,info.upsigma]*stddev(tmpspec,/nan)
+  medstd = med_stddev_trim(tmpspec, minval=-1000)
+  range2 = medstd[0] + [-3,info.upsigma]* medstd[1]
 
-  ; original
-  range = median(binnedspec(idx2))+[-3,info.upsigma]*stddev(binnedspec(idx2))
+  ; old way
+  ; range = median(binnedspec(idx2))+[-3,info.upsigma]*stddev(binnedspec(idx2))
   ; compare the ways of calculating contrast
   ; print,"Diagnostic: make2dplot stretch ranges: "
   ; print,"trimmed  median, stddev, range: ", median(tmpspec), stddev(tmpspec,/nan), range2
@@ -4445,15 +4464,16 @@ pro make2Dplot, z, linetemplates, showspecpos, specpos, $
      if maxy ge ynumpix then maxy = ynumpix-1
 
      allspec = spec2d.flux
-     
+
+     ; old way
+     ; idxgood_orig = where(allspec gt -1000)     
+     ; range_orig  = median(allspec(idxgood_orig))+[-3,info.upsigma]*stddev(allspec(idxgood_orig))
      ; BJW - trim the image before determining the contrast range
-     idxgood_orig = where(allspec gt -1000)     
-     range_orig  = median(allspec(idxgood_orig))+[-3,info.upsigma]*stddev(allspec(idxgood_orig))
      zoomspec = allspec[minx:maxx, miny:maxy]
-     idxgood = where(zoomspec gt -1000)  
+     medstd = med_stddev_trim(zoomspec, minval=-1000)
      ; Use 1.5*info.upsigma here because it isn't always enough,
      ; although info.upsigma is a user-set parameter  
-     range = median(zoomspec(idxgood))+[-3,1.5*info.upsigma]*stddev(zoomspec(idxgood))
+     range = medstd[0] + [-3,1.5*info.upsigma] * medstd[1]
      fullrange = range[1]-range[0]
      contrastmod = fullrange * (info.contrast2D / 200.) 
      ; zoomimage = bytscl(allspec,min=range[0]+contrastmod,max=range[1],top=(!d.table_size-1))
