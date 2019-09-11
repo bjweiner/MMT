@@ -3374,13 +3374,20 @@ pro save_output_to_file, event, info, default=default
      4: slit = slitno
   endcase
   
+  ; BJW - add test for null outfile to setting outputfilesaved, so if the 
+  ; user accidentally makes the filename null, they can try again
   if info.outputfilesaved eq 0 then begin ;nothing yet saved by user
      outfile = dialog_pickfile(/WRITE, title='Select file for writing', file=info.outfilename)
-     info.outfilename = outfile
-     info.outputfilesaved = 1
+     if outfile ne '' then begin
+        info.outfilename = outfile
+        info.outputfilesaved = 1
+     endif else begin
+        print, 'Null output filename, you should probably try selecting again'
+     endelse
   endif else begin
      ; BJW - if an ouput file has been selected this session, don't pop
-     ; up the dialog again?
+     ; up the dialog again, just save. This means you can't change
+     ; the name mid-session, though.
      ; outfile = dialog_pickfile(/WRITE, title='Select file for writing', file=info.outfilename)
      outfile = info.outfilename
      print, "Saving to ",outfile
@@ -3403,7 +3410,7 @@ pro save_output_to_file, event, info, default=default
     free_lun, lun
     print,'File updated'
   endif else begin
-    print, 'Action canceled. Data not saved.'
+    print, 'Null output filename - Data not saved.'
   endelse
 
   info.outputdatasaved = 1
