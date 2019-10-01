@@ -208,7 +208,10 @@ pm_Dec (sec of arc/century) = pm_Dec(mas/yr) / 10
   determine whether the data quality is good.
   <li> Epoch is the time at which the RA/Dec coordinates are valid, e.g. 2015.5
   for Gaia DR2. This matters for high proper-motion objects, including
-  some standard stars.
+  some standard stars. However, we have had an issue with the system using this 
+  number for both epoch and equinox (reference frame, which is normally J2000). 
+  That means the safest thing is to advance your high-PM objects to the current 
+  epoch, enter their current RA and Dec, and leave the PM's at 0 and epoch at 2000.
   <li> For information about filters, gratings, wavelengths, etc, see
   the instrument webpages. If you have questions, contact your MMT
   instrument scientist.
