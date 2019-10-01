@@ -146,11 +146,11 @@ def compute_angle_timeloop(body, observatory, timestart, duration=12.0):
         airmass[i] = airmass1
     return hourtime, parang, rotang, airmass
 
-def plot_angles(body, observatory, timestart, rotlimits, plotnum=0, pdf_file=''):
+def plot_angles(body, observatory, timestart, rotlimits, plotnum=0, duration=12.0, pdf_file=''):
     # compute angles as function of time
     # hourtime, parang, rotang, airmass = compute_angle_timeloop(body, observatory, timestart)
-    # for a longer plot in winter
-    hourtime, parang, rotang, airmass = compute_angle_timeloop(body, observatory, timestart, duration=14.0)
+    # use duration=14 for a longer plot in winter, 12 in summer
+    hourtime, parang, rotang, airmass = compute_angle_timeloop(body, observatory, timestart, duration=duration)
     # date for x label
     ymd_string = str(timestart).split()[0]
     # plot title with mask, ra, dec, pa. body._pa is just a float not an Angle for some reason.
@@ -217,7 +217,7 @@ def plot_angles(body, observatory, timestart, rotlimits, plotnum=0, pdf_file='')
 # Loop through sets of coordinates making plots
 # Rotator limits are hard coded; now switchable on instrument name
 
-def plot_angle_loop(names,ra,dec,pa,instname):
+def plot_angle_loop(names,ra,dec,pa,instname,duration=12.0):
     observatory = set_observatory()
     tstart = get_a_time()
     rotlimits_raw = [-174, +171]
@@ -237,7 +237,7 @@ def plot_angle_loop(names,ra,dec,pa,instname):
     nobj = len(ra)
     for i in range(nobj):
         body = set_body(names[i], ra[i], dec[i], pa[i])
-        hourtime, parang, rotang, airmass = plot_angles(body, observatory, tstart, rotlimits, plotnum=i, pdf_file=pdffile)
+        hourtime, parang, rotang, airmass = plot_angles(body, observatory, tstart, rotlimits, plotnum=i, pdf_file=pdffile, duration=duration)
     pdffile.close()
     print 'Wrote plots to file ',pdfname
     return
@@ -253,7 +253,8 @@ def main():
     else:
         instname = 'binospec'
     names, ra, dec, pa = read_coords(fname)
-    plot_angle_loop(names, ra, dec, pa, instname)
+    # set duration = 14 in winter
+    plot_angle_loop(names, ra, dec, pa, instname, duration=12.0)
     return
 
 # This is the standard boilerplate that calls the main() function.
