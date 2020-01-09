@@ -68,6 +68,7 @@ observing in spring 2018.
   <li><a href="#etc">Exposure time calculator</a>
   <li><a href="#configuration">Physical/optical configuration</a>
   <li><a href="#observing">Observing procedures</a>
+  <li><a href="#bestpractices">OObservation design best practices<</a>
   <li><a href="#acquisition">Target acquisition and coordinates</a>
   <li><a href="#slitmask">Slitmask design</a>
   <li><a href="#queue">Queue observing</a>
@@ -283,7 +284,11 @@ stars, to allow for slitmask alignment and guiding.
 <img src="bino_fields_on_sky.png" alt="Fields of CCDs and guiders
 shown on a sky image">
 <p>
-Binospec on the sky. Green rectangles are the spectroscopic fields, yellow are the allowed positions for guide stars. The blue rectangle shows the wavefront-sensor patrol area. Red dots are targets; blue are guide stars; short cyan lines show the slits assigned to targets.
+Binospec on the sky. Green rectangles are the spectroscopic fields,
+yellow are the allowed positions for guide stars. The blue rectangle
+shows the wavefront-sensor patrol area. Red dots are targets; blue are
+guide stars; short cyan lines show the slits assigned to targets. Side
+B is the side that is farther from the wavefront sensor (blue box).
 <p>
 
 
@@ -308,7 +313,8 @@ download data. For more information about the queue catalogs, see the
 Binospec can hold 10 slitmasks, and these can be changed out freely
 during the day (unlike MMIRS).
 However, there is a lead time for
-machining masks.
+machining masks, and we typically have a mask deadline 
+ahead of the first Binospec run of a trimester.
 <p>
 
 The grating tilt controls wavelength coverage.
@@ -323,6 +329,36 @@ are pointed at separate fields on the sky, there is not a
 simultaneous-observation advantage for mixed modes.
 <p>
 
+<h3 id="bestpractices">Observation design best practices</h3>
+
+<p>
+The Binospec catalog page asks users to enter various parameters such
+as RA, Dec, grating or filter choice, exposure time, and so on.
+More description is available at the <a
+href="queue_catalog_info.html">catalog help page</a>. We recommend
+that:
+
+<p>
+<ul>
+  <li>Target coordinates for slitmasks and longslit should be on the Gaia
+  DR2 RA/Dec system to allow automatic acquisition of guide stars. When
+  the target is on the Gaia system, it can be acquired directly and
+  there is no need for offset stars.
+  <li>Individual Binospec exposures should be 20 minutes or less to
+  avoid cosmic ray buildup.
+  <li>At least 3 exposures are recommended for good quality spectra, to
+  allow the pipeline to remove cosmic rays.
+  <li>Slitmasks for objects south of the MMT (Dec &lt; +33) should
+  have PAs in the -90 to +90 half, and for objects north of the MMT
+  should have PAs in the half closer to +180/-180. This helps avoid
+  rotator limits.
+  <li>Slitmasks should have at least one slit on each of Side A and B;
+  don't put zero slits on one side, as the reduction pipeline expects
+  slits on both. If your field is small you can use filler objects to
+  provide targets for the other side.
+</ul>
+<p>
+  
 
 <h3 id="acquisition">Target acquisition and coordinates</h3>
 
@@ -536,7 +572,7 @@ archived at the CfA. The raw and lightly processed (overscan and
 trimmed) data can be downloaded from your observing catalog.  The
 processed data typically will have 2 fits extensions, one for each side of
 the instrument.  For longslit data, your object will typically be in
-side 2 (extension 2).
+side B (extension 2).
 <p>
 
 The spectroscopic pipeline (now in a preliminary
@@ -680,8 +716,8 @@ A direct imaging exposure, 50 sec in g band.
 <h4>Other questions? </h4>
 
 <p>
-We will update this page as information is finalized during Binospec
-commissioning and preparations for the first semester of operations in
+This page is updated with information from Binospec
+commissioning and the first few semesters of operations starting
 2018A. 
 Please contact Benjamin Weiner, bjw@mmto.org, for further information.
 <p>
@@ -690,5 +726,5 @@ Please contact Benjamin Weiner, bjw@mmto.org, for further information.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> with contributions
 from Nelson Caldwell.
-<!-- hhmts start --> Last modified: Fri Jan  4 16:11:35 MST 2019 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Jan  8 18:59:27 MST 2020 <!-- hhmts end -->
 </body> </html>
