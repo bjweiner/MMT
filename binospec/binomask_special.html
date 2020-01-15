@@ -99,7 +99,7 @@ had an issue where the CDS server was down, and no guide stars were
 retrieved. If this happens, you can query the GAIA catalog from a
 mirror of Vizier, such as the CADC mirror.  You want stars that are
 roughly between Gmag 11 and 18 - bright stars for wavefront, and guide
-stars of nag 16-18. You need to make a CSV file that has <tt>name, ra,
+stars of mag 16-18. You need to make a CSV file that has <tt>name, ra,
 dec, magnitude, pm-ra, pm-dec, epoch</tt>. Rough instructions follow.
 <p>
 
@@ -125,17 +125,23 @@ This should download a .tsv file with perhaps several hundred
 stars. It has a long header, a footer, a header line of
 "RA_ICRS;DE_ICRS;Source;Epoch;pmRA;pmDE;Gmag", a line of dashes, and
 the data. Make a .csv file with a single comma-separated header line
-by editing the file: delete the header and footer; change the header
-line to "ra,dec,name,epoch,pm-ra,pm-dec,magnitude"; delete the line of
-dashes; and change all the semicolon separators to commas.  This
-should make a file that you can upload to Binomask in the guide stars
-tab.
+by editing the file:
+<ul>
+  <li>delete the header and footer,
+  <li>change the single header line to
+  "ra,dec,name,epoch,pm-ra,pm-dec,magnitude",
+  <li>delete the line of dashes,
+  <li>and change all the semicolon separators to commas.
+  </ul>
+This should make a file that you can upload to Binomask in the guide stars
+tab.  I don't think the column order matters as long as you get the
+  header names in the correct order to match the data.
 <p>
 
 
-
+<p>
 
 <hr>
 <address></address>
-<!-- hhmts start --> Last modified: Wed Jan 15 01:18:33 MST 2020 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Jan 15 01:24:21 MST 2020 <!-- hhmts end -->
 </body> </html>
