@@ -64,6 +64,7 @@ but don't have to download/install anything.
   <li> Generate slits on objects
   <li> Submitting the mask to your queue area
   <li> Adding the target (observing block) to your queue catalog
+  <li> Special topics
   <li> Troubleshooting
 </ul>
 <p>
@@ -167,17 +168,25 @@ Note that the target table must be comma or
 tab delimited, and currently must not include any extra whitespace in
 the header line - so
 'name,ra,dec,mag' works, but 'name, ra, dec, mag' won't.  We will fix
-this to ignore extra whitespace in the near future.  (I think that
-whitespace in the catalog lines is ok, just not in the header line.)
+this to ignore extra whitespace in the near future.  (Whitespace in
+the catalog lines should be ok, just not in the header line.)
 <p>
 
 Object priorities can be 1-most important, 2-next most, and so on. The
 mask designer will try to optimize the sum of N_rank * 10^-rank, so a
 priority 1 object counts 10 times as much as a priority 2 object, and
 so on. Using all-integer priorities will work; using all-float
-priorities may work (to be tested); and mixing integers and floats in
+priorities should work (to be tested); and mixing integers and floats in
 the priority column currently will cause an error during slit
 placement.
+<p>
+
+An RA or Dec value that is exactly an integer, such as 40.0000 degrees, will
+also cause an error when placing slits.  (This is because the
+javascript front end types it as an integer and mixes it into an array
+of floats, which causes a problem when parsed by the backend.) You can
+solve this by adding a tiny amount to the coordinate, such as 40.00001
+degrees.
 <p>
 
 <h4>Target List Best Practices</h4>
@@ -202,6 +211,9 @@ but g or r mag of 15-16 is probably a good starting point.
   failure. You can add a tiny amount to the coordinate, eg 40.00001,
   which moves the object by a negligible amount but forces the parser
   to read it as a float.
+<li>Please include objects over a large enough area that there is at
+  least one target in each side of Binospec. If there are no slits on
+  one side of Binospec, it causes problems in the reduction pipeline.
 </ul>
 <p>
 
@@ -232,7 +244,10 @@ table cross matching web service</a> (may be slow to render) and
 the University of Heidelberg's <a href="http://gaia.ari.uni-heidelberg.de/">GAIA DR1
 page</a> gives an example of how to do a 
 <a href="http://gaia.ari.uni-heidelberg.de/help.html#tapUpload">GAIA-to-user table crossmatch</a>
-with a client such as TOPCAT.
+with a client such as TOPCAT.  You can also query the GAIA catalog
+using Vizier to do a search in a region around your field; start from
+<a href="http://vizier.hia.nrc.ca/viz-bin/VizieR-3?-source=I/345">GAIA
+DR2 Vizier at CADC</a>.
 <p>
 
 <img src="binomask_loadtargetlist.png">
@@ -268,6 +283,12 @@ The tab for selecting a guide star catalog.
 Scrolled down to show the list of guide stars after it was generated
 by BinoMask (using GAIA coordinates).
 <p>
+
+On rare occasions we have had problems with an outage at CDS where
+Binomask's query fails to return GAIA stars. If this happens
+(unlikely), you can get a list of GAIA stars from one of the mirrors,
+such as <a href="http://vizier.hia.nrc.ca/viz-bin/VizieR-3?-source=I/345">GAIA
+DR2 Vizier at CADC</a>. See the <a href="binomask_special.html">page on Binomask special topics</a>.
 
 <h3>6. Generate Slits on objects</h3><p>
 
@@ -467,6 +488,14 @@ observation specified during mask design are significant. Observable
 hour angles will be taken into account during queue scheduling. 
 <p>
 
+<h3> Special topics </h3>
+<p>
+
+Some special cases and black-belt techniques are discussed on the
+<a href="binomask_special.html">Binospec and Binomask special topics
+page</a>.
+<p>
+
 <h3> Troubleshooting </h3>
 <p>
 
@@ -517,5 +546,5 @@ up the computation by a factor of 25.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> 
 
-<!-- hhmts start --> Last modified: Wed Jan  8 19:51:16 MST 2020 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Jan 15 00:39:16 MST 2020 <!-- hhmts end -->
 </body> </html>

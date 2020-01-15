@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Binospec and BinoMask special issues</title>
+</head>
+
+<body>
+<h1>Binospec and BinoMask special techniques</h1>
+<p>
+
+
+This page covers some special or black-belt issues for Binospec and
+the BinoMask slitmask design software.
+<p>
+
+<ul>
+  <li>Large catalogs of input objects
+  <li>Variable slit lengths
+  <li>Querying GAIA for guide stars
+</ul>
+<p>
+
+<h2 id="largecat">Large catalogs of input objects</h2>
+<p>
+
+If you have a lot of targets, for example if you have a primary sample
+and a large catalog of 100s-1000s of lower-priority filler targets, slitmask design
+becomes more difficult. Two problems are: (1) it's hard to see where
+your primary targets are in the js9 sky view; (2) with many targets,
+optimizing the mask placement over RA/Dec and PA can take a long time
+and time out, giving you a "Problem connecting to backend server"
+error and failure to place slits.
+<p>
+
+A method for dealing with this is to make two catalogs: the first
+contains your primary targets only, and the second contains your
+primary and filler targets.  (Thanks to Christopher Willmer for
+suggesting this method.) Begin designing the slitmask with only
+the primary targets, and in Generate Slits,
+vary the PA and mask center to optimize the
+mask placement.  Then record the mask RA, Dec, and PA, but don't
+submit the mask. Go back to the Target List tab and select the full
+catalog with filler targets.  (It should retain the optimized
+mask RA, Dec, and PA, but it is wise to record them to be sure.)
+Now go back to Generate Slits and keep the RA, Dec, and PA fixed at
+the previous values. This will place slits, including the optimized
+primary targets, and add filler targets as available.
+<p>
+
+<h2 id="slitlength">Variable slit lengths</h2>
+<p>
+
+Currently, BinoMask only allows you to select a global minimum slit
+length (6 arcsec is recommended). It will extend slits that don't
+collide with other objects, but you cannot specify that object 1 needs
+a 60 arcsec slit while objects 2 through 1000 can use 6 arcsec slits,
+(eg a large central galaxy and small satellites), or that two classes
+of objects need different lengths.
+<p>
+
+It is possible to make different slit lengths by designing a mask with
+the usual short slit lengths, and then hand editing the JSON
+file that is produced by Binomask to lengthen somme of them. Design
+the mask, and at the end, before submitting, save the mask to a file - this
+should download a file called mask.json. This is a text file with data
+structures, and is easiest to read in a JSON viewer/editor - there are
+many online, for example <a
+href="https://jsoneditoronline.org/">https://jsoneditoronline.org/</a>.
+<p>
+
+You will need to find the structure of the slit of the object that you
+want to lengthen. The slits are numbered within the "sidea" and
+"sideb" structures, and each slit structure contains RA, Dec, and
+object id, along with many other numbers. The field "polygon" in the
+slit structure has 8 numbers (4 X,Y pairs) that specify the slit
+corners in mm, <i>not in arcsec</i>. X is the dispersion direction and
+Y is the direction along the slit; you want to edit the Y-numbers,
+which are indexes 1,3,5,7 (0-based). The plate scale of the 6.5-m f/5
+MMT is 0.16 mm/arcsec. After you lengthen a slit, you must <i>remove
+the slits that would overlap with it in the Y-direction</i>, by
+deleting their data structures from the JSON file. The standard
+spacing between slits in the Y-direction is 1.5 arcsec (0.24 mm), so
+leave that margin between your new slit and the remaining slits.
+<p>
+
+Clearly, this is a black-belt technique that risks creating a bad mask
+specification or overlapping slits, so leave yourself plenty of time
+to work on it. You may be able to load the modified json file back into
+Binomask to visualize it.  You may not be able to submit the modified file
+in the normal way; if so, email the JSON file to Sean Moran and Ben
+Weiner.
+<p>
+
+<h2 id="guidestars">Querying GAIA for guide stars</h2>
+<p>
+
+Normally, Binomask will simply query a server at the CDS for guide
+stars from GAIA and you won't have to worry about it. However, we have
+had an issue where the CDS server was down, and no guide stars were
+retrieved. If this happens, you can query the GAIA catalog from a
+mirror of Vizier, such as the CADC mirror.  You want stars that are
+roughly between Gmag 11 and 18 - bright stars for wavefront, and guide
+stars of nag 16-18. You need to make a CSV file that has <tt>name, ra,
+dec, magnitude, pm-ra, pm-dec, epoch</tt>. Rough instructions follow.
+<p>
+
+Visit the <a href="http://vizier.hia.nrc.ca/viz-bin/VizieR-3?-source=I/345">GAIA
+DR2 Vizier at CADC</a>.
+<ul>
+  <li>Enter your field coordinates and a 30 arcmin
+search radius.
+  <li>click "gaia2" in the Tables window at left.
+  <li>In the Preferences box at left, select max rows 99999, and try ";
+separated values" for the output format.
+  <li>In the long list of catalog quantities towards the bottom of the
+  page, click the ALL cols checkbox at left twice to uncheck
+  everything, then check only the params
+RA_ICRS, DE_ICRS, Source, Epoch, pmRA, pmDE, Gmag.
+  <li>Enter "11 .. 18" in the Gmag constraint box to return only stars
+  with 11 &lt; Gmag &lt; 18.
+  <li>click the Submit button.
+</ul>
+<p>
+
+This should download a .tsv file with perhaps several hundred
+stars. It has a long header, a footer, a header line of
+"RA_ICRS;DE_ICRS;Source;Epoch;pmRA;pmDE;Gmag", a line of dashes, and
+the data. Make a .csv file with a single comma-separated header line
+by editing the file: delete the header and footer; change the header
+line to "ra,dec,name,epoch,pm-ra,pm-dec,magnitude"; delete the line of
+dashes; and change all the semicolon separators to commas.  This
+should make a file that you can upload to Binomask in the guide stars
+tab.
+<p>
+
+
+
+
+<hr>
+<address></address>
+<!-- hhmts start --> Last modified: Wed Jan 15 01:18:33 MST 2020 <!-- hhmts end -->
+</body> </html>
