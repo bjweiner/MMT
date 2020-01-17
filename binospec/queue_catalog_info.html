@@ -18,7 +18,9 @@ catalog management.  Most features of the web interface are
 <p>
 
 Each program has an email contact address, and the contact person will get an
-email titled "MMT Observatory Queue Observing Form" from the MMT Scheduler  about 1-2 months before the observing run, with a link to log in to the
+email titled "MMT Observatory Queue Observing Form" from the MMT
+Scheduling System
+about 1-2 months before the observing run, with a link to log in to the
 catalog.  <i>You must receive and read these emails to be aware of
 submission deadlines and to be able to log into your catalog.</i> If
 you can't find the emails, try searching for and whitelisting "MMT Scheduler"
@@ -69,6 +71,16 @@ have two targets that use the same mask, for example, short and
 long exposure times, or observations in two different semesters.
 <p>
 
+When you click "copy" to copy an observation, there are some options
+to browse the current catalog, or your previous trimester's catalogs,
+etc. Note that some of these have an option to copy "by reference" -
+this will create a pointer to the previous observation, rather than a
+new observation. Most of the time, you should do not this, but rather
+create a new copy (for example, if you have a partially completed
+observation from a previous trimester, and a new time allocation, you
+want to make a new copy).
+<p>
+
 <hr>
 <h3>Screenshot of the target table:</h3>
 <img src="queue_target_table.png">
@@ -80,7 +92,8 @@ The queue catalog window showing the target table.
 Below the catalog window is a summary of your requested time including
 estimated overheads.  Overheads include wavefront sensing, acquisition
 time, readout, and calibrations. The queue observers will typically
-keep an accounting of the actual overhead time used during an observation.
+keep an accounting of the actual overhead time used during an
+observation, and charge that rather than the estimate.
 <p> 
 
 You must assign a priority 1, 2, or 3 to each observation. These help
@@ -92,6 +105,8 @@ priorities reasonably. We look at the overall completion percentage of a
 program to split time fairly among programs, so assigning priority 1
 to all of your programs won't get you more data, it just makes it
 harder to tell which targets are most important (so don't do that).
+You don't have to hit the total times exactly or choose unusual
+exposure times to pack it precisely into the time allocation.
 <p>
 
 <hr>
@@ -225,12 +240,22 @@ be
 total = (exposure length) x (number of exposures) x (number of visits)
 </pre>
 For example, if you want six hours on a single Binospec mask, you
-could enter 1200 sec exposures, 18 exposures, and 1 visit. For Binospec, 1200 sec is typically
+could enter 1200 sec exposures, 18 exposures, and 1 visit. For Binospec, 1200 sec is 
 the longest recommended exposure time due to cosmic rays.  The queue
 software will break a long sequence up into 2-hour observing blocks for ease of
 scheduling. If you absolutely need contiguous observations, e.g. for a
 time sensitive observation such as a transit, put that and the time of
 the event in your target notes.
+<p>
+
+The overhead is estimated once per observing block. This means that if
+you have an exposure longer than 2 hours, you'll get charged more than
+one overhead. For example, a 6 hour slitmask integration would incur
+1.5 hours of overhead (3 OBs x 0.5 hours per OB). Thus, for example,
+putting in a lot of targets each with 2.5 hours integration will incur
+more overhead than is optimal - you could give the brighter ones 2
+hours and the fainter ones 3 hours, reduce overhead and the number of
+OBs, and make the observations easier to schedule.
 <p>
 
 The purpose of the "visit" is to indicate splitting your exposure, e.g. for
@@ -253,7 +278,7 @@ a target, if needed.
 The target creation and edit windows allow you to specify offset stars
 and to upload a finding chart image.  MMIRS can use offset stars. Please note that Binospec
 doesn't use offset stars, but sets to your target directly; you must
-have coordinates on the Gaia reference system (SDSS is close enough)
+have coordinates on the Gaia DR2 reference system (SDSS is close enough)
 to accurately acquire the target.
 <p>
 
@@ -285,5 +310,5 @@ Dallan Porter.
 
 <hr>
 <address>Benjamin Weiner, bjw@mmto.org</address>
-<!-- hhmts start --> Last modified: Fri Jan 18 14:21:11 MST 2019 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Fri Jan 17 15:01:54 MST 2020 <!-- hhmts end -->
 </body> </html>
