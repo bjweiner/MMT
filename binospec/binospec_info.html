@@ -68,7 +68,7 @@ observing in spring 2018.
   <li><a href="#etc">Exposure time calculator</a>
   <li><a href="#configuration">Physical/optical configuration</a>
   <li><a href="#observing">Observing procedures</a>
-  <li><a href="#bestpractices">OObservation design best practices<</a>
+  <li><a href="#bestpractices">Observation design best practices<</a>
   <li><a href="#acquisition">Target acquisition and coordinates</a>
   <li><a href="#slitmask">Slitmask design</a>
   <li><a href="#queue">Queue observing</a>
@@ -353,10 +353,11 @@ that:
   DR2 RA/Dec system to allow automatic acquisition of guide stars. When
   the target is on the Gaia system, it can be acquired directly and
   there is no need for offset stars.
-  <li>Individual Binospec exposures should be 20 minutes or less to
+  <li>Individual Binospec spectroscopic exposures must be 20 minutes or less to
   avoid cosmic ray buildup.
   <li>At least 3 exposures are recommended for good quality spectra, to
-  allow the pipeline to remove cosmic rays.
+  allow the pipeline to remove cosmic rays. The overhead for taking 3
+  exposures instead of 1 is minor.
   <li>Slitmasks for objects south of the MMT (Dec &lt; +33) should
   have PAs in the -90 to +90 half, and for objects north of the MMT
   should have PAs in the half closer to +180/-180. This helps avoid
@@ -365,6 +366,11 @@ that:
   don't put zero slits on one side, as the reduction pipeline expects
   slits on both. If your field is small you can use filler objects to
   provide targets for the other side.
+  <li>In Binospec direct imaging, a V=17 star saturates in g filter in 120 sec. We
+  recommend that your exposures be 120 sec or less, and less than
+  30 sec if you are working at low Galactic latitude. Lots of
+  saturation causes persistence which degrades your and everyone
+  else's data.
 </ul>
 <p>
   
@@ -735,5 +741,5 @@ Please contact Benjamin Weiner, bjw@mmto.org, for further information.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> with contributions
 from Nelson Caldwell.
-<!-- hhmts start --> Last modified: Sun Jan 12 11:05:32 MST 2020 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Fri Jan 31 13:29:46 MST 2020 <!-- hhmts end -->
 </body> </html>
