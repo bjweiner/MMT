@@ -57,90 +57,98 @@ observation, eg where the star was at year 2015.5.
 <h2 id="calculator"> Proper motion calculator </h2>
 <p>
 
-This calculator takes as input a
-star's RA, Dec at a previous epoch (default 2015.5), its proper motion in RA and Dec in milli-arcsec per year,
-and the desired new epoch,
-and calculates the new coordinates for that epoch. Type in the boxes
-in the upper row, or select the star from the drop-down menu. Then click Compute, and the star's new position will appear in the lower row.
+This calculator takes as input a star's RA, Dec at a previous epoch
+(default 2015.5), its proper motion in RA and Dec in milli-arcsec per
+year, and the desired new epoch, and calculates the new coordinates
+for that epoch. Enter coordinates in the boxes in the upper row, or
+select a star from the drop-down menu to fill in the RA, Dec, PM, and
+enter your new epoch, e.g. 2020.5. Then
+click Compute, and the star's new position will appear in the lower
+row.  The calculator uses Javascript embedded in the webpage, and it
+will work offline if you save this page as HTML to your computer
+(useful if your observatory's internet goes down).
 <p>
 
 
 <form name="pmform">
-<table border="0" frame="box" style="border-spacing: 4px 6px">
+<table border="0" frame="box" style="border-spacing: 4px 6px;
+  font-size:110%" >
  <tbody>
    <tr> <td colspan="3"> Choose star or type in boxes:
-     <select id="starselect" onChange="populate_coords(this.form)">
-     <option ra="" dec="" pmra="" pmdec="" value="Choose star">Choose
-      star</option> 
-   <option ra="   0.45611" dec="  -3.02755" pmra="   18.84" pmdec="   -9.70" value="  1 HR9087">  1. HR9087</option>
-   <option ra="   8.47762" dec=" -12.13382" pmra="  157.60" pmdec=" -191.43" value="  2 G158-100">  2. G158-100</option>
-   <option ra="   9.24298" dec="  53.89687" pmra="   15.96" pmdec="   -6.76" value="  3 HR153">  3. HR153</option>
-   <option ra="  10.44541" dec=" -33.65242" pmra="  -17.27" pmdec="  -18.72" value="  4 CD-34d241">  4. CD-34d241</option>
-   <option ra="  12.51618" dec=" -52.13751" pmra="  138.59" pmdec="   30.69" value="  5 BPM16274">  5. BPM16274</option>
-   <option ra="  28.71097" dec=" -27.47759" pmra="  310.82" pmdec=" -231.98" value="  6 LTT1020">  6. LTT1020</option>
-   <option ra="  37.03992" dec="   8.46004" pmra="   23.71" pmdec="   -4.79" value="  7 HR718">  7. HR718</option>
-   <option ra="  47.62972" dec=" -68.60138" pmra="   39.45" pmdec=" -103.19" value="  8 EG21">  8. EG21</option>
-   <option ra="  57.09541" dec=" -39.14443" pmra="  214.13" pmdec=" -189.45" value="  9 LTT1788">  9. LTT1788</option>
-   <option ra="  57.20947" dec="  -0.97634" pmra="   84.43" pmdec=" -162.96" value=" 10 GD50"> 10. GD50</option>
-   <option ra="  58.43190" dec="  -0.07647" pmra="  -14.79" pmdec="  -95.87" value=" 11 SA95-42"> 11. SA95-42</option>
-   <option ra="  58.84237" dec="   9.78835" pmra="  173.27" pmdec="   -5.51" value=" 12 HZ4"> 12. HZ4</option>
-   <option ra="  62.37093" dec="  17.13168" pmra="  111.45" pmdec="  -22.02" value=" 13 LB227"> 13. LB227</option>
-   <option ra="  63.18174" dec="  11.86321" pmra="   59.18" pmdec="  -90.67" value=" 14 HZ2"> 14. HZ2</option>
-   <option ra="  72.65302" dec="   8.90005" pmra="    1.34" pmdec="  -27.98" value=" 15 HR1544"> 15. HR1544</option>
-   <option ra="  76.37767" dec="  52.83069" pmra="   12.59" pmdec="  -93.52" value=" 16 G191-B2B"> 16. G191-B2B</option>
-   <option ra="  86.49958" dec=" -32.30653" pmra="    2.99" pmdec="  -22.03" value=" 17 HR1996"> 17. HR1996</option>
-   <option ra="  88.11543" dec="  15.88626" pmra="   76.84" pmdec=" -172.94" value=" 18 GD71"> 18. GD71</option>
-   <option ra="  89.10424" dec=" -27.85967" pmra="  236.47" pmdec=" -157.22" value=" 19 LTT2415"> 19. LTT2415</option>
-   <option ra=" 101.30571" dec="   2.13741" pmra="   -1.17" pmdec="   -0.53" value=" 20 HILT600"> 20. HILT600</option>
-   <option ra=" 102.01956" dec=" -44.31621" pmra="   -4.11" pmdec="    5.67" value=" 21 HD49798"> 21. HD49798</option>
-   <option ra=" 113.36381" dec=" -50.58423" pmra="   -3.12" pmdec="    5.31" value=" 22 HD60753"> 22. HD60753</option>
-   <option ra=" 118.36296" dec="  52.49097" pmra="  -88.37" pmdec=" -255.42" value=" 23 G193-74"> 23. G193-74</option>
-   <option ra=" 122.70633" dec="  74.96614" pmra="    7.17" pmdec="   10.30" value=" 24 BD+75d325"> 24. BD+75d325</option>
-   <option ra=" 130.37968" dec=" -32.93668" pmra="-1061.33" pmdec=" 1345.95" value=" 25 LTT3218"> 25. LTT3218</option>
-   <option ra=" 130.80607" dec="   3.39866" pmra="  -19.54" pmdec="   -1.00" value=" 26 HR3454"> 26. HR3454</option>
-   <option ra=" 140.32957" dec="  81.72412" pmra="  -11.26" pmdec="  -51.26" value=" 27 AGK+81d266"> 27. AGK+81d266</option>
-   <option ra=" 150.19667" dec="  -7.55856" pmra="  -42.37" pmdec="   -1.88" value=" 28 GD108"> 28. GD108</option>
-   <option ra=" 158.05536" dec=" -35.62827" pmra=" -260.74" pmdec="   -4.59" value=" 29 LTT3864"> 29. LTT3864</option>
-   <option ra=" 159.90315" dec="  43.10245" pmra="   12.54" pmdec="  -25.41" value=" 30 Feige34"> 30. Feige34</option>
-   <option ra=" 162.09797" dec="  37.57031" pmra="    0.22" pmdec="    1.72" value=" 31 HD93521"> 31. HD93521</option>
-   <option ra=" 174.17019" dec="  -9.80221" pmra="  -57.30" pmdec="    4.18" value=" 32 HR4468"> 32. HR4468</option>
-   <option ra=" 176.45578" dec=" -64.84301" pmra=" 2661.59" pmdec=" -344.85" value=" 33 LTT4364"> 33. LTT4364</option>
-   <option ra=" 178.45833" dec="  53.69477" pmra="   96.45" pmdec="    3.96" value=" 34 HR4554"> 34. HR4554</option>
-   <option ra=" 181.69678" dec="  11.67015" pmra="   -7.43" pmdec="   -6.53" value=" 35 Feige56"> 35. Feige56</option>
-   <option ra=" 183.48392" dec="  32.94217" pmra=" -100.88" pmdec="   30.13" value=" 36 HZ21"> 36. HZ21</option>
-   <option ra=" 189.34799" dec="  25.06651" pmra="    1.83" pmdec="  -27.43" value=" 37 Feige66"> 37. Feige66</option>
-   <option ra=" 189.70371" dec=" -49.80038" pmra=" -557.23" pmdec="  -74.09" value=" 38 LTT4816"> 38. LTT4816</option>
-   <option ra=" 190.46576" dec="  17.52199" pmra="   -7.33" pmdec="  -37.28" value=" 39 Feige67"> 39. Feige67</option>
-   <option ra=" 194.25950" dec="  22.03041" pmra="  -38.41" pmdec=" -202.95" value=" 40 GD153"> 40. GD153</option>
-   <option ra=" 195.03587" dec="   3.47435" pmra=" -439.16" pmdec=" -865.95" value=" 41 G60-54"> 41. G60-54</option>
-   <option ra=" 197.48730" dec="  -5.53915" pmra="  -30.82" pmdec="  -29.69" value=" 42 HR4963"> 42. HR4963</option>
-   <option ra=" 199.09028" dec="  29.09826" pmra=" -157.77" pmdec=" -107.31" value=" 43 HZ43"> 43. HZ43</option>
-   <option ra=" 200.89658" dec="  36.13319" pmra="  -66.27" pmdec="   -4.52" value=" 44 HZ44"> 44. HZ44</option>
-   <option ra=" 204.70519" dec="  70.28535" pmra=" -402.09" pmdec="  -24.61" value=" 45 GRW+70d5824"> 45. GRW+70d5824</option>
-   <option ra=" 206.88437" dec="  49.31327" pmra=" -121.17" pmdec="  -14.91" value=" 46 HR5191"> 46. HR5191</option>
-   <option ra=" 212.94299" dec=" -33.05396" pmra="   -4.14" pmdec="    7.12" value=" 47 CD-32d9927"> 47. CD-32d9927</option>
-   <option ra=" 221.37568" dec="   0.71724" pmra="  -40.42" pmdec="   -8.10" value=" 48 HR5501"> 48. HR5501</option>
-   <option ra=" 234.74739" dec=" -28.59437" pmra=" -233.38" pmdec=" -177.35" value=" 49 LTT6248"> 49. LTT6248</option>
-   <option ra=" 237.99945" dec="  32.94843" pmra="  -14.56" pmdec="    0.92" value=" 50 BD+33d2642"> 50. BD+33d2642</option>
-   <option ra=" 245.89142" dec=" -39.22949" pmra="   77.13" pmdec="    0.33" value=" 51 EG274"> 51. EG274</option>
-   <option ra=" 246.97245" dec="   9.20242" pmra="  -96.72" pmdec=" -470.57" value=" 52 G138-31"> 52. G138-31</option>
-   <option ra=" 279.10710" dec=" -44.31094" pmra=" -168.74" pmdec=" -159.04" value=" 53 LTT7379"> 53. LTT7379</option>
-   <option ra=" 279.23582" dec="  38.78487" pmra="  200.94" pmdec="  286.23" value=" 54 HR7001"> 54. HR7001</option>
-   <option ra=" 298.68682" dec="   0.27357" pmra="   39.13" pmdec="  -13.93" value=" 55 HR7596"> 55. HR7596</option>
-   <option ra=" 302.73517" dec=" -30.21958" pmra=" -340.72" pmdec=" -249.28" value=" 56 LTT7987"> 56. LTT7987</option>
-   <option ra=" 303.48089" dec="   6.70995" pmra=" -254.96" pmdec=" -582.28" value=" 57 G24-9"> 57. G24-9</option>
-   <option ra=" 311.91911" dec="  -9.49593" pmra="   31.95" pmdec="  -34.73" value=" 58 HR7950"> 58. HR7950</option>
-   <option ra=" 323.06942" dec="   0.25412" pmra="  413.23" pmdec="   27.27" value=" 59 LDS749B"> 59. LDS749B</option>
-   <option ra=" 327.79575" dec="  28.86375" pmra="  -34.73" pmdec="  -56.85" value=" 60 BD+28d4211"> 60. BD+28d4211</option>
-   <option ra=" 328.10581" dec="   2.38748" pmra="   15.43" pmdec=" -300.55" value=" 61 G93-48"> 61. G93-48</option>
-   <option ra=" 329.92472" dec="  26.43243" pmra="  -37.46" pmdec="  -41.67" value=" 62 BD+25d4655"> 62. BD+25d4655</option>
-   <option ra=" 337.41078" dec=" -20.83717" pmra="   38.87" pmdec="   -3.42" value=" 63 NGC7293"> 63. NGC7293</option>
-   <option ra=" 340.36584" dec="  10.83131" pmra="   78.28" pmdec="  -10.64" value=" 64 HR8634"> 64. HR8634</option>
-   <option ra=" 343.17134" dec=" -20.59385" pmra="   78.87" pmdec=" -314.21" value=" 65 LTT9239"> 65. LTT9239</option>
-   <option ra=" 349.89854" dec=" -17.09120" pmra="  242.14" pmdec="   10.40" value=" 66 LTT9491"> 66. LTT9491</option>
-   <option ra=" 349.99329" dec="  -5.16561" pmra="   -8.37" pmdec="   -0.63" value=" 67 Feige110"> 67. Feige110</option>
-   <option ra=" 351.52726" dec="  16.00486" pmra="  -41.52" pmdec=" -115.57" value=" 68 GD248"> 68. GD248</option>
-  </select>
+     <select id="starselect" onChange="populate_coords(this.form)" style="background-color:LightCyan">
+    <option ra="" dec="" pmra="" pmdec="" epoch="2015.5" value="Choose
+      star">Choose star</option>
+      
+   <option ra="   0.45611" dec="  -3.02755" pmra="   18.84" pmdec="   -9.70" epoch="2015.5" value="  1 HR9087">  1. HR9087</option>
+   <option ra="   8.47762" dec=" -12.13382" pmra="  157.60" pmdec=" -191.43" epoch="2015.5" value="  2 G158-100">  2. G158-100</option>
+   <option ra="   9.24298" dec="  53.89687" pmra="   15.96" pmdec="   -6.76" epoch="2015.5" value="  3 HR153">  3. HR153</option>
+   <option ra="  10.44541" dec=" -33.65242" pmra="  -17.27" pmdec="  -18.72" epoch="2015.5" value="  4 CD-34d241">  4. CD-34d241</option>
+   <option ra="  12.51618" dec=" -52.13751" pmra="  138.59" pmdec="   30.69" epoch="2015.5" value="  5 BPM16274">  5. BPM16274</option>
+   <option ra="  28.71097" dec=" -27.47759" pmra="  310.82" pmdec=" -231.98" epoch="2015.5" value="  6 LTT1020">  6. LTT1020</option>
+   <option ra="  37.03992" dec="   8.46004" pmra="   23.71" pmdec="   -4.79" epoch="2015.5" value="  7 HR718">  7. HR718</option>
+   <option ra="  47.62972" dec=" -68.60138" pmra="   39.45" pmdec=" -103.19" epoch="2015.5" value="  8 EG21">  8. EG21</option>
+   <option ra="  57.09541" dec=" -39.14443" pmra="  214.13" pmdec=" -189.45" epoch="2015.5" value="  9 LTT1788">  9. LTT1788</option>
+   <option ra="  57.20947" dec="  -0.97634" pmra="   84.43" pmdec=" -162.96" epoch="2015.5" value=" 10 GD50"> 10. GD50</option>
+   <option ra="  58.43190" dec="  -0.07647" pmra="  -14.79" pmdec="  -95.87" epoch="2015.5" value=" 11 SA95-42"> 11. SA95-42</option>
+   <option ra="  58.84237" dec="   9.78835" pmra="  173.27" pmdec="   -5.51" epoch="2015.5" value=" 12 HZ4"> 12. HZ4</option>
+   <option ra="  62.37093" dec="  17.13168" pmra="  111.45" pmdec="  -22.02" epoch="2015.5" value=" 13 LB227"> 13. LB227</option>
+   <option ra="  63.18174" dec="  11.86321" pmra="   59.18" pmdec="  -90.67" epoch="2015.5" value=" 14 HZ2"> 14. HZ2</option>
+   <option ra="  72.65302" dec="   8.90005" pmra="    1.34" pmdec="  -27.98" epoch="2015.5" value=" 15 HR1544"> 15. HR1544</option>
+   <option ra="  76.37767" dec="  52.83069" pmra="   12.59" pmdec="  -93.52" epoch="2015.5" value=" 16 G191-B2B"> 16. G191-B2B</option>
+   <option ra="  86.49958" dec=" -32.30653" pmra="    2.99" pmdec="  -22.03" epoch="2015.5" value=" 17 HR1996"> 17. HR1996</option>
+   <option ra="  88.11543" dec="  15.88626" pmra="   76.84" pmdec=" -172.94" epoch="2015.5" value=" 18 GD71"> 18. GD71</option>
+   <option ra="  89.10424" dec=" -27.85967" pmra="  236.47" pmdec=" -157.22" epoch="2015.5" value=" 19 LTT2415"> 19. LTT2415</option>
+   <option ra=" 101.30571" dec="   2.13741" pmra="   -1.17" pmdec="   -0.53" epoch="2015.5" value=" 20 HILT600"> 20. HILT600</option>
+   <option ra=" 102.01956" dec=" -44.31621" pmra="   -4.11" pmdec="    5.67" epoch="2015.5" value=" 21 HD49798"> 21. HD49798</option>
+   <option ra=" 113.36381" dec=" -50.58423" pmra="   -3.12" pmdec="    5.31" epoch="2015.5" value=" 22 HD60753"> 22. HD60753</option>
+   <option ra=" 118.36296" dec="  52.49097" pmra="  -88.37" pmdec=" -255.42" epoch="2015.5" value=" 23 G193-74"> 23. G193-74</option>
+   <option ra=" 122.70633" dec="  74.96614" pmra="    7.17" pmdec="   10.30" epoch="2015.5" value=" 24 BD+75d325"> 24. BD+75d325</option>
+   <option ra=" 130.37968" dec=" -32.93668" pmra="-1061.33" pmdec=" 1345.95" epoch="2015.5" value=" 25 LTT3218"> 25. LTT3218</option>
+   <option ra=" 130.80607" dec="   3.39866" pmra="  -19.54" pmdec="   -1.00" epoch="2015.5" value=" 26 HR3454"> 26. HR3454</option>
+   <option ra=" 140.32957" dec="  81.72412" pmra="  -11.26" pmdec="  -51.26" epoch="2015.5" value=" 27 AGK+81d266"> 27. AGK+81d266</option>
+   <option ra=" 150.19667" dec="  -7.55856" pmra="  -42.37" pmdec="   -1.88" epoch="2015.5" value=" 28 GD108"> 28. GD108</option>
+   <option ra=" 158.05536" dec=" -35.62827" pmra=" -260.74" pmdec="   -4.59" epoch="2015.5" value=" 29 LTT3864"> 29. LTT3864</option>
+   <option ra=" 159.90315" dec="  43.10245" pmra="   12.54" pmdec="  -25.41" epoch="2015.5" value=" 30 Feige34"> 30. Feige34</option>
+   <option ra=" 162.09797" dec="  37.57031" pmra="    0.22" pmdec="    1.72" epoch="2015.5" value=" 31 HD93521"> 31. HD93521</option>
+   <option ra=" 174.17019" dec="  -9.80221" pmra="  -57.30" pmdec="    4.18" epoch="2015.5" value=" 32 HR4468"> 32. HR4468</option>
+   <option ra=" 176.45578" dec=" -64.84301" pmra=" 2661.59" pmdec=" -344.85" epoch="2015.5" value=" 33 LTT4364"> 33. LTT4364</option>
+   <option ra=" 178.45833" dec="  53.69477" pmra="   96.45" pmdec="    3.96" epoch="2015.5" value=" 34 HR4554"> 34. HR4554</option>
+   <option ra=" 181.69678" dec="  11.67015" pmra="   -7.43" pmdec="   -6.53" epoch="2015.5" value=" 35 Feige56"> 35. Feige56</option>
+   <option ra=" 183.48392" dec="  32.94217" pmra=" -100.88" pmdec="   30.13" epoch="2015.5" value=" 36 HZ21"> 36. HZ21</option>
+   <option ra=" 189.34799" dec="  25.06651" pmra="    1.83" pmdec="  -27.43" epoch="2015.5" value=" 37 Feige66"> 37. Feige66</option>
+   <option ra=" 189.70371" dec=" -49.80038" pmra=" -557.23" pmdec="  -74.09" epoch="2015.5" value=" 38 LTT4816"> 38. LTT4816</option>
+   <option ra=" 190.46576" dec="  17.52199" pmra="   -7.33" pmdec="  -37.28" epoch="2015.5" value=" 39 Feige67"> 39. Feige67</option>
+   <option ra=" 194.25950" dec="  22.03041" pmra="  -38.41" pmdec=" -202.95" epoch="2015.5" value=" 40 GD153"> 40. GD153</option>
+   <option ra=" 195.03587" dec="   3.47435" pmra=" -439.16" pmdec=" -865.95" epoch="2015.5" value=" 41 G60-54"> 41. G60-54</option>
+   <option ra=" 197.48730" dec="  -5.53915" pmra="  -30.82" pmdec="  -29.69" epoch="2015.5" value=" 42 HR4963"> 42. HR4963</option>
+   <option ra=" 199.09028" dec="  29.09826" pmra=" -157.77" pmdec=" -107.31" epoch="2015.5" value=" 43 HZ43"> 43. HZ43</option>
+   <option ra=" 200.89658" dec="  36.13319" pmra="  -66.27" pmdec="   -4.52" epoch="2015.5" value=" 44 HZ44"> 44. HZ44</option>
+   <option ra=" 204.70519" dec="  70.28535" pmra=" -402.09" pmdec="  -24.61" epoch="2015.5" value=" 45 GRW+70d5824"> 45. GRW+70d5824</option>
+   <option ra=" 206.88437" dec="  49.31327" pmra=" -121.17" pmdec="  -14.91" epoch="2015.5" value=" 46 HR5191"> 46. HR5191</option>
+   <option ra=" 212.94299" dec=" -33.05396" pmra="   -4.14" pmdec="    7.12" epoch="2015.5" value=" 47 CD-32d9927"> 47. CD-32d9927</option>
+   <option ra=" 221.37568" dec="   0.71724" pmra="  -40.42" pmdec="   -8.10" epoch="2015.5" value=" 48 HR5501"> 48. HR5501</option>
+   <option ra=" 234.74739" dec=" -28.59437" pmra=" -233.38" pmdec=" -177.35" epoch="2015.5" value=" 49 LTT6248"> 49. LTT6248</option>
+   <option ra=" 237.99945" dec="  32.94843" pmra="  -14.56" pmdec="    0.92" epoch="2015.5" value=" 50 BD+33d2642"> 50. BD+33d2642</option>
+   <option ra=" 245.89142" dec=" -39.22949" pmra="   77.13" pmdec="    0.33" epoch="2015.5" value=" 51 EG274"> 51. EG274</option>
+   <option ra=" 246.97245" dec="   9.20242" pmra="  -96.72" pmdec=" -470.57" epoch="2015.5" value=" 52 G138-31"> 52. G138-31</option>
+   <option ra=" 279.10710" dec=" -44.31094" pmra=" -168.74" pmdec=" -159.04" epoch="2015.5" value=" 53 LTT7379"> 53. LTT7379</option>
+   <option ra=" 279.23582" dec="  38.78487" pmra="  200.94" pmdec="  286.23" epoch="2015.5" value=" 54 HR7001"> 54. HR7001</option>
+   <option ra=" 298.68682" dec="   0.27357" pmra="   39.13" pmdec="  -13.93" epoch="2015.5" value=" 55 HR7596"> 55. HR7596</option>
+   <option ra=" 302.73517" dec=" -30.21958" pmra=" -340.72" pmdec=" -249.28" epoch="2015.5" value=" 56 LTT7987"> 56. LTT7987</option>
+   <option ra=" 303.48089" dec="   6.70995" pmra=" -254.96" pmdec=" -582.28" epoch="2015.5" value=" 57 G24-9"> 57. G24-9</option>
+   <option ra=" 311.91911" dec="  -9.49593" pmra="   31.95" pmdec="  -34.73" epoch="2015.5" value=" 58 HR7950"> 58. HR7950</option>
+   <option ra=" 323.06942" dec="   0.25412" pmra="  413.23" pmdec="   27.27" epoch="2015.5" value=" 59 LDS749B"> 59. LDS749B</option>
+   <option ra=" 327.79575" dec="  28.86375" pmra="  -34.73" pmdec="  -56.85" epoch="2015.5" value=" 60 BD+28d4211"> 60. BD+28d4211</option>
+   <option ra=" 328.10581" dec="   2.38748" pmra="   15.43" pmdec=" -300.55" epoch="2015.5" value=" 61 G93-48"> 61. G93-48</option>
+   <option ra=" 329.92472" dec="  26.43243" pmra="  -37.46" pmdec="  -41.67" epoch="2015.5" value=" 62 BD+25d4655"> 62. BD+25d4655</option>
+   <option ra=" 337.41078" dec=" -20.83717" pmra="   38.87" pmdec="   -3.42" epoch="2015.5" value=" 63 NGC7293"> 63. NGC7293</option>
+   <option ra=" 340.36584" dec="  10.83131" pmra="   78.28" pmdec="  -10.64" epoch="2015.5" value=" 64 HR8634"> 64. HR8634</option>
+   <option ra=" 343.17134" dec=" -20.59385" pmra="   78.87" pmdec=" -314.21" epoch="2015.5" value=" 65 LTT9239"> 65. LTT9239</option>
+   <option ra=" 349.89854" dec=" -17.09120" pmra="  242.14" pmdec="   10.40" epoch="2015.5" value=" 66 LTT9491"> 66. LTT9491</option>
+   <option ra=" 349.99329" dec="  -5.16561" pmra="   -8.37" pmdec="   -0.63" epoch="2015.5" value=" 67 Feige110"> 67. Feige110</option>
+   <option ra=" 351.52726" dec="  16.00486" pmra="  -41.52" pmdec=" -115.57" epoch="2015.5" value=" 68 GD248"> 68. GD248</option>
+
+ </select>
   </td>
    </tr>
  <th colspan="4"> RA/Dec at first epoch, deg</th> <th colspan="2"> Previous epoch</th> <th colspan="4">PMs,
@@ -160,7 +168,8 @@ in the upper row, or select the star from the drop-down menu. Then click Compute
 <td> <input id="epoch_new" name="epoch_new" size="11" value="2020.0" type="text"></td>
 </tr>
 <tr>
-  <td colspan="2"><input value="Compute new position" onClick="calc_new_radec(this.form)" type="button"></td>
+  <td colspan="2"><input value="Compute new position"
+  onClick="calc_new_radec(this.form)" type="button" style="background-color:LightCyan"></td>
 </tr>
 <tr>
   <td>New RA (deg)</td>
@@ -177,10 +186,6 @@ in the upper row, or select the star from the drop-down menu. Then click Compute
 </form>
 <p>
 
-The calculator can fill in the RA, Dec, PM fields from the table below
-by selecting the star from the dropdown menu (using an internal lookup table),
-or you can type in coordinates.  The calculator uses Javascript embedded in the webpage, and it will work offline if you save this page as HTML to your computer (useful if your observatory's internet is down).
-<p>
 
 <hr>
 <p>
@@ -557,21 +562,25 @@ function populate_coords(form) {
    var sel_dec = selectedOption.getAttribute("dec")
    var sel_pmra = selectedOption.getAttribute("pmra")
    var sel_pmdec = selectedOption.getAttribute("pmdec")
-   // alert("Called populate with " + sel_ra + " " + sel_dec)
+   var sel_epoch = selectedOption.getAttribute("epoch")
+  // alert("Called populate with " + sel_ra + " " + sel_dec)
    // these are the text boxes
    // var ra = document.getElementById("ra")
    // var dec = document.getElementById("dec")
    // var pm_ra = document.getElementById("pm_ra")
    // var pm_dec = document.getElementById("pm_dec")
+   // var epoch_old = document.getElementById("epoch_old")
    var ra = form.ra
    var dec = form.dec
    var pm_ra = form.pm_ra
    var pm_dec = form.pm_dec
+   var epoch_old = form.epoch_old
    // set the values of the text boxes
    ra.value = sel_ra
    dec.value = sel_dec
    pm_ra.value = sel_pmra
    pm_dec.value = sel_pmdec
+   epoch_old.value = sel_epoch
 }
 
 </script>
@@ -644,5 +653,5 @@ Observatory</a>.
 
 <hr>
 <address></address>
-<!-- hhmts start --> Last modified: Wed Feb  5 11:53:19 MST 2020 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Feb  5 15:12:29 MST 2020 <!-- hhmts end -->
 </body> </html>
