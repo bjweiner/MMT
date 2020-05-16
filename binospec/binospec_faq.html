@@ -1,0 +1,319 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Binospec: Frequently Asked Questions</title>
+</head>
+
+<body>
+<h1>Binospec: Frequently Asked Questions</h1>
+
+<h2>Overview</h2>
+
+Binospec is a multi-object wide field optical spectrograph for the
+6.5-m MMT telescope, with two
+rectangular 8x15 arcmin fields of view, each with its own
+spectrograph.
+It is run in a queue-observed mode.
+For basic properties of Binospec see the <a
+href="binospec_info.html">Binospec information page</a>.
+
+<h2>Contents</h2>
+<ul>
+  <li><a href="#general">General questions</a>
+  <li><a href="#spectroscopy">Spectroscopy</a>
+  <li><a href="#imaging">Imaging</a>
+  <li><a href="#data">Data: formats, pipelines, etc</a>
+  <li><a href="#other">Other topics</a>
+</ul>
+<p>
+
+<h2 id="general">General</h2>
+
+<h3>Strengths</h3>
+
+Binospec has a wide field of view and is very efficient across most of
+the optical window (eg roughly 3600-9200 A).  It produces data with
+a clean reduction free of most artifacts and sky subtraction
+problems. A data delivery system and pipeline give quick access to raw
+data=, and data can be reduced by users or by SAO staff. There is a
+tool for measuring galaxy redshifts in reduced data.  What this adds
+up to is that Binospec is good at getting sensitive spectra of largish
+numbers of objects in fields of order 15 arcmin.
+<p>
+
+Binospec has acquisition and calibration overheads that add up to
+nominally 30 minutes per spectroscopic target (often a bit less in
+practice). This makes it less efficient at acquiring spectra of large
+numbers of single bright objects needing eg 10-15 minute exposures, or
+at survey tiling fields of a degree scale or more.
+<p>
+
+<h3>Overheads and observing block length</h3>
+
+The queue catalog will assign each observing block a fiducial overhead,
+currently set at 30 min for spectroscopy (either longslit or slit
+mask) and 10 min for imaging.  This includes target acquisition,
+instrument configuration, calibration exposures, and CCD readout
+times. The actual overhead is often a little shorter for spectroscopy
+(like 25 min) and we only charge programs the actual overhead. Some of
+the overhead is due to night time calibrations (flats, arc lamp) that
+take several minutes. Staff are exploring taking some calibrations
+during the day to save time, but this will only knock off ~10 minutes
+at most and could affect reduction quality.  What this means is that
+taking a lot of spectra of objects that only need 10-15 minute
+exposures is not an efficient use of Binospec time.
+<p>
+
+Additionally, the catalog software breaks requested observations into
+observing blocks of at most 2 hours exposure time, for scheduling
+practicality. This means that for example, if you assign a lot of
+targets each 2.5 hours of exposure time, your program will look
+inefficient. You could, for example, give some of them 2 hours and
+some of them 3 hours, and lose less to overhead.
+In practice, if we do manage to integrate for over 2 hours
+consecutively on a target, your program would only be charged for one acquisition.
+<p>
+
+
+<h3>Guide and offset stars</h3>
+
+You must supply accurate coordinates that are in the Gaia DR2
+reference frame (SDSS is good enough).  Binospec's guide cameras can
+then acquire guide stars with Gaia positions and set your target
+directly onto the slit.  There is not currently a slit with a mirrored
+surface, so it's not possible or necessary to use a slit viewing
+camera to set the pointing on an offset star.  Just supply good
+coordinates.
+<p>
+
+<h2 id="spectroscopy">Spectroscopy</h2>
+
+<h3>Common grating setups</h3>
+
+The default setup for large wavelength coverage is the 270 lpmm
+grating and central wavelength 6500 A.  If you need higher resolution,
+the 1000 lpmm grating is better at the bluest wavelengths &lt; 5000 A,
+and the 600 lpmm grating is better at redder wavelengths.  The central
+wavelengths are continuously tunable but some values are not allowed,
+see the table on the Binospec info page.
+<p>
+
+<h3>Longslit choice</h3>
+
+The 1.0 arcsec wide slit is always in the instrument.  You should use
+this unless you have a strong reason not to. It is well matched to the
+typical seeing, and any other longslit has to be installed, which
+means competing for space with all the slitmasks in a given queue (ie
+your program could only be observed on nights when your longslit is
+in).
+<p>
+
+<h3>Spectroscopic exposure lengths</h3>
+
+We strongly recommend a maximum of 20 minutes per single exposure due
+to build up of cosmic rays.  We also recommend to get at least 3
+exposures per target to remove cosmic rays; the pipeline will run more
+easily and data will be better.
+<p>
+
+Exposures shorter than 60 sec or so are inefficient due to readout and
+only recommended for bright objects like standard stars.  If you are
+doing a long time series like a planetary transit, 120 sec has been
+used in the past.
+<p>
+
+<h3>Blue blocking filters</h3>
+
+Binospec has two spectroscopic blocking filters, LP3500 and LP3800.  These are long-pass,
+blocking blue light. They have about 98-99% throughput longward of
+3500 A and 3800 A respectively. They prevent 2nd order blue light from
+contaminating the 1st order spectrum, which can be a problem
+especially for
+intrinsically blue objects.  Generally, you should use LP3800 unless
+you are observing the 3500-3800 A range.
+<p>
+
+<h3>Parallactic angle</h3>
+
+Binospec is behind an ADC (atmospheric dispersion compensator), so you
+don't need to observe at the parallactic angle, although the observers
+will sometimes set the longslit at an angle that tracks through parallactic
+anyway.
+<p>
+
+<h3>Same mask with different gratings or central wavelengths</h3>
+
+You can use the same multislit mask with two different wavelenth
+tunings. This is a common way to get large wavelength coverage at
+moderately high resolution with the 600 line grating, for example (of
+course it takes twice as much time, but you also resolve the sky
+better).  It's also possible to observe the same mask
+with two gratings, eg the 1000 and 600 lpmm gratings.
+<p>
+
+<h3>Using a previously designed mask</h3>
+
+Currently we are storing all the previously designed masks, so if you
+want to observe a mask from a previous semester, that's possible. The
+queue catalog will let you select one of your previous masks. You
+should also be able to find masks designed by one of your Co-Is. If
+you have any problems finding an existing mask, contact your MMT
+instrument scientist.
+<p>
+
+<h3>Spectrophotometric standards</h3>
+
+If you need standards for flux calibration or telluric correction, put
+a note in the comments field of your object.  If you're especially
+concerned about tellurics you may want to note that so we know to take
+the standard reasonably close.  You can add standard stars to your
+catalog; put them in as priority 3 so the queue scheduler doesn't try
+to schedule them as normal observations. You <b>must update standard
+coordinates to the current epoch using Gaia</b>. Many standard stars
+are white dwarfs with high proper motions, and many popular lists of
+standards are horribly out of date.  For more information see the <a
+href="http://mingus.mmto.arizona.edu/~bjw/mmt/spectro_standards.html">MMT
+spectro standards page<a>.
+<p>
+
+<h3>Pseudo-IFU mode</h3>
+
+It's possible to build up an integral-field-like spatially resolved
+spectrum by taking a series of exposures stepping the longslit (or
+slitmask) in the perpendicular to slit direction.  This step is
+controlled by the observer in instrument coordinates, so you need to
+specify the step size across the slit, not in compass directions.
+For example, say "use PA=45 and step by 2 arcsec perpendicular to the
+slit, doing 5 positions at -4, -2, 0, +2, +4 arcsec." Don't say
+"use PA=45 and do 5 positions stepping by 2.8 arcsec north."
+<p>
+
+<h3>Afternoon "sky" flats for spectroscopy</h3>
+
+Sky flats aren't part of the normal Binospec reduction
+process. However, some programs that need very good knowledge of the
+instrumental profile can benefit from afternoon spectroscopic flats
+using the solar spectrum. These are used to measure the instrumental
+profile by comparison with model spectra. You probably don't need
+these unless you are measuring velocity dispersions or doing precision
+radial velocity work. They are time-consuming to take and require
+coordination between TO and queue observer, so please contact your MMT
+instrument scientist if you think you might need them.
+<p>
+
+<h3>Avoiding rotator limits for slitmasks</h3>
+
+The instrument rotator has limits near +180/-180 degrees.  These
+can prevent observing slitmasks at certain PAs and certain times.
+In practice, the limits mean that to avoid hitting the limit at
+transit,
+for masks that are north of the MMT
+(Dec &gt; +33), you should avoid designing masks with position angles near 0, and for masks
+south of the MMT (Dec &lt; +33), you should avoid PAs near +180 or
+-180.
+<p>
+
+<h2 id="imaging">Imaging</</h2>
+
+<h3>Imaging exposure lengths</h3>
+
+Individual direct imaging exposures should be kept pretty short, especially if you are
+working in a field with a lot of stars (lower Galactic latitude) or
+near the peak of detector sensitivity (r or i band).  If so, direct
+imaging exposures should be no more than 60 seconds, or you will
+saturate a lot of stars.  Probably in
+all fields and filters, imaging exposures should be less than about
+240-300 seconds. Saturated stars cause persistence problems that can
+damage data on faint targets taken after your field.
+<p>
+
+<h3>Imaging flatfields</h3>
+
+Flatfields for imaging are taken in the afternoon
+with an internal lamp, and we have to
+use one of the arc comparison lamps because the spectroscopic continuum lamp is
+too bright.  This means that imaging flatfields will show up in your
+raw data package with image type 'comp'. Flatfields can be shared
+between targets, so you might get a notification about data being
+available for a target when only the afternoon flats have been 
+<p>
+
+<h3>Imaging dithers</h3>
+
+It's not currently possible to make really large dithers while imaging
+because the guide stars would go off the subarray (region of interest)
+of the guide cameras.  The detectors are pretty clean so modest
+dithers should take care of most detector artifacts.
+<p>
+
+<h2 id="data">Data products</h2>
+
+<h3>Raw and reduced data</h3>
+
+Raw data will typically show up in your catalog the next morning,
+copied over around 9 am MST. These include *.fits and *proc.fits files
+- the proc files have been overscan and bias subtracted and trimmed.
+Spectroscopic data can be reduced by the Binospec IDL pipeline. SAO staff
+will reduce the data when time is available.  The data package also
+includes a file with an auto-generated reduction script, so you can
+download the pipeline and try reducing the raw data yourself. Several
+of our users have reduced the longslit data with the conventional IRAF
+cookbook workflow (Massey et al) that they've used for other longslit
+instruments.
+The Binospec
+pipeline doesn't reduce imaging data, but you can reduce those with
+IRAF or any other typical method for reducing imaging.
+<p>
+
+<h3>How do I look at the data?</h3>
+
+The reduced data files include an image that has 1-d spectra, one per
+row, and a file with many extensions, each the 2-d spectrum of one
+slit.  See a description at the <a
+href="https://bitbucket.org/chil_sai/binospec/wiki/Home">Binospec
+pipeline repository wiki</a>. To inspect spectra and fit redshifts, you can try the Specpro
+software in the version adapted for Binospec, see the <a href=bino_specpro_hints.html">Using Specpro to inspect
+Binospec data</a> page.
+<p>
+
+
+<h3>Where's my longslit object?</h3>
+
+The longslit masks have a slit on each of Side A and Side B, and the
+data are stored in extensions 1 and 2 of a fits file. Your object is
+in one side, and the other slit is on some random part of sky about 10
+arcmin away. Typically longslit targets are observed on side B.
+So if you don't see the object's trace, look in the second
+extension of the FITS file.
+<p>
+
+<h2 id="other">Other topics</h2>
+
+<h3>Non-sidereal targets</h3>
+
+The MMT can track non-sidereal targets that have a JPL ephemeris. We
+should be able to acquire and track a solar system object for imaging by
+offsetting the telescope to put the object into one of the two
+Binospec fields.  Testing on this is in progress.  We recommend that
+you contact MMT staff so we can set up a conference call between PI,
+instrument scientist and queue observers before such an observation.
+<p>
+
+Taking spectra of a non-sidereal target will be more involved since
+acquiring it onto the slit will not use the RA/Dec and Gaia stars. If
+you plan to do such an observation, please get in touch with MMT staff
+so we can coordinate with the Binospec instrument team.
+<p>
+
+<h2>Further questions?</h2>
+
+If you have a question not covered here or on the <a
+href="binospec_info.html">Binospec information page</a>, please
+contact the instrument scientist, Ben Weiner, at bjw @ mmto.org.
+<p>
+
+
+
+<hr>
+<address>Benjamin Weiner, bjw@mmto.org</address>
+<!-- hhmts start --> Last modified: Sat May 16 02:40:27 MST 2020 <!-- hhmts end -->
+</body> </html>
