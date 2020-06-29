@@ -297,11 +297,25 @@ You can let it vary the instrument PA freely, specify a range of PA to allow,
 or fix it to the current value. You can also let it vary the mask center
 position in RA and Dec.  You can choose the goal to optimize: most uniform
 wavelength coverage, maximum slit packing, or fully random selection.
-Click the "Place Slits" button to start the process. Once it has produced
+<p>
+
+Click the "Place Slits" button to start the process. Once Binomask has produced
 slit assignments, it will populate the "Targets Assigned" table below the sky 
 view. You have to scroll down in the Generate Slits tab to see this
-"Targets Assigned" table. The selected targets and guide stars will now be colored cyan
-points on the image.
+"Targets Assigned" table. The selected targets and guide stars will
+now be shown on the image.  Cyan outlines of slits and guide star
+boxes are drawn on the image.
+<p>
+
+(Binomask properly takes account of
+effects like optical distortion and differential atmospheric
+refraction at the selected time of observation
+to place the slits on the correct physical location on the
+mask. However, the translation from physical units back to sky coordinates in the display
+is approximate. So if you zoom in on the JS9 display, you may see
+slits in the corners of the mask drawn offset from the targets by 1-2
+arcsec. This is normal and is only a display issue; the mask will be
+cut correctly.)
 <p>
 
 Varying the PA: Binomask will take account of what PAs are observable
@@ -546,5 +560,5 @@ up the computation by a factor of 25.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> 
 
-<!-- hhmts start --> Last modified: Wed Jan 15 00:39:16 MST 2020 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Mon Jun 29 16:06:12 MST 2020 <!-- hhmts end -->
 </body> </html>
