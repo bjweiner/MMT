@@ -142,7 +142,7 @@ anyway.
 
 <h3>Same mask with different gratings or central wavelengths</h3>
 
-You can use the same multislit mask with two different wavelenth
+You can use the same multislit mask with two different wavelength
 tunings. This is a common way to get large wavelength coverage at
 moderately high resolution with the 600 line grating, for example (of
 course it takes twice as much time, but you also resolve the sky
@@ -160,20 +160,38 @@ you have any problems finding an existing mask, contact your MMT
 instrument scientist.
 <p>
 
-<h3>Spectrophotometric standards</h3>
+<h3>Adding spectrophotometric standards to your catalog</h3>
 
 If you need standards for flux calibration or telluric correction, put
 a note in the comments field of your object.  If you're especially
 concerned about tellurics you may want to note that so we know to take
 the standard reasonably close.  You can add standard stars to your
-catalog; put them in as priority 3 so the queue scheduler doesn't try
-to schedule them as normal observations. You <b>must update standard
+catalog. This is especially helpful if you are using a grating/wavelength
+combination different from the typical G270/6500 A.
+<p>
+
+Add your standard stars as priority 3 so the queue scheduler doesn't try
+to schedule them as normal observations. You <b>must update standard star
 coordinates to the current epoch using Gaia</b>. Many standard stars
 are white dwarfs with high proper motions, and many popular lists of
 standards are horribly out of date.  For more information see the <a
 href="http://mingus.mmto.arizona.edu/~bjw/mmt/spectro_standards.html">MMT
 spectro standards page<a>.
 <p>
+
+<h3>Spectrophotometric standards for current or past observations</h3>
+
+We frequently take standard stars during a run as general observatory
+calibrations. These are most commonly in the G270/6500 setting but
+others can be done.  These observations are taken in an observatory
+(director's time) catalog, not charged to an individual program. So
+they don't appear in your catalog, but we can give individual PIs
+access to the data. If you need standard star data, contact Ben Weiner
+and specify the grating, central wavelength, and date. We don't have
+data in all settings from all runs but the throughput is generally
+stable.
+<p>
+
 
 <h3>Pseudo-IFU mode</h3>
 
@@ -234,7 +252,8 @@ use one of the arc comparison lamps because the spectroscopic continuum lamp is
 too bright.  This means that imaging flatfields will show up in your
 raw data package with image type 'comp'. Flatfields can be shared
 between targets, so you might get a notification about data being
-available for a target when only the afternoon flats have been taken.
+available for a target, even though only the afternoon flats have been
+taken so far.
 <p>
 
 <h3>Imaging dithers</h3>
@@ -259,15 +278,21 @@ download the pipeline and try reducing the raw data yourself. Several
 of our users have reduced the longslit data with the conventional IRAF
 cookbook workflow (Massey et al) that they've used for other longslit
 instruments.
+<p>
+
 The Binospec
-pipeline doesn't reduce imaging data, but you can reduce those with
-IRAF or any other typical method for reducing imaging.
+pipeline doesn't reduce imaging data, so you should download the
+raw *proc.fits data, and reduce those with
+IRAF, ccdproc, or any other typical method for reducing
+imaging. Note that the imaging internal flatfields will show in your
+catalog as type "comp" and sometimes are filed under a different
+object in your catalog than the nighttime science data.
 <p>
 
 <h3>How do I look at the data?</h3>
 
-The reduced data files include an image that has 1-d spectra, one per
-row, and a file with many extensions, each the 2-d spectrum of one
+The reduced data files include a 2-D FITS image that has 1-d spectra, one per
+row; and a FITS file with many extensions, each the 2-d spectrum of one
 slit.  See a description at the <a
 href="https://bitbucket.org/chil_sai/binospec/wiki/Home">Binospec
 pipeline repository wiki</a>. To inspect spectra and fit redshifts, you can try the Specpro
@@ -276,7 +301,7 @@ Binospec data</a> page.
 <p>
 
 
-<h3>Where's my longslit object?</h3>
+<h3>Where's my longslit object in the data?</h3>
 
 The longslit masks have a slit on each of Side A and Side B, and the
 data are stored in extensions 1 and 2 of a fits file. Your object is
@@ -290,15 +315,15 @@ extension of the FITS file.
 
 <h3>Non-sidereal targets</h3>
 
-The MMT can track non-sidereal targets that have a JPL ephemeris. We
-should be able to acquire and track a solar system object for imaging by
-offsetting the telescope to put the object into one of the two
-Binospec fields.  Testing on this is in progress.  We recommend that
-you contact MMT staff so we can set up a conference call between PI,
+The MMT can track non-sidereal targets that have a JPL Horizons ephemeris. We
+have tested acquiring and track a solar system object for imaging by
+tracking with the MMT and offsetting the telescope to put the object into one of the two
+Binospec imaging fields of view.  We recommend that
+you contact MMT staff so we can set up communication between PI,
 instrument scientist and queue observers before such an observation.
 <p>
 
-Taking spectra of a non-sidereal target will be more involved since
+Taking spectra of a non-sidereal target will be more involved because
 acquiring it onto the slit will not use the RA/Dec and Gaia stars. If
 you plan to do such an observation, please get in touch with MMT staff
 so we can coordinate with the Binospec instrument team.
@@ -315,5 +340,5 @@ contact the instrument scientist, Ben Weiner, at bjw @ mmto.org.
 
 <hr>
 <address>Benjamin Weiner, bjw@mmto.org</address>
-<!-- hhmts start --> Last modified: Sat May 16 02:48:09 MST 2020 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Mon Aug 24 17:22:13 MST 2020 <!-- hhmts end -->
 </body> </html>
