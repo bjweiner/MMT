@@ -6,9 +6,10 @@
 #  Read a table of Name, RA, Dec, PA  columns (space-delimited)
 #  make plots of airmass, parallactic angle, and rotator angle
 #  Calling:
-#    python rotator_angle.py <masks_name_radec_pa.dat> <instname>
+#    python rotator_angle.py <masks_name_radec_pa.dat> <instname> <duration_hours>
 #  where masks_name_radec_pa.dat is the name of your file with data
-# and instname is 'binospec' or 'mmirs' (default binospec)
+# and instname is 'binospec' or 'mmirs' (default binospec).
+# and duration should be ~14 hours in winter and ~12 hours in summer
 # If you omit the arguments, then it will prompt for the filename,
 # but then you can't specify instrument.
 
@@ -179,30 +180,30 @@ def plot_angles(body, observatory, timestart, rotlimits, plotnum=0, duration=12.
     fig = ax1.axis([hourmin,hourmax,-180,180])
     #xstring = body.name + ', UT time, hours'
     xstring = ymd_string + ', UT time, hours'
-    fig = ax1.set_xlabel(xstring)
-    fig = ax1.set_ylabel('angle, deg')
+    fig = ax1.set_xlabel(xstring,fontsize='small')
+    fig = ax1.set_ylabel('angle, deg',fontsize='small')
     # plot angles as fn of time
     ax1.plot(hourtime[ifup], 180.0/3.1416*parang[ifup], 'k:')
     ax1.plot(hourtime[ifup], 180.0/3.1416*rotang[ifup], 'b-')
     #ax1.text(hourmin+0.5,155.0,body.name,color='k')
     #plt.title(str(body.name))
-    plt.title(titlestring)
-    ax1.text(hourmin+0.5,140.0,'parallactic angle',color='k')
+    plt.title(titlestring, fontsize='medium')
+    ax1.text(hourmin+0.5,140.0,'parallactic angle',color='k',fontsize='small')
     # Horizontal lines for rotator limits
     ax1.plot([hourmin, hourmax], [rotlimits[0],rotlimits[0]], 'r-')
     ax1.plot([hourmin, hourmax], [rotlimits[1],rotlimits[1]], 'r-')
-    ax1.text(hourmin+0.5,120.0,'rotator angle',color='b')
-    ax1.text(hourmin+0.5,-165.0,'rotator limits',color='r')
+    ax1.text(hourmin+0.5,120.0,'rotator angle',color='b',fontsize='small')
+    ax1.text(hourmin+0.5,-165.0,'rotator limits',color='r',fontsize='small')
     # Vertical lines for twilight
     ax1.plot([twi1_hour,twi1_hour], [-180,180], color='c')
     ax1.plot([twi2_hour,twi2_hour], [-180,180], color='c')
-    ax1.text(twi1_hour,-140.0,'12 deg twilight',color='c')
+    ax1.text(twi1_hour,-140.0,'12 deg twilight',color='c',fontsize='small')
     # Second y axis for plotting airmass
     ax2 = ax1.twinx()
     fig = ax2.axis([hourmin,hourmax,0,3])
-    fig = ax2.set_ylabel('airmass')
+    fig = ax2.set_ylabel('airmass', fontsize='small')
     ax2.plot(hourtime[ifup], airmass[ifup], 'g-')
-    ax2.text(hourmax-0.5,2.6,'airmass',color='g',horizontalalignment='right')
+    ax2.text(hourmax-0.5,2.6,'airmass',color='g',horizontalalignment='right',fontsize='small')
     if pdf_file == '':
         # Individual pdf files per object
         # plt.show()
@@ -253,8 +254,12 @@ def main():
     else:
         instname = 'binospec'
     names, ra, dec, pa = read_coords(fname)
-    # set duration = 14 in winter
-    plot_angle_loop(names, ra, dec, pa, instname, duration=12.0)
+    # set duration plot_hours = 14 in winter, 12 in summer
+    if len(sys.argv) >= 4:
+        plot_hours = float(sys.argv[3])
+    else:
+        plot_hours = 12.0
+    plot_angle_loop(names, ra, dec, pa, instname, duration=plot_hours)
     return
 
 # This is the standard boilerplate that calls the main() function.
