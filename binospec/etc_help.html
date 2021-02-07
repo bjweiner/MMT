@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>
+Binospec/Hectospec ETC help
+</title>
+</head>
+
+<body>
+<h2>Binospec / Hectospec ETC help</h2>
+
+
+<h3>Description of the options</h3>
+<p>
+
+<b>Instrument and Mode</b>: Choose instrument and grating (in lines/mm, eg
+270).  This will update the angstroms/pixel.  The angstroms/pixel and
+arcsec/pixel give approximately the spectral resolution for a given
+slit (eg 1.3 A/pixel and 0.267 arcsec/pixel mean that a 1 arcsec slit
+has FWHM of 3.75 pixels = 4.9 A.)
+<p>
+
+<b>Spectrum type</b>: Choose a category of spectral templates.  A second menu
+will then appear that lists templates in that category (eg
+for Kinney-Calzetti templates, choose among bulge,
+elliptical, spirals, starbursts).  Note that the wavelength coverage
+of these templates varies and this can be important for higher
+redshifts.
+<p>
+
+<b>Redshift</b>: Redshift to shift the template to.
+<p>
+
+<b>AB Mag in observed band</b>: Normalization of the spectrum, eg if you want
+to calculate for a galaxy with observed r=23, put 23 here and choose
+'r' in the 'Bandfilter' selection below.
+<p>
+
+<b>Source effective radius</b>: Half light radius of the source. This is
+convolved with the seeing and then sampled by the extraction aperture
+to compute how much light from the source is in your aperture.
+<p>
+
+<b>Exposure time</b>: in sec
+<p>
+
+<b>Moonage</b>: daydream.  Just kidding, 0 is dark (new moon), 14.7 is full
+moon.  Used to estimate the sky brightness.
+<p>
+
+<b>Seeing</b>: this is convolved with the object radius and then sampled by
+the aperture.  Choose something like 1.0 arcsec, the default of 0.4
+arcsec is optimistic in the optical at MMT.
+<p>
+
+<b>Bandfilter</b>: filter where the spectrum is normalized to the
+selected magnitude.  The template spectrum is convolved with this
+filter to synthesize a magnitude. The options are g, r, i, because
+this filter should overlap with the wavelength coverage of
+Bino/Hecto. If the template does not fully cover the selected filter,
+the normalization can be off.
+<p>
+
+<b>Aperture type and width</b>: Select the shape and size of your spectral
+extraction
+aperture.  For example you might choose 'round' and 1.5 arcsec for
+the Hectospec fiber, or 'rectangular' and width=1.0 arcsec, height=2.0
+arcsec for a Binospec 1 arcsec slit on a small object where you expect
+to extract in a window of 2 arcsec in the spatial direction.
+
+The width should match your slit width.  Larger height will include
+more light from the object but also more noise from sky flux. 
+<p>
+
+<b>Airmass</b>: airmass of observation (affects extinction).
+<p>
+
+<b>Plot spectrum / flux </b>: you will get a plot of SNR per resolution
+element 
+(ie per slitwidth) vs wavelength and a plot of either counts or flux
+vs wavelength.  It may take a couple of seconds for the plot to
+refresh.
+<p>
+
+<hr>
+
+<h3>Tips</h3>
+<p>
+It is best to use a template that fully covers the region you want to
+observe and the bandfilter you are normalizing the spectrum with.
+For example, if you take an SDSS-gals spiral spectrum (starts at 3800
+A in rest frame), put it at redshift 0.7, and try to normalize it to mag=22 in the g-band, it
+may not work, because the redshifted spectrum doesn't cover the g
+filter.
+But if you normalize it to mag=22 in r-band, it should work.
+<p>
+
+If you're having trouble with the wavelength coverage for redshifted
+objects, try using the Kinney-Calzetti templates, as they extend well
+into the rest UV.
+<p>
+
+<hr>
+
+<h3>Credits / questions</h3>
+<p>
+ETC calculator code by Michael Kurtz, kurtz@cfa.harvard.edu.
+<p>
+MMT help page maintained by Ben Weiner, bjw@mmto.org.
+<p>
+
+
+
+
+
+<hr>
+<address></address>
+<!-- hhmts start --> Last modified: Sun Feb  7 02:33:47 MST 2021 <!-- hhmts end -->
+</body> </html>
