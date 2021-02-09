@@ -230,19 +230,22 @@ commissioning.
 <h3 id="etc">Exposure time calculator</h3>
 
 <p>
-SAO has built an exposure time / sensitivity calculator for Binospec
-and Hectospec.  A preliminary version is available at this link:
-<a href="http://tdc-www.harvard.edu/software/ETC.html">
+SAO has built a preliminary exposure time / sensitivity calculator for Binospec
+and Hectospec, written by Michael Kurtz. Relevant information is on several webpages:
+
+<ul>
+  <li> Direct link to the spectroscopic exposure time calculator for
+spectra:
+<a
+href="http://hopper.si.edu/etc-cgi/TEST/sao-etc">http://hopper.si.edu/etc-cgi/TEST/sao-etc</a>.
+  <li> Expanded description of the ETC parameters at <a
+href="etc_help.html">Binospec ETC parameter help</a>.
+  <li> Main page for the <a href="http://tdc-www.harvard.edu/software/ETC.html">
 <b>Binospec exposure time calculator</b> </a>, which also gives you an
-option to download the package.
+option to download the ETC code package.
+</ul>
 <p>
 
-A direct link to the spectroscopic exposure time calculator for
-spectra is:
-<a
-href="http://hopper.si.edu/etc-cgi/TEST/sao-etc">http://hopper.si.edu/etc-cgi/TEST/sao-etc</a>
-.  A more verbose description of the ETC parameters is available at <a
-href="etc_help.html">Binospec ETC parameter help</a>.
 
 For imaging see this calculator (select MMTcam):
 <a
@@ -259,6 +262,14 @@ Please see the <a href="spectro_standards.html">MMT spectrophotometric
 standards</a> page for the list of "ESO spectrophotometric standard
 stars" with
 up to date Gaia proper motions.
+<p>
+
+For imaging, PLEASE limit exposures to 120-150 sec or less.  A V=17
+star will saturate in the g filter at 120 sec.  Longer exposures
+saturate too many stars and cause persistence in the CCD that can
+last for hours, which appear as artifacts in faint spectroscopic
+observations.  This degrades your data and the data of other
+observers who come after you.
 <p>
 
 <h3 id="configuration">Binospec configuration</h3>
@@ -744,5 +755,5 @@ Please contact Benjamin Weiner, bjw@mmto.org, for further information.
 Page created by
 <address>Benjamin Weiner, bjw@mmto.org</address> with contributions
 from Nelson Caldwell.
-<!-- hhmts start --> Last modified: Sun Feb  7 02:37:01 MST 2021 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Tue Feb  9 12:54:28 MST 2021 <!-- hhmts end -->
 </body> </html>
