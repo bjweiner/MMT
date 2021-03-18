@@ -52,7 +52,9 @@ instructions</a>. These tell you what the individual steps are doing.
   <li> Missing skyflats
   <li> No standard stars on config?
   <li> Restarting a reduction halfway through
-  <li> Detecting completed but problematic data
+  <li> Detecting completed but problematic data 
+  <li> Combining data from multiple nights
+  <li> Inspecting your spectra
 </ul>
 <p>
 
@@ -199,6 +201,62 @@ a reduction that crashed halfway through and was restarted without a
 new rerun.
 <p>
 
+<h4> Combining data from multiple nights </h4>
+
+Sometimes data will be taken for the same configuration across multiple
+nights.  Generally, I've found that trying to put all the data
+together and reduce it in one chunk does not work well and you get
+poor results.  The problem may be that the calibration changes
+enough that combining the calibrations or applying one calibration
+to another night's data works poorly. The better way to proceed is
+to reduce each night separately up to and including the hs_extract
+step, which produces the "spHect*.fits" file of extracted spectra.
+You should then be able to use the "hs_coadd" routine to coadd
+multiple spHect files into an output file of combined spectra. This
+routine is in hsred/idl/spec2d/hs_coadd.pro. Then you
+can run hs_toiraf to convert it into IRAF multispec format, or
+hs_reduce1d to find redshifts (see "Inspecting your spectra" below).
+<p>
+
+<h4> Inspecting your spectra </h4>
+
+Now that you have completed a reduction, what to do with it?
+The data products from HSRED are described at the <a href"
+HSRED pipeline page">http://www.mmto.org/hsred-reduction-pipeline/</a>.
+The reduced spectra are stored in a file named something like
+"spHect-configname_2019.1024_1.fits" where configname is the
+name of the input catalog file, and the other numbers are observation
+date and the configuration number.  The format of the spHect file
+is similar to SDSS spectra.  HSRED v2 also makes an output file
+called [something].ms.fits, which is in IRAF multispec format, and a
+directory with individual *ms.fits files, one file per fiber. You can
+look at these with IRAF's splot or any other spectrum-visualizing
+tool.  These ms.fits files are created by the pipeline's hs_toiraf.pro
+procedure.
+<p>
+
+The pipeline also tries to fit redshifts to spectra, using code
+derived from the SDSS algorithms, which is run by the "hs_reduce1d"
+procedure.  The results of this fitting
+are stored in a file called something like
+"spZall-configname_2019.1024_1.fits". These include candidate
+redshift fits for multiple templates in a format similar to SDSS.
+<p>
+
+To plot the spectra and overplot the candidate redshifts for quality
+inspection, there is a piece of IDL code called "qplot2," based on
+code from Ben Weiner, Christopher Willmer, and Casey Papovich.
+You can retrieve this code from <a
+href="https://github.com/bjweiner/qplot">qplot2 on github</a>. Read
+the Readme.qplot_hotwo file. qplot2 was written to take output from
+HSRED v1.x, and it expects a catalog text file that was made during the
+setup of a HSRED v1.x reduction. This means it may complain when run on
+data reduced with HSRED v2, but you should be able to run it by
+either omitting the catalog file argument, or creating the catalog
+file.
+<p>
+
+
 <h4>Other problems?</h4>
 
 If you have a Hectospec data reduction issue that isn't covered here,
@@ -208,5 +266,5 @@ this page, contributions are welcome!
 
 <hr>
 <address>Benjamin Weiner, bjw@mmto.org</address>
-<!-- hhmts start --> Last modified: Wed Apr 12 17:26:46 MST 2017 <!-- hhmts end -->
+<!-- hhmts start -->Last modified: Thu May 28 16:37:01 MST 2020 <!-- hhmts end -->
 </body> </html>
