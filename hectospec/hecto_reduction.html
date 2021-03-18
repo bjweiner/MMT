@@ -43,6 +43,16 @@ href="http://mmto.org/~rcool/hsred/hsred_reductions.html">older HSRED
 instructions</a>. These tell you what the individual steps are doing.
 
 <p>
+For formatting reasons, I write the names of HSRED IDL procedures in
+capitals here, such as HS_EXTRACT, but you don't need to type them
+in all caps.  These routines can usually be found under the hsred/idl
+directory in filenames corresponding to the procedure name, such as
+hsred/idl/spec2d/hs_extract.pro.  You need to have the hsred directory
+in your IDL_PATH environment variable
+with a '+' plus sign prefix so that IDL will search
+all the subdirectories, like '+/Users/bjw/idl/hsred'.
+<p>
+
 
 <h3>Common problems</h3>
 
@@ -209,13 +219,13 @@ together and reduce it in one chunk does not work well and you get
 poor results.  The problem may be that the calibration changes
 enough that combining the calibrations or applying one calibration
 to another night's data works poorly. The better way to proceed is
-to reduce each night separately up to and including the hs_extract
+to reduce each night separately up to and including the HS_EXTRACT
 step, which produces the "spHect*.fits" file of extracted spectra.
-You should then be able to use the "hs_coadd" routine to coadd
+You should then be able to use the HS_COADD routine to coadd
 multiple spHect files into an output file of combined spectra. This
 routine is in hsred/idl/spec2d/hs_coadd.pro. Then you
-can run hs_toiraf to convert it into IRAF multispec format, or
-hs_reduce1d to find redshifts (see "Inspecting your spectra" below).
+can run HS_TOIRAF to convert it into IRAF multispec format, or
+HS_REDUCE1D to find redshifts (see "Inspecting your spectra" below).
 <p>
 
 <h4> Inspecting your spectra </h4>
@@ -236,7 +246,7 @@ procedure.
 <p>
 
 The pipeline also tries to fit redshifts to spectra, using code
-derived from the SDSS algorithms, which is run by the "hs_reduce1d"
+derived from the SDSS algorithms, which is run by the HS_REDUCE1D
 procedure.  The results of this fitting
 are stored in a file called something like
 "spZall-configname_2019.1024_1.fits". These include candidate
