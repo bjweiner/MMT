@@ -52,6 +52,19 @@ position of the north polar axis in year 2000. Epoch is the time of
 observation, eg where the star was at year 2015.5. 
 <p>
 
+If you are looking for standards for observations with the MMT, please
+note that the legacy MMT catalog format uses non-standard units for proper
+motions and doesn't separate epoch and equinox correctly. You must
+read the <a href="#mmtnote">note for MMT observers</a> at the bottom
+of the page.
+<p>
+
+If you don't want to worry about proper motions, choose a standard
+star that has very small proper motions, less than about 30-50
+mas/yr. For a large telescope you should use a star fainter than
+magnitude 10 or so.  Some good stars are: HILT600, GD108, Feige34, Feige66,
+Feige67, BD+33d2642, Feige110.
+
 <hr>
 <p>
 <h2 id="calculator"> Proper motion calculator </h2>
@@ -592,12 +605,13 @@ function populate_coords(form) {
 <hr>
 <p>
 
-<h4>A special note for MMT observers</h4>
+<h4 id="mmtnote">A special note for MMT observers</h4>
 <p>
 
 The legacy 
 <a href="http://www.mmto.org/node/269">MMT catalog tool</a> used with
-Blue/Red Channel spectrographs does not take proper motions in
+Blue/Red Channel spectrographs, and the MMT queue catalog for Binospec
+and  MMIRS, does not take proper motions in
 milli-arcsec per year, but rather in pm_RA = seconds of time per
 century and pm_Dec = seconds of arc per century. These differ from the
 mas/yr values:
@@ -606,23 +620,27 @@ pm_RA (sec of time/century) = pm_RA(mas/yr) / [10 * 15 * cos(Dec)]
 
 pm_Dec (sec of arc/century) = pm_Dec(mas/yr) / 10
 </pre>
-Also, the catalog tool for Blue/Red Channel only accepts epoch 2000 coordinates, not epoch
-2015.5, so you should back propagate the coordinates to epoch
-2000.  An issue with this catalog tool is that it will use the same number
-for epoch and equinox, so if you want to apply proper motions you should do 
+Also, the catalog tools for Blue/Red Channel and Binospec/MMIRS
+expect epoch/equinox 2000 coordinates, not epoch
+2015.5. Unfortunately, these tools and the MMT mount code
+assume that epoch and equinox are
+the same, which worked okay in 2000 but is not good in 2020. You don't
+want to enter epoch=equinox=2020 because it will assume that your
+coordinates are precessed into the 2020 reference frame rather than
+J2000 equinox. So if you want to apply proper motions you should do 
 one of two things:
 <ul>
 
-<li> Apply the proper motions to advance the object's RA, Dec to the
+<li> 1. Apply the proper motions to advance the object's RA, Dec to the
 epoch of observation, e.g. 2019.5. Then enter the object
-with <it>proper motions = zero</it> and epoch=equinox=2000. This is
-less confusing but the catalog entry will only be good for a year or
+with <it>proper motions = zero</it> and <it>epoch=equinox=2000</it>. This is
+less confusing, although the catalog entry will only be good for a year or
 so if your object has PM near 1 arcsec/year.
 
-<li> Back-propagate the proper motions to find the RA,Dec of the
+<li> 2. Or back-propagate the proper motions to find the RA,Dec of the
 object at epoch 2000.0, then enter that RA, Dec, the proper motions,
 and epoch=equinox=2000. This should be good at all times but requires
-you to do extra work.
+you to do extra work and is another source of error.
 </ul>
 
 If you are working with some other catalog that properly handles epoch and equinox separately, you don't have to worry about this.
@@ -653,5 +671,5 @@ Observatory</a>.
 
 <hr>
 <address></address>
-<!-- hhmts start --> Last modified: Wed Feb  5 15:12:29 MST 2020 <!-- hhmts end -->
+<!-- hhmts start -->Last modified: Mon Mar  7 17:12:07 MST 2022 <!-- hhmts end -->
 </body> </html>
