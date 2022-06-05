@@ -147,13 +147,18 @@ def calc_az_alt_pa_for_dec(lat_deg, ha_hr, dec_deg):
 
 plt.clf()
 # fig = plt.axis([-8,8,-180,180])
-# fig = plt.axis([-8,8,0,180])
+fig = plt.axis([-8,8,0,180])
+# fig = plt.axis([-8,8,-90,90])
 fig = plt.xlabel("Hour angle, hours")
 fig = plt.ylabel("Parallactic angle, deg")
 for dec, sty in zip(dec_array_deg, linestyle_array):
     az_deg, alt_deg, pa_deg = calc_az_alt_pa_for_dec(lat_deg, ha_hr, dec)
     ifup = (alt_deg > 0)
     ifdown = (alt_deg <= 0)
+    # can make parang go from -90 to 90 instead of 0 to 180 ?
+    # This does not work well
+    # testpa = pa_deg > 90.0
+    # pa_deg[testpa] = pa_deg[testpa] - 180.0
     # plt.plot(ha_hr[ifup], pa_deg[ifup], 'b-')
     plt.plot(ha_hr[ifup], pa_deg[ifup], sty)
     # plt.plot(ha_hr[ifdown], pa_deg[ifdown], 'c.')
