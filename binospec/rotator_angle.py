@@ -78,19 +78,27 @@ def get_a_time():
     localhms = raw_input('Enter UT date to start compute at: yyyy mm dd hh mm ss [now]: ')
     if len(localhms) > 1:
         localtime = localhms.split()
-        # print localtime
+        # print(localtime)
         trequest_tuple = (int(localtime[0]), int(localtime[1]), int(localtime[2]), int(localtime[3]), int(localtime[4]), float(localtime[5]))
         trequest = ephem.Date(trequest_tuple)
     else:
         trequest = tnow
-    # print trequest
+    # print(trequest)
     return trequest
 
 # name, ra and dec are strings, pa is a string with degrees
 def set_body(name, ra, dec, pa):
     body = ephem.FixedBody()
     body.name = name
-    body._ra = ra
+    # If there is a colon in RA, assume it's an hour string, else
+    # assume it's decimal degrees. Then ephem needs an angle converted
+    # from degrees, because ephem would assume RA is in hours
+    if ":" in ra:
+        body._ra = ra
+    else:
+        body._ra = ephem.degrees(ra)
+    # Dec should convert properly from a string either way since
+    # pyephem will assume it is degrees
     body._dec = dec
     body._epoch = '2000/1/1 12:00:00'
     # Something weird happens here that causes positive PA to be
@@ -99,7 +107,7 @@ def set_body(name, ra, dec, pa):
     pa_pos = float(pa)
     if pa_pos < 0.0:
         pa_pos = pa_pos + 360.0
-    body._pa = 3.1416 / 180.0 * pa_pos
+    body._pa = 3.141593 / 180.0 * pa_pos
     return body
 
 def compute_pos_at_time(body, obs_location, time):
@@ -158,7 +166,7 @@ def plot_angles(body, observatory, timestart, rotlimits, plotnum=0, duration=12.
     panorm = 180.0/3.1416 * body._pa
     if panorm > 180.0:
         panorm = panorm-360.0
-    print body.name, panorm
+    print(body.name, panorm)
     titlestring = '%s, %5s %6s, PA=%5.0f' % (body.name, str(body._ra)[0:5], str(body._dec)[0:6], panorm )
     # x plot limits
     hourmin = hourtime[0]
@@ -240,7 +248,7 @@ def plot_angle_loop(names,ra,dec,pa,instname,duration=12.0):
         body = set_body(names[i], ra[i], dec[i], pa[i])
         hourtime, parang, rotang, airmass = plot_angles(body, observatory, tstart, rotlimits, plotnum=i, pdf_file=pdffile, duration=duration)
     pdffile.close()
-    print 'Wrote plots to file ',pdfname
+    print('Wrote plots to file ',pdfname)
     return
 
 
@@ -258,7 +266,8 @@ def main():
     if len(sys.argv) >= 4:
         plot_hours = float(sys.argv[3])
     else:
-        plot_hours = 12.0
+        # plot_hours = 12.0
+        plot_hours = 14.0
     plot_angle_loop(names, ra, dec, pa, instname, duration=plot_hours)
     return
 
