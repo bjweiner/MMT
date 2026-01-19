@@ -861,6 +861,9 @@ function getzrange, event, info, temp
      if zmin le 0.05 then zmin = 0.0
   endelse
 
+  ; zmax is where the blue end of the template is shifted to the
+  ; midpoint of the data, ie 50% coverage. This may be too 
+  ; restrictive - BJW
   zmax = (maxspec - (maxspec-minspec)/2.) / mintemp - 1
 
   if zmax lt 0.0 then zmax = 0.0
@@ -3665,7 +3668,11 @@ pro auto_find_z, event, info, minz=minz, maxz=maxz
        zmax = zrange[1]
    endelse
 
-    pspace = 1;controls how many pixels to move for each correlation
+    ; Note that zfindspec continuum subtracts the data, but I don't
+    ; think it ever continuum subtracts the templates, so if their
+    ; continuum is odd it will affect the fit - BJW, July 2022
+
+    pspace = 1 ;controls how many pixels to move for each correlation
     width = 3*pspace
     nfind = 6 ;number of answers to be found by zcompute 
     result = zfindspec(template, event, info, /linear_lambda, zmin=zmin, zmax=zmax, $
@@ -4495,7 +4502,7 @@ pro make2Dplot, z, linetemplates, showspecpos, specpos, $
 
      ; BJW - allow expansion of zoomed region to be 1 spec pixel
      ;  = nexpand screen pixels
-     nexpand = 3
+     nexpand = 4
      nxnew = nexpand * (maxx-minx+1)
      nynew = nexpand * (maxy-miny+1)
      expandspec = rebin(zoomspec, nxnew, nynew)
