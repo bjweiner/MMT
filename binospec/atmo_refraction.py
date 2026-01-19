@@ -54,7 +54,12 @@ refrac = (pressure / 101.0) * 283.0 / (273.0 + temp) * refrac_rad
 
 refrac_sec = refrac / degtorad  * 3600.0
 
-fieldsize_deg = 0.25
+# Use 0.25 deg for Binospec and 1.0 deg for Hectospec, or other
+# truly wide field instruments (DESI = 1.6 deg?)
+# don't forget to change the differential refrac y axis label and plot limit
+# fieldsize_deg = 0.25
+fieldsize_deg = 1.0
+fieldsize_min = fieldsize_deg * 60.0
 fieldsize_rad = fieldsize_deg * degtorad
 
 refrac_diff_rad = refrac_true(elevrad) - refrac_true(elevrad + fieldsize_rad)
@@ -65,14 +70,18 @@ plt.plot(elevation,refrac_sec/60.0,'g-')
 fig = plt.axis([0,90,0,20])
 fig = plt.xlabel('Elevation, deg')
 fig = plt.ylabel('Refraction, arcmin')
-plt.savefig('elev_refrac_min.pdf')
+# plt.savefig('elev_refrac_min.pdf')
+plt.savefig('elev_refrac_min.png')
 
 plt.clf()
 plt.plot(elevation,refrac_diff_sec,'b-')
-fig = plt.axis([0,90,0,3])
+# fig = plt.axis([0,90,0,3])
+fig = plt.axis([0,90,0,6])
 fig = plt.xlabel('Elevation, deg')
-fig = plt.ylabel('Differential refraction across 15\', arcsec')
-plt.savefig('elev_diff_refrac.pdf')
+# fig = plt.ylabel('Differential refraction across 15\', arcsec')
+fig = plt.ylabel('Differential refraction across 60\', arcsec')
+# plt.savefig('elev_diff_refrac.pdf')
+plt.savefig('elev_diff_refrac.png')
 
 ii = np.where(np.abs(elevation % 5) < 0.01)
 print "elevation = ",elevation[ii]
