@@ -54,16 +54,17 @@ observation, eg where the star was at year 2015.5.
 
 If you are looking for standards for observations with the MMT, please
 note that the legacy MMT catalog format uses non-standard units for proper
-motions and doesn't separate epoch and equinox correctly. You must
+motions. You must
 read the <a href="#mmtnote">note for MMT observers</a> at the bottom
 of the page.
 <p>
 
-If you don't want to worry about proper motions, choose a standard
+<b>If you don't want to worry about proper motions, choose a standard
 star that has very small proper motions, less than about 30-50
 mas/yr. For a large telescope you should use a star fainter than
 magnitude 10 or so.  Some good stars are: HILT600, GD108, Feige34, Feige66,
-Feige67, BD+33d2642, Feige110.
+Feige67, BD+33d2642, Feige110.  If you use one of these stars, you
+shouldn't need to enter proper motions for the next century or so.</b>
 
 <hr>
 <p>
@@ -75,7 +76,7 @@ This calculator takes as input a star's RA, Dec at a previous epoch
 year, and the desired new epoch, and calculates the new coordinates
 for that epoch. Enter coordinates in the boxes in the upper row, or
 select a star from the drop-down menu to fill in the RA, Dec, PM, and
-enter your new epoch, e.g. 2020.5. Then
+enter your new epoch, e.g. 2022.8. Then
 click Compute, and the star's new position will appear in the lower
 row.  The calculator uses Javascript embedded in the webpage, and it
 will work offline if you save this page as HTML to your computer
@@ -611,7 +612,7 @@ function populate_coords(form) {
 The legacy 
 <a href="http://www.mmto.org/node/269">MMT catalog tool</a> used with
 Blue/Red Channel spectrographs, and the MMT queue catalog for Binospec
-and  MMIRS, does not take proper motions in
+and  MMIRS, does not take proper motions in units of
 milli-arcsec per year, but rather in pm_RA = seconds of time per
 century and pm_Dec = seconds of arc per century. These differ from the
 mas/yr values:
@@ -621,37 +622,51 @@ pm_RA (sec of time/century) = pm_RA(mas/yr) / [10 * 15 * cos(Dec)]
 pm_Dec (sec of arc/century) = pm_Dec(mas/yr) / 10
 </pre>
 Also, the catalog tools for Blue/Red Channel and Binospec/MMIRS
-expect epoch/equinox 2000 coordinates, not epoch
-2015.5. Unfortunately, these tools and the MMT mount code
-assume that epoch and equinox are
-the same, which worked okay in 2000 but is not good in 2020. You don't
-want to enter epoch=equinox=2020 because it will assume that your
-coordinates are precessed into the 2020 reference frame rather than
-J2000 equinox. So if you want to apply proper motions you should do 
-one of two things:
+default to epoch/equinox 2000 coordinates, not epoch
+2015.5.  The MMT mount code unfortunately sets equinox=epoch (which is wrong),
+so that if you enter a non-2000 epoch it will precess the coordinates,
+which is undesirable.
+We are working on modifying the MMT mount code so that it only
+uses equinox J2000 (ICRS) reference frame, allowing epoch to be useful,
+but it's not there yet.
+So if you want to use a star that may have significant proper motions, you can do 
+one of three things:
 <ul>
 
-<li> 1. Apply the proper motions to advance the object's RA, Dec to the
-epoch of observation, e.g. 2019.5. Then enter the object
-with <it>proper motions = zero</it> and <it>epoch=equinox=2000</it>. This is
-less confusing, although the catalog entry will only be good for a year or
-so if your object has PM near 1 arcsec/year.
+<li> 1. Use a standard star with small proper motions as suggested above, 
+enter zero for the PMs, and epoch 2000.
 
-<li> 2. Or back-propagate the proper motions to find the RA,Dec of the
-object at epoch 2000.0, then enter that RA, Dec, the proper motions,
-and epoch=equinox=2000. This should be good at all times but requires
-you to do extra work and is another source of error.
+<li> 2. Apply the proper motions to advance the object's RA, Dec to the
+epoch of observation, e.g. 2022.5. Then enter the object
+with <it>proper motions = zero</it> and <it>epoch 2000</it>. This is
+less confusing, although the catalog entry will only be good for a year or
+so if your object has a large PM near 1 arcsec/year.
+
+<li> 3. Back-propagate the position to the year 2000, enter the back propagated position, and the PMs converted from mas/yr to PMs in the sec per century units
+described above, and <i>epoch 2000</i>.  This adds extra complexity and I don't
+recommend it.
+
+<!-- <li> 3. Convert the PMs in mas/yr to PMs in the sec per century units
+
+  described above, enter the coordinates and the converted PMs,
+  and <i>the correct epoch</i>. If you use Gaia coordinates from this
+  table, the epoch needs to be 2015.5, not 2000.
+  This should be good at all times but requires
+you to do extra work and is another source of error. -->
+
 </ul>
 
-If you are working with some other catalog that properly handles epoch and equinox separately, you don't have to worry about this.
-
+If you are entering stars into some other catalog that takes PMs in
+mas/yr, you don't have to worry about converting them, but you do need
+to put in the appropriate epoch for your coordinates.
 <p>
 
 The MMT queue observing interface used with MMIRS and Binospec
-requires the same funky per-century units, and is intended to allow
-input of different epochs, but we have had the same epoch=equinox issue 
-in some internal software, so you are safer advancing the RA/Dec 
-coordinates to the current time as described above.
+requires the same funky sec-per-century units, and allows
+input of different epochs, so you need to follow the procedure 1 or 2
+above to enter the star position.  This is especially important for
+Binospec because it doesn't have a slit viewing camera, so if your
+star is even a few arcsec off, it won't be acquired.
 
 <p>
 <hr>
@@ -671,5 +686,5 @@ Observatory</a>.
 
 <hr>
 <address></address>
-<!-- hhmts start -->Last modified: Mon Mar  7 17:12:07 MST 2022 <!-- hhmts end -->
+<!-- hhmts start -->Last modified: Thu Sep  1 22:46:11 MST 2022 <!-- hhmts end -->
 </body> </html>
