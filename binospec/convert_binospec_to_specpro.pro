@@ -40,7 +40,14 @@
 
 ; Benjamin Weiner, 25 July - 2 August 2018
 
-
+; Mar 2022. Changes to reconcile with CNAW version
+;   loop_create_files: long64(sxpar(hdr2d,'SLITTARG'))
+;   loop_create_files: pass hdr2d into write_spec1d_file
+;   write_spec1d_file: put header into primary extension
+;   write_spec2d_file: put header into primary extension
+; Changes to reconcile with Steve Willner's
+;   write_spec1d_file: add 1 to index when creating lambda array
+;   write_spec2d_file: add 1 to index when creating lambda array
 
 ; Get mask header structures from FITS tables in 1d file. This
 ; assumes the mask structures are always in extensions 4 and 5 of
@@ -86,7 +93,7 @@ pro loop_create_files, spec1dfile, spec2dfile, maskstruct, maskid=maskid,outdir=
   for i = 1, nobj do begin
      slitstr = strcompress(string(i,format='(I03)'), /remove_all)
      data2d = mrdfits(spec2dfile,i,hdr2d)
-     targnum = sxpar(hdr2d,'SLITTARG')
+     targnum = long64(sxpar(hdr2d,'SLITTARG'))
      targstr = strcompress(string(targnum,format='(I)'), /remove_all)
      suffix = maskstr + "." + slitstr + "." + targstr + ".fits"
      suffixdat = maskstr + "." + slitstr + "." + targstr + ".dat"
@@ -96,6 +103,8 @@ pro loop_create_files, spec1dfile, spec2dfile, maskstruct, maskid=maskid,outdir=
      photname = 'phot.' + suffixdat
      infoname = 'info.' + suffixdat
      write_spec1d_file, fname1d, flux1d_all, error1d_all, i, hdr1d_all, outdir=outdir
+     ; CNAW passes the hdr2d header into the write_spec1d_file procedure
+     ; write_spec1d_file, fname1d, flux1d_all, error1d_all, i, hdr2d, outdir=outdir
      write_spec2d_file, fname2d, data2d, hdr2d, outdir=outdir
      write_info_file, infoname, maskstruct, hdr2d, i, outdir=outdir, outcatfilenum=fnum
      ; Not implemented yet
@@ -140,13 +149,22 @@ pro write_spec1d_file, fname, flux1d_all, error1d_all, iobj, hdr1d_all, outdir=o
   if icount gt 0 then ivar[ibad] = maxivar
 
   npix = n_elements(flux)
-  lambda = (dindgen(npix) - crpix1) * cdelt1 + crval1
+  ; lambda = (dindgen(npix) - crpix1) * cdelt1 + crval1
+  ; Fix the off-by-1 error noted by Steve Willner
+  lambda = (dindgen(npix)+1 - crpix1) * cdelt1 + crval1
   ; convert from nm to angstroms
   if strcompress(cunit1, /remove_all) eq 'nm' or strcompress(cunit1, /remove_all) eq 'NM' then lambda = lambda*10.d0
   iuse = where(lambda gt wmin and lambda lt wmax, icount)
   if icount lt 1 then print, "Warning: no pixels found in wavelength ", wmin,wmax," for ",fname
   outstruct = {flux: flux[iuse], ivar: ivar[iuse], lambda: lambda[iuse]}
-  if keyword_set(outdir) then begin 
+  ; added by CNAW to write a header into the primary extension
+  im = ''
+  sxaddpar,hdr1d_all,'NAXIS',0
+  sxdelpar,hdr1d_all,'NAXIS1'
+  sxdelpar,hdr1d_all,'NAXIS2'
+  if keyword_set(outdir) then begin
+     ; added by CNAW
+     writefits, outdir + '/' + fname, im, hdr1d_all
      mwrfits, outstruct, outdir + '/' + fname, /create
   endif else begin
      mwrfits, outstruct, fname, /create
@@ -184,7 +202,9 @@ pro write_spec2d_file, fname, data2d, hdr2d, outdir=outdir, wmin=wmin, wmax=wmax
   lsize = size(lambda)
   nx = lsize(1)
   ny = lsize(2)
-  lambda1 = (dindgen(nx) - crpix1) * cdelt1 + crval1
+  ; lambda1 = (dindgen(nx) - crpix1) * cdelt1 + crval1
+  ; Fix the off-by-1 error noted by Steve Willner
+  lambda1 = (dindgen(nx)+1 - crpix1) * cdelt1 + crval1
   ; convert from nm to angstroms
   if strcompress(cunit1, /remove_all) eq 'nm' or strcompress(cunit1, /remove_all) eq 'NM' then lambda1 = lambda1*10.d0
   iuse = where(lambda1 gt wmin and lambda1 lt wmax, icount)
