@@ -663,7 +663,7 @@ def calc_exposure_offsets(fieldcen, tstart, tend):
     # return the sin, cos from the start to plot an arrow. 
     # The end might matter too if there is a lot of field rotation.
     angle_list = [sinth1, costh1, sinth2, costh2]
-    return nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az_start, alt_start, angle_list
+    return nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az_start, alt_start, angle_list, sepdiff_sec_rms
 
 # Draw arrows at locations using annotate. Here the middle of the arrow
 # is at the x,y point. The length is u,v * scale
@@ -679,7 +679,7 @@ def arrow_plot(x, y, u, v, scale=1, plotradius=1.6, color='black'):
             plt.annotate('', xytext=(x[i]-dx,y[i]-dy), xy=(x[i]+dx,y[i]+dy), arrowprops=dict(color=color, width=0.5, headlength=5, headwidth=3) )
     return
 
-def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, alt, exptime, angle_list):
+def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, alt, exptime, angle_list, sep_rms):
     global plotnumber
     xsepdiff = xsep2 - xsep1
     ysepdiff = ysep2 - ysep1
@@ -741,6 +741,9 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
     plt.annotate('', xytext=(xup_label, yup_label), xy=(xup_label+xuparrow1, yup_label+yuparrow1), arrowprops=dict(color='blue', width=0.5, headlength=5, headwidth=3) )
     plt.annotate('', xytext=(xup_label, yup_label), xy=(xup_label+xuparrow2, yup_label+yuparrow2), arrowprops=dict(color='red', width=0.25, headlength=5, headwidth=3) )
     plt.text(xup_label, yup_label, 'up', horizontalalignment='center', verticalalignment='center')
+    xrms_label = xlim2 * 0.92
+    yrms_label = ylim2 * 0.88
+    plt.text(xrms_label, yrms_label, 'rms {:5.2f}'.format(sep_rms), horizontalalignment='left')
 
     # I think this can be done with pyplot.quiver
     # could use scale keyword, I want to turn off autoscale to make plots comparable,
@@ -771,8 +774,8 @@ def main():
             break
         tstart, tend, exptime = get_times()
         # plt.close()
-        nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, angle_list = calc_exposure_offsets(fieldcen, tstart, tend)
-        plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, exptime, angle_list)
+        nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, angle_list, sep_rms = calc_exposure_offsets(fieldcen, tstart, tend)
+        plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, exptime, angle_list, sep_rms)
     print("quitting")
     return
     
