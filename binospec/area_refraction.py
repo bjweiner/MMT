@@ -241,6 +241,9 @@ time_obs = time2025
 
 def get_times():
     time_str = input("Time string for exposure start, eg: 2025-04-02 07:30:00: ")
+    if time_str == '':
+        print("using 2025-04-02 07:30:00")
+        time_str = "2025-04-02 07:30:00"
     try:
         time_start = Time(time_str)
     except Exception as e:
