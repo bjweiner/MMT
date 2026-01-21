@@ -672,7 +672,7 @@ def calc_exposure_offsets(fieldcen, tstart, tend):
 # is at the x,y point. The length is u,v * scale
 # So if x,y plot axes are in deg, and u,v are in arcsec, and scale=0.5, then
 # a 1 arcsec shift is plotted as an arrow 0.5 axis units (0.5 deg) long.
-# Suppress arrrows outside some radius, eg DESI field is circular.
+# Suppress arrrows outside some x-y radius, eg DESI field is circular 1.6 deg.
 def arrow_plot(x, y, u, v, scale=1, plotradius=1.6, color='black'):
     npts = len(x)
     for i in range(npts):
@@ -689,17 +689,22 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
     # Make an arrow scaled to sepdiff somehow and plot at the location of xsep1, ysep1
     # Cast the angles to deg or arcsec units
 
-    limscale = 1.2
-    xlim1 = limscale * np.min(xsep1.deg)
-    xlim2 = limscale * np.max(xsep1.deg)
-    ylim1 = limscale * np.min(ysep1.deg)
-    ylim2 = limscale * np.max(ysep1.deg)
+    ylimscale = 1.2
+    xlimscale = ylimscale * 1.2
+    # You can set x and y lims equal to get a square plot, or x larger to get
+    # more room for annotations. set_aspect('equal') should keep the circle circular
+    xlim1 = xlimscale * np.min(xsep1.deg)
+    xlim2 = xlimscale * np.max(xsep1.deg)
+    ylim1 = ylimscale * np.min(ysep1.deg)
+    ylim2 = ylimscale * np.max(ysep1.deg)
     plt.close()
     plt.clf()
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(1,1)
     plt.axis([xlim2, xlim1, ylim1, ylim2])
     plt.xlabel("Field pos, x (deg arc RA)")
     plt.ylabel("Field pos, y (deg Dec)")
+    # ax.set_aspect('equal', 'box')
+    ax.set_aspect('equal')
 #    toplabel = str(altaz_frame.az) + str(altaz_frame.alt) + str(exptime)
     toplabel = 'az alt {:6.1f} {:6.1f} , exptime {:5.1f} min'.format(az, alt, exptime)
     plt.text(0, ylim2*1.03, toplabel, horizontalalignment='center')
@@ -713,13 +718,15 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
     # for i in range(npts):
         # draw a line from xsep1,ysep1 to xsep2,ysep2 upscaling the length
     # Use annotate to draw an arrow plot where I have control over the scale,
-    # and a scale arrow
+    # and a scale arrow. ascale is a scale to make the arrows fit, so multiply
+    # both the arrows and the label by ascale.
     ascale = 0.6
     xscale_label = xlim2 * 0.9
     # Depending whether you print label left or right of scale arrow
     # xscale_label = xlim2 * 0.4
     yscale_label = ylim1 * 0.95
     arrow_plot(xsep1.deg, ysep1.deg, xsepdiff.arcsec, ysepdiff.arcsec, scale=ascale, plotradius=maxradius, color='blue')
+    # the 0.3 here is 0.3 arcsec, it goes here and in the label text.
     arrowlength = 0.3*ascale
     plt.annotate('', xytext=(xscale_label,yscale_label), xy=(xscale_label-arrowlength,yscale_label), arrowprops=dict(color='black', width=0.5, headlength=5, headwidth=3) )
     # plt.text(xscale_label+0.02,yscale_label,'0.3" apparent motion',horizontalalignment='right',verticalalignment='center')
@@ -728,16 +735,14 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
     # sinth and costh are the angle between the v-axis (up) and the y-axis (Dec)
     # I want to draw an arrow in the v direction, meaning du=0 and dv=length
     # use the transform of 0,v to x,y as in derotate_grid.
-    # For some reason, the arrow direction needed to have x flipped, prob due to
-    # mix up because u (az) increases to right and x (dec) increases to left, 
-    # after I fixed that in derotate_grid the up-arrow seems to be ok.
+    # Previously the arrow direction needed to have x flipped, prob due to
+    # mix-up because u (az) increases to right and x (dec) increases to left;
+    # after I fixed that in derotate_grid, the up-arrow seems to be ok.
     sinth1, costh1, sinth2, costh2 = angle_list
     vlength = 0.25
     xuparrow1 = -vlength * sinth1
-    # xuparrow1 = -xuparrow1
     yuparrow1 = vlength * costh1
     xuparrow2 = -vlength * sinth2
-    # xuparrow2 = -xuparrow2
     yuparrow2 = vlength * costh2
     xup_label = xlim1 * 0.8
     yup_label = ylim1 * 0.8
