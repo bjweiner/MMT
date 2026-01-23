@@ -280,7 +280,7 @@ def get_coords():
 
 # if you don't specify a pressure or set pressure = 0, you should get
 # no refraction.  transform_to() was rather slow - maybe just the first time
-# if it downloads an iers file
+# if it downloads an iers file.
 pressure_kpno = 80. * 1000. * u.Pa
 wl = 0.7 * u.micron
 maxradius = 1.6
@@ -730,7 +730,7 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
     arrowlength = 0.3*ascale
     plt.annotate('', xytext=(xscale_label,yscale_label), xy=(xscale_label-arrowlength,yscale_label), arrowprops=dict(color='black', width=0.5, headlength=5, headwidth=3) )
     # plt.text(xscale_label+0.02,yscale_label,'0.3" apparent motion',horizontalalignment='right',verticalalignment='center')
-    plt.text(xscale_label-arrowlength-0.02,yscale_label,'0.3" apparent motion',horizontalalignment='left',verticalalignment='center')
+    plt.text(xscale_label-arrowlength-0.04,yscale_label,'0.3" apparent motion',horizontalalignment='left',verticalalignment='center')
 
     # sinth and costh are the angle between the v-axis (up) and the y-axis (Dec)
     # I want to draw an arrow in the v direction, meaning du=0 and dv=length
