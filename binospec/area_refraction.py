@@ -4,7 +4,7 @@
 #
 
 #  The Bennett and Saemundsson formulae used here are from the wikipedia
-#  article and are for visual so about 500-550 nm.
+#  article (and come from Meeus) and are for visual so about 500-550 nm.
 #  See R.C. Stone 1996 http://adsabs.harvard.edu/abs/1996PASP..108.1051S
 #  for a much more detailed treatment.
 
@@ -20,14 +20,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from astropy.coordinates import (EarthLocation, SkyCoord, ICRS, AltAz,
+from astropy.coordinates import (EarthLocation, SkyCoord, ICRS, FK5, AltAz,
                                  Angle, Longitude)
 import astropy.units as u
 from astropy.time import Time
 
+from astroplan import FixedTarget, Observer
+from pytz import timezone
+
 degtorad = np.pi / 180.0
 VERBOSE = 1
 plotnumber = 1
+# derotate_method can be 'dec_axis', 'astroplan', or 'parang' (default)
+derotate_method = 'parang'
 
 # Bennett formula for refrac as func of apparent altitude, returns in radians
 # with a in deg: R in min = cot(a + 7.31/(a + 4.4))
@@ -147,7 +152,7 @@ def get_uv_from_meeus(grid_altaz, index_cen):
     cos_sep = np.sin(dec1.radian) * np.sin(dec2.radian) + np.cos(dec1.radian) * np.cos(dec2.radian) * np.cos(radiff.radian)
     sep = np.arccos(cos_sep)  # sep is in radians?
     tan_pa = np.sin(radiff.radian) / (np.cos(dec2.radian) * np.tan(dec1.radian) - np.sin(dec2.radian) * np.cos(radiff.radian))
-    pa  = np.arctan(tan_pa)   # or use atan2 ?
+    pa  = np.arctan(tan_pa)   # or use arctan2 ?
     # PA is measured from the v axis through -u, so need to use PA+90 to find u and v
     # This will not work at sep = 0.0 because PA will blow up?
     if (sep > 1.0e-6):
@@ -216,6 +221,12 @@ def set_observatory():
 
 hopkins = EarthLocation.of_site('mmt')
 kittpeak = EarthLocation.of_site('kpno')
+
+# astroplan. kpno is probably predefined but pressure may not be
+# observer_kpno = Observer.(name='Kitt Peak', location=kittpeak, pressure=0.8 * u.bar, relative_humidity=0.25, temperature=10 * u.deg.C, timezone=timezone('US/Arizona'), description='Mayall? at Kitt Peak, AZ')
+observer_kpno = Observer.at_site('kpno')
+observer_kpno.pressure = 0.8 * u.bar
+print(observer_kpno)
 
 # Test fields and times. Use a field that is fairly low at transit
 # Dec -25 transits at about airmass 1.85, altitude 32.9 deg
@@ -567,7 +578,8 @@ def derotate_grid(index_cen, n_off, ra_grid, dec_grid, u1, v1):
     ddec21 = dec2 - dec1
     dutmp21 = utmp2 - utmp1
     dvtmp21 = vtmp2 - vtmp1
-    # if we aligned with the grid colum, the dra = dx term is 0.  
+    # if we aligned with the grid colum, the dra = dx term is 0.
+    # astropy may be typing sintheta and costheta as Angles, which seems off
     sintheta21 = -dutmp21 / ddec21
     costheta21 = dvtmp21 / ddec21
     #
@@ -578,9 +590,15 @@ def derotate_grid(index_cen, n_off, ra_grid, dec_grid, u1, v1):
     # if the dra term is 0.  Does this make sintheta an Angle or dimensionless?
     sintheta31 = -dutmp31 / ddec31
     costheta31 = dvtmp31 / ddec31
+    # use these as parallactic angle estimates. It was being typed oddly but
+    # explicitly turning it into an Angle seems to help.  I think this may be
+    # off by a sign.
+    parang_est_21 = Angle(np.arctan2( sintheta21, costheta21), u.radian)
+    parang_est_31 = Angle(np.arctan2( sintheta31, costheta31), u.radian)
     if VERBOSE > 0:
         print("sintheta, costheta from south grid step: {:9.6f} {:9.6f}".format(sintheta21, costheta21))
         print("sintheta, costheta from north grid step: {:9.6f} {:9.6f}".format(sintheta31, costheta31))
+        print("parallactic angle estimates in deg: {:9.4f} {:9.4f}".format(parang_est_21.degree, parang_est_31.degree))
         # print("sintheta, costheta from south grid step: ", sintheta21, costheta21)
         # print("sintheta, costheta from north grid step: ", sintheta31, costheta31)
     sintheta = (sintheta21 + sintheta31) / 2.0
@@ -597,6 +615,98 @@ def derotate_grid(index_cen, n_off, ra_grid, dec_grid, u1, v1):
     y_sep = -u1 * sintheta + v1 * costheta
     return index_cen, x_sep, y_sep, sintheta, costheta
 
+# Derotate the grid using the parallactic angle from astroplan
+# Strangely this seems to be worse than my hack of derotating to the Dec axis
+# but weirdly it works better for times in 2000 than in 2025
+# using astroplan parang in 2000 gives a nice quadrupole pattern even at Dec -25
+# with a smaller rms than I was getting with my hack derotation.
+# it seems that astroplan is not precessing coordinates, so it may be just
+# wrong in not-2000.
+# however astroplan in 2000 gives significant field rotation near the zenith
+# (not quadrupole), which also should not be happening.
+def derotate_grid_astroplan(obs_loc, time_obs, index_cen, field_grid, u1, v1):
+    # make an astroplan Target from the SkyCoord of center
+    target_cen = FixedTarget(field_grid[index_cen])
+    parang = obs_loc.parallactic_angle(time_obs, target_cen)
+    print("parallactic angle from astroplan: {:9.4f}".format(parang.degree))
+    # need the negation here - angles were defined in opposite sense
+    rot_ang = -parang
+    sintheta = np.sin(rot_ang.radian)
+    costheta = np.cos(rot_ang.radian)
+    if VERBOSE > 0:
+        print("sintheta, costheta: {:9.6f} {:9.6f}".format(sintheta, costheta))
+    x_sep = -u1 * costheta - v1 * sintheta
+    y_sep = -u1 * sintheta + v1 * costheta
+    return index_cen, x_sep, y_sep, sintheta, costheta
+
+
+# Calculate parallactic angle ourselves, from the apparent coordinates
+# at current equinox.
+# test case of 13h00m00s +20d00m00s at KPNO at ut 2025-04-02 07:30:00
+#  skycalc says: LMST 12 47 08.4, alt 77.50 az 164.50, HA -0 14 06 parang -13.95
+#    ranow, decnow: RA: 13 01 14.5, dec: +19 51 52
+# testing against the print statements, the routine has:
+#   LMST is 12:47:12, 4 sec higher. az is 164.55, 0.05 deg higher, el is 77.47
+#   sindec and cosdec are very close between the two methods
+#   hourang is -0:14:02.1  and -0.06134 rad  (-3.5145 deg or -0:14:03.5 of time)
+#   parang  is -0.2422 rad and -0.2426 rad   (-13.88 deg and -13.90 deg)
+#  so on this test case, both methods seem to work. I think it gets a little
+#  worse if you are very close to the meridian.  I also tried 13:00:00 +80:00:00
+#  and it agreed with skycalc, although they both may be giving PA in 2025 coords.
+# Meeus equation 14.1:
+# H = hour_ang = LST - RA  in radians
+# parang = arctan2(sin H, (tan(lat) * cos(dec) - sin(dec) * cos(H) ) ) in radians
+# with an AltAz coord we should be able to calculate parang
+# def parangle(index_cen, field_grid, altaz_frame_p):
+def parangle(field_cen, altaz_frame_p):
+    # fieldcen_altaz_p = field_grid[index_cen].transform_to(altaz_frame_p)
+    fieldcen_altaz_p = field_cen.transform_to(altaz_frame_p)
+    # These should all return Angles
+    lon = fieldcen_altaz_p.location.lon
+    lat = fieldcen_altaz_p.location.lat
+    el = fieldcen_altaz_p.alt
+    az = fieldcen_altaz_p.az
+    # I need LST from the time, and RA at the current time (not RA_2000) here
+    fieldcen_now = fieldcen_altaz_p.transform_to(FK5(equinox=fieldcen_altaz_p.obstime))
+    ranow = fieldcen_now.ra
+    decnow = fieldcen_now.dec
+    sindec1 = np.sin(decnow)
+    cosdec1 = np.cos(decnow)
+    lmst = fieldcen_altaz_p.obstime.sidereal_time('mean', longitude=lon)
+    # If this works to subtract a time and a RA angle, yay!
+    hourang = lmst - ranow
+    parang = Angle(np.arctan2(np.sin(hourang), (np.tan(lat) * np.cos(decnow) - np.sin(decnow) * np.cos(hourang))) )
+    # If we didn't have ability to transform to FK5 at current time, can calculate
+    # parang from the position, but it's trig-heavy. See Meeus and
+    # https://astronomy.stackexchange.com/questions/34086/how-to-calculate-parallactic-angle-from-a-fixed-alt-az-position
+    sindec2 = np.sin(el) * np.sin(lat) + np.cos(el) * np.cos(lat) * np.cos(az)
+    cosdec2 = np.sqrt(1.0 - sindec2**2)
+    # Difference between az measured from north, or south
+    azmod = np.pi * u.radian + az
+    hourang2 = np.arctan2(np.sin(azmod), (np.cos(azmod) * np.sin(lat) + np.tan(el) * np.cos(lat)))
+    parang2 = Angle(np.arctan2(np.sin(hourang2), (np.tan(lat) * cosdec2 - sindec2 * np.cos(hourang2))) )
+    if VERBOSE > 0:
+        print("in parang calc1: lon, lat, az, el, lmst: ", lon, lat, az, el, lmst)
+        print("in parang calc1: ranow, decnow, sindec1, cosdec1: ", ranow, decnow, sindec1, cosdec1)
+        print("in parang calc1: hourang, parang: ", hourang, parang)
+        print("in parang calc2: lat, az, azmod, el: ", lat, az, azmod, el)
+        print("in parang calc2: sindec, cosdec: ", sindec2, cosdec2)
+        print("in parang calc2: hourang, parang: ", hourang2, parang2)
+    return hourang, parang
+
+# derotate with the parallactic angle calculated ourselves
+def derotate_grid_parang(altaz_frame, index_cen, field_grid, u1, v1):
+    field_cen = field_grid[index_cen]
+    hourang, parang = parangle(field_cen, altaz_frame)
+    print("parallactic angle calculated: {:9.4f}".format(parang.degree))
+    rot_ang = -parang
+    sintheta = np.sin(rot_ang.radian)
+    costheta = np.cos(rot_ang.radian)
+    if VERBOSE > 0:
+        print("sintheta, costheta: {:9.6f} {:9.6f}".format(sintheta, costheta))
+    x_sep = -u1 * costheta - v1 * sintheta
+    y_sep = -u1 * sintheta + v1 * costheta
+    return index_cen, x_sep, y_sep, sintheta, costheta
 
 # Here we calculate the separations in apparent units, and then
 # derotate to put them on the ra-dec axes
@@ -613,7 +723,17 @@ def calc_xy_grid(field_grid, altaz_frame_p):
     index_south = index_cen - n_off
     index_north = index_cen + n_off
 
-    index_tmp, x_sep, y_sep, sintheta, costheta = derotate_grid(index_cen, n_off, field_grid.ra, field_grid.dec, u_sep, v_sep)
+    if derotate_method == 'dec_axis':
+        index_tmp, x_sep, y_sep, sintheta, costheta = derotate_grid(index_cen, n_off, field_grid.ra, field_grid.dec, u_sep, v_sep)
+    elif derotate_method == 'astroplan':
+        # stuff that derotate_grid_astroplan needs is attributes of the AltAz frame
+        time_obs = altaz_frame_p.obstime
+        obs_loc = observer_kpno
+        index_tmp, x_sep, y_sep, sintheta, costheta = derotate_grid_astroplan(obs_loc, time_obs, index_cen, field_grid, u_sep, v_sep)
+    else:
+        # parang calc just needs the altaz_frame and field center
+        index_tmp, x_sep, y_sep, sintheta, costheta = derotate_grid_parang(altaz_frame_p, index_cen, field_grid, u_sep, v_sep)
+        
     return index_cen, x_sep, y_sep, az_cen, alt_cen, sintheta, costheta
 
 def calc_exposure_offsets(fieldcen, tstart, tend):
