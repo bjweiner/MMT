@@ -12,6 +12,8 @@ from astropy.io import fits
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+# for median smoothing
+import scipy.signal as scisig
 
 # Read mask info structures from ext 4 and 5 of the spec1d HDU
 def get_mask_info(spec1dhdu):
@@ -68,14 +70,37 @@ def plot_object(hdr_main, hdr1d, flux1d, error1d, iobj):
     isvalid = np.where( ~np.isnan(fluxobj) )
     fluxmin = np.min(fluxobj[isvalid])
     fluxmax = np.max(fluxobj[isvalid])
+    wavemingood = wave1d[isvalid[0][0]]
+    wavemaxgood = wave1d[isvalid[0][-1]]
+
+    print("Valid flux from wavelengths: ", wavemingood, wavemaxgood)
+    # To prompt for a plot wavelength range
+    # wstring = input('Enter wavelength min max to plot: ')
+    # waveminplot = float(wstring.split()[0])
+    # wavemaxplot = float(wstring.split()[1])
+    waveminplot = wavemingood
+    wavemaxplot = wavemaxgood
+    fminplot = fluxmin
+    # fminplot = 0.0
+    fmaxplot = fluxmax
+
+    smoostr = input('Smooth flux by N pixels: ')
+    nsmooth = int(smoostr)
+    flux_smooth = scisig.medfilt(fluxobj[isvalid], kernel_size=nsmooth)
+    err_smooth = errobj[isvalid] / np.sqrt(nsmooth)
+
+    wlabel = 0.65*(wavemaxplot-waveminplot) + waveminplot
+    flabel = 0.8*(fluxmax-fluxmin) + fluxmin
 
     plt.clf()
-    plt.axis([380, 950, fluxmin, fluxmax])
-    plt.plot(wave1d[isvalid], errobj[isvalid], 'r-')
-    plt.plot(wave1d[isvalid], fluxobj[isvalid], 'k-')
+    plt.axis([waveminplot, wavemaxplot, fminplot, fmaxplot])
+    # plt.plot(wave1d[isvalid], errobj[isvalid], 'r-')
+    # plt.plot(wave1d[isvalid], fluxobj[isvalid], 'k-')
+    plt.plot(wave1d[isvalid], err_smooth, 'r-')
+    plt.plot(wave1d[isvalid], flux_smooth, 'k-')
     plt.xlabel('wavelength, nm')
     plt.ylabel('flux')
-    plt.text(750, 0.9*fluxmax, name)
+    plt.text(wlabel, flabel, name)
     # Could add iobj to name for spectrum plot
     plotname = name + '_spec1d_plot.pdf'
     plt.savefig(plotname)
@@ -93,7 +118,7 @@ def main():
     if len(sys.argv) >= 2:
       fname = sys.argv[1]
     else:
-      fname = input('Ffilename of Binospec reduced 1-d spectra, eg obj_abs_slits_extr.fits: ').strip()
+      fname = input('Filename of Binospec reduced 1-d spectra, eg obj_abs_slits_extr.fits: ').strip()
     if len(sys.argv) >= 3:    
       iobj = int(sys.argv[2])
     else:
