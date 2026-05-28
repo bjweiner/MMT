@@ -25,6 +25,10 @@ from astropy.coordinates import (EarthLocation, SkyCoord, ICRS, FK5, AltAz,
 import astropy.units as u
 from astropy.time import Time
 
+# To suppress errors about out of date IERS file
+from astropy.utils.iers import conf
+conf.auto_max_age = None
+
 from astroplan import FixedTarget, Observer
 from pytz import timezone
 
@@ -305,11 +309,15 @@ fieldcen_altaz_pkpno = fieldcen.transform_to(altaz_frame_pkpno)
 # print(fieldcen_altaz_p0)
 # print(fieldcen_altaz_pkpno)
 # The important parts are: no refrac az, alt (179.96314566, 32.89824134)
-# with refrac az, alt (179.96314566, 32.91837616), it defaulted to 0.0 deg C and obswl=1 micron
+# with refrac az, alt (179.96314566, 32.91837616), where it defaulted to 0.0 deg C and obswl=1 micron
 # refrac makes a difference of 0.020135 deg = 72.5 arcsec, in Alt, no diff in Az
-# with obswl = 0.7 micron, az, alt (179.96314566, 32.91849711), which is 0.44 arcsec
+# with obswl = 0.7 micron: az, alt (179.96314566, 32.91849711), which is 0.44 arcsec
 # different from 1 micron (as one might expect from the usual size of the atmospheric
 # dispersion effect)
+# with obswl = 0.4 micron: az, alt (179.96314566, 32.91900713)
+# so the alt is 32.91900713, 32.91849711, 32.91837616 for 0.4, 0.7, 1.0 micron
+# these are 0.00063097, 0.00012095, 0 deg offset in alt
+# which is  2.271, 0.435, 0 arcsec offset in alt (at elev 32.9 deg = 1.84airmass)
 
 def run_initial_tests(ra, dec, altaz_frame_p0, altaz_frame_p):
     altaz_frame_pkpno = altaz_frame_p
