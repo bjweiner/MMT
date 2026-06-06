@@ -33,8 +33,11 @@ from astroplan import FixedTarget, Observer
 from pytz import timezone
 
 degtorad = np.pi / 180.0
-VERBOSE = 1
+# for the loop version you want VERBOSE = 0
+VERBOSE = 0
+# Global values to make a plot filename counter
 plotnumber = 1
+ha_plotnumber = 1
 # derotate_method can be 'dec_axis', 'astroplan', or 'parang' (default)
 derotate_method = 'parang'
 
@@ -636,7 +639,8 @@ def derotate_grid_astroplan(obs_loc, time_obs, index_cen, field_grid, u1, v1):
     # make an astroplan Target from the SkyCoord of center
     target_cen = FixedTarget(field_grid[index_cen])
     parang = obs_loc.parallactic_angle(time_obs, target_cen)
-    print("parallactic angle from astroplan: {:9.4f}".format(parang.degree))
+    if VERBOSE > 0:
+        print("parallactic angle from astroplan: {:9.4f}".format(parang.degree))
     # need the negation here - angles were defined in opposite sense
     rot_ang = -parang
     sintheta = np.sin(rot_ang.radian)
@@ -706,7 +710,8 @@ def parangle(field_cen, altaz_frame_p):
 def derotate_grid_parang(altaz_frame, index_cen, field_grid, u1, v1):
     field_cen = field_grid[index_cen]
     hourang, parang = parangle(field_cen, altaz_frame)
-    print("parallactic angle calculated: {:9.4f}".format(parang.degree))
+    if VERBOSE > 0:
+        print("parallactic angle calculated: {:9.4f}".format(parang.degree))
     rot_ang = -parang
     sintheta = np.sin(rot_ang.radian)
     costheta = np.cos(rot_ang.radian)
@@ -772,7 +777,8 @@ def calc_exposure_offsets(fieldcen, tstart, tend):
     # center, so comparable to each other
     index_cen1, xsep1, ysep1, az_start, alt_start, sinth1, costh1 = calc_xy_grid(field_grid, altaz_frame_kpno_start)
     index_cen2, xsep2, ysep2, az_end, alt_end, sinth2, costh2 = calc_xy_grid(field_grid, altaz_frame_kpno_end)
-    print("Start pos and exptime: {:s} {:s} {:8.2f} min".format(az_start, alt_start, (tend-tstart).sec/60))
+    if VERBOSE > 0:
+        print("Start pos and exptime: {:s} {:s} {:8.2f} min".format(az_start, alt_start, (tend-tstart).sec/60))
     if (alt_start.deg < 10 or alt_end.deg < 10):
         print ('Warning, altitude < 10 deg, results unreliable.',az_start, alt_start, az_end, alt_end)
 
@@ -791,10 +797,23 @@ def calc_exposure_offsets(fieldcen, tstart, tend):
     print("RMS offset from tstart - tend, arcsec: {:8.4f}".format(sepdiff_sec_rms))
     print("median offset from tstart - tend, arcsec: {:8.4f}".format(sepdiff_sec_median))
 
+    # I may want to know and return the hour angle and dec
+    # Can compute hourang with trig from az, alt, and lon, or
+    # get it from a transform
+    # dec is just fieldcen.dec, which is an input argument,
+    # so I don't need to return it, but I will to keep the return list
+    # similar to what gets passed into plot_exposure_offsets
+    fieldcen_altaz = fieldcen.transform_to(altaz_frame_kpno_start)
+    lon = fieldcen_altaz.location.lon
+    lmst = fieldcen_altaz.obstime.sidereal_time('mean', longitude=lon)
+    hourang = lmst - fieldcen.ra
+    dec = fieldcen.dec
+    print("hourang, Dec: ", hourang, dec)
+
     # return the sin, cos from the start to plot an arrow. 
     # The end might matter too if there is a lot of field rotation.
     angle_list = [sinth1, costh1, sinth2, costh2]
-    return nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az_start, alt_start, angle_list, sepdiff_sec_rms
+    return nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az_start, alt_start, hourang, dec, angle_list, sepdiff_sec_rms
 
 # Draw arrows at locations using annotate. Here the middle of the arrow
 # is at the x,y point. The length is u,v * scale
@@ -810,7 +829,7 @@ def arrow_plot(x, y, u, v, scale=1, plotradius=1.6, color='black'):
             plt.annotate('', xytext=(x[i]-dx,y[i]-dy), xy=(x[i]+dx,y[i]+dy), arrowprops=dict(color=color, width=0.5, headlength=5, headwidth=3) )
     return
 
-def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, alt, exptime, angle_list, sep_rms):
+def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms):
     global plotnumber
     xsepdiff = xsep2 - xsep1
     ysepdiff = ysep2 - ysep1
@@ -836,6 +855,10 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
 #    toplabel = str(altaz_frame.az) + str(altaz_frame.alt) + str(exptime)
     toplabel = 'az alt {:6.1f} {:6.1f} , exptime {:5.1f} min'.format(az, alt, exptime)
     plt.text(0, ylim2*1.03, toplabel, horizontalalignment='center')
+    hadeclabel = 'HA {:5.2f} hr, Dec {:6.1f}'.format(hourang.hour, dec.deg)
+    xhadec_label = xlim1 * 0.92
+    yhadec_label = ylim2 * 0.88
+    plt.text(xhadec_label, yhadec_label, hadeclabel, horizontalalignment='right')
 
     # plt.scatter is useful to change marker sizes, but I also want to change
     # orientation
@@ -896,25 +919,123 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
     
     return
 
-##
+###
+
+def plot_ha_rms(declin, ra, ha, alt, sep_rms):
+    global ha_plotnumber
+    haplotlim = 4.5
+    rms_thresh = 0.29
+    # ra and alt are probably a scalar in deg, and ha a scalar in hours
+    plt.clf()
+    plt.axis([-haplotlim, haplotlim, 0, 0.7])
+    plt.xlabel('Hour angle at Dec {:6.1f}'.format(declin.deg))
+    plt.ylabel('image motion, RMS, arcsec')
+    # Suppress plotting values near zenith due to field rotation issue
+    max_alt = 70.0
+    iplot = np.where(alt < max_alt)
+    plt.plot(ha[iplot], sep_rms[iplot], 'b-')
+    # dotted line for threshold
+    plt.plot([-haplotlim, haplotlim], [rms_thresh, rms_thresh], 'r:')
+    plotname = 'hourang_separ_{:04d}.pdf'.format(ha_plotnumber)
+    plt.savefig(plotname)
+    ha_plotnumber = ha_plotnumber + 1
+    plt.show(block=False)
+    return
+
+###
 
 # fieldcen = get_coords()
 # tstart, tend, exptime = get_times()
 
 # nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2 = calc_exposure_offsets(fieldcen, tstart, tend)
 
-def main():
+# Loop over some range of coordinates calculating the
+# rms at various hour angles for a given Dec
+
+def calc_loop_coords(tstart, tend, exptime, fname):
+    fieldcen = get_coords()
+    tmpstr = input('Enter RA offset range in hours: min, max, step: ')
+    rarangestr = tmpstr.split()
+    # raoffmin = float(rarangestr[0])
+    # raoffmax = float(rarangestr[1])
+    # raoffstep = float(rarangestr[2])
+    ra_offsets = np.arange(float(rarangestr[0]), float(rarangestr[1]), float(rarangestr[2]))
+    ra_offsets_angle = Angle(ra_offsets, unit=u.hour)
+    tmpstr = input('Enter Dec offset range in deg: min, max, step: ')
+    decrangestr = tmpstr.split()
+    dec_offsets = np.arange(float(decrangestr[0]), float(decrangestr[1]), float(decrangestr[2]))
+    dec_offsets_angle = Angle(dec_offsets, unit=u.degree)
+    ra_angles = fieldcen.ra + ra_offsets_angle
+    dec_angles = fieldcen.dec + dec_offsets_angle
+    print("RA loop values: ", ra_angles)
+    print("Dec loop values: ", dec_angles)
+    nraloop = len(ra_angles)
+    for dec1 in dec_angles:
+        tmp_ra = ra_angles
+        tmp_ha = np.zeros(nraloop)
+        tmp_alt = np.zeros(nraloop)
+        tmp_rms = np.zeros(nraloop)
+        # for ra1 in ra_angles:
+        for i in range(nraloop):
+            ra1 = ra_angles[i]
+            field1 = SkyCoord(ra1, dec1, frame="icrs")
+            nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, declin, angle_list, sep_rms = calc_exposure_offsets(field1, tstart, tend)
+            print(ra1, dec1, az, alt, hourang, declin, sep_rms)
+            # append these numbers and hourangle, dec to a column of data
+            tmp_ra[i] = ra1
+            tmp_ha[i] = hourang.hour
+            tmp_alt[i] = alt.deg
+            tmp_rms[i] = sep_rms
+            # if you want an offset map of each individual field - 
+            # this will be a lot of plots
+            plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, declin, exptime, angle_list, sep_rms)
+        # make a plot here of sep_rms as function of ra1 or hour angle,
+        # for a given dec
+        plot_ha_rms(dec1, tmp_ra, tmp_ha, tmp_alt, tmp_rms)
+        
+    # finish looping over dec
+    # save the output table as a csv file
+    # return ra1, dec1, az, alt, sep_rms
+    # or return table
+    return
+
+
+# Original / Default interactive mode is to prompt user for some
+# coordinates, time of start, and exposure time.
+
+def do_interactive():
     while True:
         fieldcen = get_coords()
         if fieldcen == -1:
             break
         tstart, tend, exptime = get_times()
         # plt.close()
-        nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, angle_list, sep_rms = calc_exposure_offsets(fieldcen, tstart, tend)
-        plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, exptime, angle_list, sep_rms)
+        nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, angle_list, sep_rms = calc_exposure_offsets(fieldcen, tstart, tend)
+        plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms)
     print("quitting")
     return
+
+# To loop over some range of coordinates and calculate rms, etc
+
+def do_loop():
+    tstart, tend, exptime = get_times()
+    tmp1 = input('Output data file: ')
+    fname = tmp1.strip()
+    calc_loop_coords(tstart, tend, exptime, fname)
+
+    return
     
+
+# LOOP = False
+LOOP = True
+
+def main():
+    if LOOP == True:
+        do_loop()
+    else:
+        do_interactive()
+    return
+  
 # This is the standard boilerplate that calls the main() function.
 if __name__ == '__main__':
   main()
