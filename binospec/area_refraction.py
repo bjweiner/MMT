@@ -1,7 +1,18 @@
 #!python
 #
 # Differential refraction changes over some area around a point on sky
-#
+# compute how points covering some area (like a DESI field) move
+# relative to the field center, from start to end of amn exposure,
+# due to the change in distortion (relative-apparent-position)
+# as atmospheric refraction changes.  Compute these relative shifts,
+# make on-sky plots, compute a statistic like rms image motion.
+# Can run this either interactively to try different times and RA/Dec,
+# or as a big loop over various RA/Dec positions at a single UT.
+# the latter allows making plots of, for a given Dec, image motion
+# as a function of hour angle. The interactive or loop behavior
+# is controlled by the LOOP boolean (sorry not a command line argument).
+
+# Ben Weiner, Jan-June 2026.
 
 #  The Bennett and Saemundsson formulae used here are from the wikipedia
 #  article (and come from Meeus) and are for visual so about 500-550 nm.
@@ -40,6 +51,14 @@ plotnumber = 1
 ha_plotnumber = 1
 # derotate_method can be 'dec_axis', 'astroplan', or 'parang' (default)
 derotate_method = 'parang'
+
+# LOOP = False/True is set way down at the bottom of the file and 
+# controls whether you do interactive prompts for RA, Dec, time, or
+# whether it prompts for coordinates to do a big loop over RA, Dec
+# and makes a ton of plots of the field distortion, and also the
+# plots of rms image motion as a function of hour angle.
+# LOOP = False
+# LOOP = True
 
 # Bennett formula for refrac as func of apparent altitude, returns in radians
 # with a in deg: R in min = cot(a + 7.31/(a + 4.4))
@@ -631,10 +650,12 @@ def derotate_grid(index_cen, n_off, ra_grid, dec_grid, u1, v1):
 # but weirdly it works better for times in 2000 than in 2025
 # using astroplan parang in 2000 gives a nice quadrupole pattern even at Dec -25
 # with a smaller rms than I was getting with my hack derotation.
-# it seems that astroplan is not precessing coordinates, so it may be just
-# wrong in not-2000.
-# however astroplan in 2000 gives significant field rotation near the zenith
-# (not quadrupole), which also should not be happening.
+# it seems that astroplan is not precessing coordinates, so it is just
+# wrong at a time that's not-2000. This is a bug in astroplan which
+# I have reported, but not yet fixed.
+# however, astroplan in 2000 also gives significant field rotation
+# near the zenith (not a quadrupole pattern), which also should not
+# be happening.
 def derotate_grid_astroplan(obs_loc, time_obs, index_cen, field_grid, u1, v1):
     # make an astroplan Target from the SkyCoord of center
     target_cen = FixedTarget(field_grid[index_cen])
@@ -794,6 +815,9 @@ def calc_exposure_offsets(fieldcen, tstart, tend):
     inradius = np.where(xsep1.deg**2 + ysep1.deg**2 < maxradius**2)
     sepdiff_sec_rms = np.sqrt(np.mean(sepdiff_arcsec_sq[inradius] ))
     sepdiff_sec_median = np.median( sepdiff_arcsec[inradius] )
+    # If we wanted some different statistic, like the 95th percentile
+    # of image motion (ie 95% of the field has motion less than X)
+    # we could calculate and return that here.
     print("RMS offset from tstart - tend, arcsec: {:8.4f}".format(sepdiff_sec_rms))
     print("median offset from tstart - tend, arcsec: {:8.4f}".format(sepdiff_sec_median))
 
