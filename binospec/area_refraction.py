@@ -876,7 +876,7 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
     plt.ylabel("Field pos, y (deg Dec)")
     # ax.set_aspect('equal', 'box')
     ax.set_aspect('equal')
-#    toplabel = str(altaz_frame.az) + str(altaz_frame.alt) + str(exptime)
+    # toplabel = str(altaz_frame.az) + str(altaz_frame.alt) + str(exptime)
     toplabel = 'az alt {:6.1f} {:6.1f} , exptime {:5.1f} min'.format(az, alt, exptime)
     plt.text(0, ylim2*1.03, toplabel, horizontalalignment='center')
     hadeclabel = 'HA {:5.2f} hr, Dec {:6.1f}'.format(hourang.hour, dec.deg)
