@@ -1049,6 +1049,10 @@ def do_loop():
 
     return
     
+# Choose whether we are going to run interactive mode - LOOP=False ; 
+# or set LOOP= True to prompt to make a big loop over RA, Dec values
+# and then make plots of the rms motion as function of hour angle 
+# in each row of Dec = dec1, dec2, and so on
 
 # LOOP = False
 LOOP = True
