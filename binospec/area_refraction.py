@@ -2,7 +2,7 @@
 #
 # Differential refraction changes over some area around a point on sky
 # compute how points covering some area (like a DESI field) move
-# relative to the field center, from start to end of amn exposure,
+# relative to the field center, from start to end of an exposure,
 # due to the change in distortion (relative-apparent-position)
 # as atmospheric refraction changes.  Compute these relative shifts,
 # make on-sky plots, compute a statistic like rms image motion.
@@ -59,6 +59,9 @@ derotate_method = 'parang'
 # plots of rms image motion as a function of hour angle.
 # LOOP = False
 # LOOP = True
+
+# Can use this to annotate plot for which script/algorithm was used
+notelabel = 'uses astropy'
 
 # Bennett formula for refrac as func of apparent altitude, returns in radians
 # with a in deg: R in min = cot(a + 7.31/(a + 4.4))
@@ -853,7 +856,7 @@ def arrow_plot(x, y, u, v, scale=1, plotradius=1.6, color='black'):
             plt.annotate('', xytext=(x[i]-dx,y[i]-dy), xy=(x[i]+dx,y[i]+dy), arrowprops=dict(color=color, width=0.5, headlength=5, headwidth=3) )
     return
 
-def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms):
+def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms, textnote=''):
     global plotnumber
     xsepdiff = xsep2 - xsep1
     ysepdiff = ysep2 - ysep1
@@ -927,6 +930,12 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
     xrms_label = xlim2 * 0.92
     yrms_label = ylim2 * 0.88
     plt.text(xrms_label, yrms_label, 'rms {:5.2f}'.format(sep_rms), horizontalalignment='left')
+    # Put a little note in bottom right, eg to show which code was used
+    if textnote != '':
+        xnote = xlim1 * 1.0
+        ynote = ylim1 * 1.22
+        # plt.text(xnote, ynote, textnote, horizontalalignment='left', fontstsize=8)
+        plt.text(xnote, ynote, textnote, horizontalalignment='right', size='small', color='gray')
 
     # I think this can be done with pyplot.quiver
     # could use scale keyword, I want to turn off autoscale to make plots comparable,
@@ -1012,7 +1021,7 @@ def calc_loop_coords(tstart, tend, exptime, fname):
             tmp_rms[i] = sep_rms
             # if you want an offset map of each individual field - 
             # this will be a lot of plots
-            plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, declin, exptime, angle_list, sep_rms)
+            plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, declin, exptime, angle_list, sep_rms, textnote=notelabel)
         # make a plot here of sep_rms as function of ra1 or hour angle,
         # for a given dec
         plot_ha_rms(dec1, tmp_ra, tmp_ha, tmp_alt, tmp_rms)
@@ -1035,7 +1044,7 @@ def do_interactive():
         tstart, tend, exptime = get_times()
         # plt.close()
         nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, angle_list, sep_rms = calc_exposure_offsets(fieldcen, tstart, tend)
-        plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms)
+        plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms, textnote=notelabel)
     print("quitting")
     return
 
@@ -1054,8 +1063,8 @@ def do_loop():
 # and then make plots of the rms motion as function of hour angle 
 # in each row of Dec = dec1, dec2, and so on
 
-# LOOP = False
-LOOP = True
+LOOP = False
+# LOOP = True
 
 def main():
     if LOOP == True:

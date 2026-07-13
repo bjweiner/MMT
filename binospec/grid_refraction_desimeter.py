@@ -56,11 +56,23 @@ from desimeter.trig import sincosd
 from area_refraction import construct_grid, get_uv_from_separ, get_times, get_coords
 from area_refraction import parangle
 from area_refraction import arrow_plot, plot_exposure_offsets
+from area_refraction import plot_ha_rms
 
 degtorad = np.pi / 180.0
 radtodeg = 180.0 / np.pi
 VERBOSE = 1
 plotnumber = 1
+
+# LOOP = False/True is set way down at the bottom of the file and 
+# controls whether you do interactive prompts for RA, Dec, time, or
+# whether it prompts for coordinates to do a big loop over RA, Dec
+# and makes a ton of plots of the field distortion, and also the
+# plots of rms image motion as a function of hour angle.
+# LOOP = False
+# LOOP = True
+
+# Can use this to annotate plot for which script/algorithm was used
+notelabel = 'desimeter'
 
 hopkins = EarthLocation.of_site('mmt')
 kittpeak = EarthLocation.of_site('kpno')
@@ -150,7 +162,7 @@ def calc_offsets_desimeter(fieldcen, tstart, tend):
     ysep1 = Angle(ytan1, u.radian)
     xsep2 = - Angle(xtan2, u.radian)
     ysep2 = Angle(ytan2, u.radian)
-    if VERBOSE > 0:
+    if VERBOSE > 1:
         print('tan grid first element: ',xtan1[0], ytan1[0], xtan2[0], ytan2[0])
     
     # compute sep_rms - same as in area_refraction.py
@@ -171,8 +183,8 @@ def calc_offsets_desimeter(fieldcen, tstart, tend):
     # if using astropy angles , can do this:
     posradius = np.sqrt((xsep1**2 + ysep1**2))
     inradius = np.where(xsep1.deg**2 + ysep1.deg**2 < maxradius**2)
-    if VERBOSE > 0:
-        print(maxradius, 'tan radius in deg?', posradius)
+    if VERBOSE > 1:
+        print('max ', maxradius, 'array of tan radius in rad or deg?', posradius)
     sepdiff_sec_rms = np.sqrt(np.mean(sepdiff_arcsec_sq[inradius] ))
     sepdiff_sec_median = np.median( sepdiff_arcsec[inradius] )
     print("RMS offset from tstart - tend, arcsec: {:8.4f}".format(sepdiff_sec_rms))
@@ -330,6 +342,98 @@ def print_plot_arguments(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, 
 # update for desimeter-based routines
 # if we return the exact same arguments, can use the same plot_exposure_offsets
 
+    # Loop over some range of coordinates calculating the
+# rms at various hour angles for a given Dec
+
+def calc_loop_coords(tstart, tend, exptime, fname):
+    fieldcen = get_coords()
+    tmpstr = input('Enter RA offset range in hours: min, max, step: ')
+    rarangestr = tmpstr.split()
+    # raoffmin = float(rarangestr[0])
+    # raoffmax = float(rarangestr[1])
+    # raoffstep = float(rarangestr[2])
+    ra_offsets = np.arange(float(rarangestr[0]), float(rarangestr[1]), float(rarangestr[2]))
+    ra_offsets_angle = Angle(ra_offsets, unit=u.hour)
+    tmpstr = input('Enter Dec offset range in deg: min, max, step: ')
+    decrangestr = tmpstr.split()
+    dec_offsets = np.arange(float(decrangestr[0]), float(decrangestr[1]), float(decrangestr[2]))
+    dec_offsets_angle = Angle(dec_offsets, unit=u.degree)
+    ra_angles = fieldcen.ra + ra_offsets_angle
+    dec_angles = fieldcen.dec + dec_offsets_angle
+    print("RA loop values: ", ra_angles)
+    print("Dec loop values: ", dec_angles)
+    nraloop = len(ra_angles)
+    for dec1 in dec_angles:
+        tmp_ra = ra_angles
+        tmp_ha = np.zeros(nraloop)
+        tmp_alt = np.zeros(nraloop)
+        tmp_rms = np.zeros(nraloop)
+        # for ra1 in ra_angles:
+        for i in range(nraloop):
+            ra1 = ra_angles[i]
+            field1 = SkyCoord(ra1, dec1, frame="icrs")
+            nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, declin, angle_list, sep_rms = calc_offsets_desimeter(field1, tstart, tend)
+            print(ra1, dec1, az, alt, hourang, declin, sep_rms)
+            # append these numbers and hourangle, dec to a column of data
+            tmp_ra[i] = ra1
+            tmp_ha[i] = hourang.hour
+            tmp_alt[i] = alt.deg
+            tmp_rms[i] = sep_rms
+            # if you want an offset map of each individual field - 
+            # this will be a lot of plots
+            plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, declin, exptime, angle_list, sep_rms, textnote=notelabel)
+        # make a plot here of sep_rms as function of ra1 or hour angle,
+        # for a given dec
+        plot_ha_rms(dec1, tmp_ra, tmp_ha, tmp_alt, tmp_rms)
+        
+    # finish looping over dec
+    # save the output table as a csv file
+    # return ra1, dec1, az, alt, sep_rms
+    # or return table
+    return
+
+
+# Original / Default interactive mode is to prompt user for some
+# coordinates, time of start, and exposure time.
+
+def do_interactive():
+    while True:
+        fieldcen = get_coords()
+        if fieldcen == -1:
+            break
+        tstart, tend, exptime = get_times()
+        # plt.close()
+        nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, angle_list, sep_rms = calc_offsets_desimeter(fieldcen, tstart, tend)
+        plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms, textnote=notelabel)
+    print("quitting")
+    return
+
+# To loop over some range of coordinates and calculate rms, etc
+
+def do_loop():
+    tstart, tend, exptime = get_times()
+    tmp1 = input('Output data file: ')
+    fname = tmp1.strip()
+    calc_loop_coords(tstart, tend, exptime, fname)
+
+    return
+    
+# Choose whether we are going to run interactive mode - LOOP=False ; 
+# or set LOOP= True to prompt to make a big loop over RA, Dec values
+# and then make plots of the rms motion as function of hour angle 
+# in each row of Dec = dec1, dec2, and so on
+
+LOOP = False
+# LOOP = True
+
+def main():
+    if LOOP == True:
+        do_loop()
+    else:
+        do_interactive()
+    return
+
+''' older version for desimeter
 
 def main():
     while True:
@@ -345,6 +449,8 @@ def main():
         plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms)
     print("quitting")
     return
+
+'''
     
 # This is the standard boilerplate that calls the main() function.
 if __name__ == '__main__':
