@@ -75,7 +75,8 @@ def set_observatory():
 
 def get_a_time():
     tnow = ephem.now()
-    localhms = raw_input('Enter UT date to start compute at: yyyy mm dd hh mm ss [now]: ')
+    # localhms = raw_input('Enter UT date to start compute at: yyyy mm dd hh mm ss [now]: ')
+    localhms = input('Enter UT date to start compute at: yyyy mm dd hh mm ss [now]: ')
     if len(localhms) > 1:
         localtime = localhms.split()
         # print(localtime)
@@ -256,7 +257,8 @@ def main():
     if len(sys.argv) >= 2:
         fname = sys.argv[1]
     else:
-        fname = raw_input('Enter filename with name, ra, dec, pa (space delimited, hh:mm:ss): ')
+        # fname = raw_input('Enter filename with name, ra, dec, pa (space delimited, hh:mm:ss): ')
+        fname = input('Enter filename with name, ra, dec, pa (space delimited, hh:mm:ss): ')
     if len(sys.argv) >= 3:
         instname = sys.argv[2]
     else:
