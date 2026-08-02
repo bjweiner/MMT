@@ -26,6 +26,15 @@ from astropy.table import Table
 # for median smoothing
 import scipy.signal as scisig
 
+# Take a fits header from an image and remove the image
+# structure keywords, so you can write the header to a bintable,
+# and remove the WCS keywords
+def strip_header(header):
+    hdrcopy = header.copy(strip=True)
+    for keytmp in [ 'CTYPE1', 'CTYPE2', 'CRPIX1', 'CRPIX2', 'CRVAL1', 'CRVAL2', 'CD1_1', 'CD2_2', 'CUNIT1', 'CUNIT2' ]:
+        hdrcopy.remove(keytmp, ignore_missing=True)
+    return hdrcopy
+
 # How many pixels to smooth by
 nsmooth = 1
 # Plot the object spectrum, or object -sky
@@ -84,13 +93,19 @@ ysky2 = ycen + 2 * yrad + yskyrad
 nrows = 2*yrad
 
 # Very bogus wavelength calibration, cwl is wavelength at x~2048
-# I use a bogus calibration because we are extracting from raw data
+# I am using nx/2 = 2048 not 2048.5 as the reference pixel
+# I use a bogus linear calibration because we are extracting from raw data
+# rather than doing a full fit to lines
+# These numbers were originally G270/6500: 6500, 1.3. and G600/6500: 6500, 0.6
+# but I examined some images and IDed lines to do slightly better.
+# see 2026feb/Readme.wavecal
+# The dw/dpix is a little non-linear so the accuracy is limited.
 # for G270 / 6500
-# cwl = 6500.0
-# dwdpix = 1.3
+cwl = 6490.9
+dwdpix = 1.3131
 # for G600 / 6500
-cwl = 6500.0
-dwdpix = 0.6
+# cwl = 6498.5
+# dwdpix = 0.6093
 # for G600 / 8500
 # cwl = 8500.0
 # dwdpix = 0.6
@@ -123,7 +138,7 @@ fig, ax = plt.subplots()
 nspec = len(imnames)
 for i in range(nspec):
     hdulist1 = fits.open(imnames[i])
-    # get a header from 1st image
+    # get a header from the 1st image for numbers to put on the plot
     if i == 0:
         # For some reason the value of WSEEING may be NA in extension 2
         # header, so use extension 1
@@ -148,6 +163,8 @@ for i in range(nspec):
         # Report offset between slit pa and parang in 0 to 180 deg
         offsetang = offsetang % 180
         # This offset should be ~equal to the rotator angle, modulo 180
+    # get the header for the i'th image we are extracting
+    hdr2d_1 = hdulist1[ 1 ].header
     # get the data of side B, 2nd fits extension
     indx = 2
     data2d_1 = hdulist1[ indx ].data
@@ -171,8 +188,15 @@ for i in range(nspec):
     hdulist1.close()
     # make an astropy table
     table_spec = Table([xpix, wavelen, objspec, skyspec, objsubspec], names=('x', 'wavelen', 'objspec', 'skyspec', 'objsubspec'))
-    # write it as a fits table
-    table_spec.write( outnames[i], format='fits', overwrite=True)
+    # originally: just write it as a fits table
+    # table_spec.write( outnames[i], format='fits', overwrite=True)
+    
+    # Do something about copying the header from the proc file to the
+    # fits table. For ex, use table_to_hdu(), or create a BinTableHDU
+    # with data and header
+    new_header = strip_header( hdr2d_1 )
+    outhdu = fits.BinTableHDU(data=table_spec, header=new_header)
+    outhdu.writeto( outnames[i], overwrite=True)
     # set a wavelength range to plot, and/or trim nans?
     # consider smoothing with scipy.signal.medfilt()
     # should we plot the raw spectrum or skysub?
@@ -198,7 +222,7 @@ if ifannotate == True:
     airmasslabel = 'airmass %4.2f' % (airmass)
     offsetanglabel = 'delta-parang %6.1f' % (offsetang)
     rotatoranglabel = 'rot angle %6.1f' % (rotatorang)
-    if (wseeing > 0.0) and (wseeing <5.0):
+    if (wseeing != None) and (wseeing > 0.0) and (wseeing <5.0):
         seeinglabel = 'WFS seeing %4.2f' % (wseeing)
     else:
         seeinglabel = 'WFS seeing NA'
