@@ -41,6 +41,11 @@ def get_bino_spec1d(spec1dhdu):
     hdr_main = spec1dhdu[0].header
     return hdr_main, hdr1d_all, flux1d_all, error1d_all
 
+def close_bino_file(hdulist):
+    hdulist.close()
+    return 
+
+
 # Read spec2d data
 # def get_bino_spec2d(spec2dhdu):
 #    # Get number of extensions somehow
@@ -112,6 +117,7 @@ def plot_spec_from_file(fname, iobj):
     hdr_main, hdr1d, flux1d, error1d = get_bino_spec1d(spec1dhdu)
     plotname = plot_object(hdr_main, hdr1d, flux1d, error1d, iobj)
     print('Saved plot in file ', plotname)
+    spec1dhdu.close()
     return
 
 def main():
