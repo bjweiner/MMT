@@ -35,10 +35,12 @@ from astropy.coordinates import (EarthLocation, SkyCoord, ICRS, FK5, AltAz,
                                  Angle, Longitude)
 import astropy.units as u
 from astropy.time import Time
+from astropy.table import Table
+from astropy.io import ascii
 
 # To suppress errors about out of date IERS file
-from astropy.utils.iers import conf
-conf.auto_max_age = None
+# from astropy.utils.iers import conf
+# conf.auto_max_age = None
 
 from astroplan import FixedTarget, Observer
 from pytz import timezone
@@ -58,11 +60,24 @@ derotate_method = 'parang'
 # and makes a ton of plots of the field distortion, and also the
 # plots of rms image motion as a function of hour angle.
 # Change where this is set at the end ...
-LOOP = False
-# LOOP = True
+# LOOP = False
+LOOP = True
 
 # Can use this to annotate plot for which script/algorithm was used
 notelabel = 'uses astropy'
+
+# In addition to calculating RMS image motion over the field, can
+# calc the Nth percentile, eg 95%ile, meaning 95% of the field area
+# has image motion less than X.  If you change this from 0.95, will
+# need to change a plot label.
+stat_percentile = 0.95
+
+# Spacing of the position grid in arcmin to pass into construct_grid()
+# 15 arcmin makes a good plot, 5 arcmin samples the area much better
+# eg for calculating the 95th pctile, but the plot is too crowded
+# grid_space_arcmin = 15.0
+grid_space_arcmin = 10.0
+# grid_space_arcmin = 5.0
 
 # Bennett formula for refrac as func of apparent altitude, returns in radians
 # with a in deg: R in min = cot(a + 7.31/(a + 4.4))
@@ -785,14 +800,16 @@ def calc_exposure_offsets(fieldcen, tstart, tend):
     altaz_frame_kpno_start = AltAz(obstime = tstart, location = kittpeak, pressure = pressure_kpno, obswl = wl)
     altaz_frame_kpno_end   = AltAz(obstime = tend, location = kittpeak, pressure = pressure_kpno, obswl = wl)
 
+    # Defining step size for grid
     # With step=15 arcmin and plotradius=1.6 deg , there should be ~128 points
-    # I actually counted 137 being plotted.
+    # I counted actually 137 being plotted.
     # with step=10 arcmin, should be ~289 points, step=5 arcmin, ~1158 points.
     # If calculating 95th percentiles, maybe make the step smaller so
-    # you have a more well sampled distributin. This will make the 
-    # sky plots messier.
-    field_grid, nra, ndec = construct_grid(fieldcen.ra, fieldcen.dec, radius=90.0, step=5.0)
+    # you have a more well sampled distribution. This will make the 
+    # sky plots messier. Can use grid_space_arcmin set at the top of file.
+    # field_grid, nra, ndec = construct_grid(fieldcen.ra, fieldcen.dec, radius=90.0, step=5.0)
     # field_grid, nra, ndec = construct_grid(fieldcen.ra, fieldcen.dec, radius=90.0, step=15.0)
+    field_grid, nra, ndec = construct_grid(fieldcen.ra, fieldcen.dec, radius=90.0, step=grid_space_arcmin)
     # field_grid, nra, ndec = construct_grid_offsets(fieldcen, radius=60.0, step=30.0)
     
     # The two sets of uv grids should differ by the field rotation from start
@@ -824,15 +841,22 @@ def calc_exposure_offsets(fieldcen, tstart, tend):
     sepdiff_arcsec = np.sqrt( sepdiff_arcsec_sq )
     # Limit the stats to points inside DESI 1.6 deg radius
     inradius = np.where(xsep1.deg**2 + ysep1.deg**2 < maxradius**2)
-    sepdiff_sec_rms = np.sqrt(np.mean(sepdiff_arcsec_sq[inradius] ))
-    sepdiff_sec_median = np.median( sepdiff_arcsec[inradius] )
-    # If we wanted some different statistic, like the 95th percentile
-    # of image motion (ie 95% of the field has motion less than X)
-    # we could calculate and return that here.
-    sepdiff_sec_95pct = np.quantile( sepdiff_arcsec[inradius], 0.95 )
+    # If the altitude is very low strange things can happen / empty arrays
+    if np.size(inradius) > 1:
+        sepdiff_sec_rms = np.sqrt(np.mean(sepdiff_arcsec_sq[inradius] ))
+        sepdiff_sec_median = np.median( sepdiff_arcsec[inradius] )
+        # If we wanted some different statistic, like the 95th percentile
+        # of image motion (ie 95% of the field has motion less than X)
+        # we could calculate and return that here.
+        sepdiff_sec_pct = np.quantile( sepdiff_arcsec[inradius], stat_percentile )
+    else:
+        # empty array, set the image motion to some large number
+        sepdiff_sec_rms = 30.0
+        sepdiff_sec_median = 30.0
+        sepdiff_sec_pct = 30.0
     print("RMS offset from tstart - tend, arcsec: {:8.4f}".format(sepdiff_sec_rms))
     print("median offset from tstart - tend, arcsec: {:8.4f}".format(sepdiff_sec_median))
-    print("95th pctile offset from tstart - tend, arcsec: {:8.4f}".format(sepdiff_sec_95pct))
+    print("95th pctile offset from tstart - tend, arcsec: {:8.4f}".format(sepdiff_sec_pct))
 
     # I may want to know and return the hour angle and dec
     # Can compute hourang with trig from az, alt, and lon, or
@@ -850,7 +874,7 @@ def calc_exposure_offsets(fieldcen, tstart, tend):
     # return the sin, cos from the start to plot an arrow. 
     # The end might matter too if there is a lot of field rotation.
     angle_list = [sinth1, costh1, sinth2, costh2]
-    return nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az_start, alt_start, hourang, dec, angle_list, sepdiff_sec_rms, sepdiff_sec_95pct
+    return nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az_start, alt_start, hourang, dec, angle_list, sepdiff_sec_rms, sepdiff_sec_pct
 
 # Draw arrows at locations using annotate. Here the middle of the arrow
 # is at the x,y point. The length is u,v * scale
@@ -866,7 +890,7 @@ def arrow_plot(x, y, u, v, scale=1, plotradius=1.6, color='black'):
             plt.annotate('', xytext=(x[i]-dx,y[i]-dy), xy=(x[i]+dx,y[i]+dy), arrowprops=dict(color=color, width=0.5, headlength=5, headwidth=3) )
     return
 
-def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms, sep_95pct, textnote=''):
+def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms, sep_pct, textnote=''):
     global plotnumber
     xsepdiff = xsep2 - xsep1
     ysepdiff = ysep2 - ysep1
@@ -939,7 +963,7 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
     plt.text(xup_label, yup_label, 'up', horizontalalignment='center', verticalalignment='center')
     xrms_label = xlim2 * 0.94
     yrms_label = ylim2 * 0.88
-    plt.text(xrms_label, yrms_label, 'rms {:5.2f}, 95pct {:5.2f}'.format(sep_rms, sep_95pct), horizontalalignment='left', size='small')
+    plt.text(xrms_label, yrms_label, 'rms {:5.2f}, 95pct {:5.2f}'.format(sep_rms, sep_pct), horizontalalignment='left', size='small')
     # Put a little note in bottom right, eg to show which code was used
     if textnote != '':
         xnote = xlim1 * 1.0
@@ -964,13 +988,13 @@ def plot_exposure_offsets(nra, ndec, index_cen, xsep1, ysep1, xsep2, ysep2, az, 
 
 ###
 
-# Can also use this routine to plot the sep_95pct as function of HA
-# just call with a different array argument and use ifplot_pctile to
+# also use this routine to plot the sep_pct (Nth %ile) as function of HA
+# just call it with a different array argument, and use ifplot_pctile to
 # change the axis label
 
 def plot_ha_rms(declin, ra, ha, alt, sep_rms, ifplot_pctile=False):
     global ha_plotnumber
-    haplotlim = 4.5
+    haplotlim = 5.02
     rms_thresh = 0.29
     # ra and alt are probably a scalar in deg, and ha a scalar in hours
     plt.clf()
@@ -1023,35 +1047,59 @@ def calc_loop_coords(tstart, tend, exptime, fname):
     print("RA loop values: ", ra_angles)
     print("Dec loop values: ", dec_angles)
     nraloop = len(ra_angles)
+    # Lists for accumulating all the data
+    all_ra = np.ndarray(0)
+    all_dec = np.ndarray(0)
+    all_ha = np.ndarray(0)
+    all_alt = np.ndarray(0)
+    all_rms = np.ndarray(0)
+    all_pct = np.ndarray(0)
     for dec1 in dec_angles:
-        tmp_ra = ra_angles
+        tmp_ra = np.zeros(nraloop)
+        tmp_dec = np.zeros(nraloop)
         tmp_ha = np.zeros(nraloop)
         tmp_alt = np.zeros(nraloop)
         tmp_rms = np.zeros(nraloop)
-        tmp_95pct = np.zeros(nraloop)
+        tmp_pct = np.zeros(nraloop)
         # for ra1 in ra_angles:
         for i in range(nraloop):
             ra1 = ra_angles[i]
             field1 = SkyCoord(ra1, dec1, frame="icrs")
-            nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, declin, angle_list, sep_rms, sep_95pct = calc_exposure_offsets(field1, tstart, tend)
-            print(ra1, dec1, az, alt, hourang, declin, sep_rms, sep_95pct)
+            nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, declin, angle_list, sep_rms, sep_pct = calc_exposure_offsets(field1, tstart, tend)
+            print(ra1, dec1, az, alt, hourang, declin, sep_rms, sep_pct)
             # append these numbers and hourangle, dec to a column of data
-            tmp_ra[i] = ra1
+            tmp_dec[i] = dec1.deg
+            tmp_ra[i] = ra1.deg
             tmp_ha[i] = hourang.hour
             tmp_alt[i] = alt.deg
             tmp_rms[i] = sep_rms
-            tmp_95pct[i] = sep_95pct
+            tmp_pct[i] = sep_pct
             # if you want an offset map of each individual field - 
             # this will be a lot of plots
-            plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, declin, exptime, angle_list, sep_rms, sep_95pct, textnote=notelabel)
+            plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, declin, exptime, angle_list, sep_rms, sep_pct, textnote=notelabel)
         # make a plot here of sep_rms as function of ra1 or hour angle,
         # for a given dec
-        plot_ha_rms(dec1, tmp_ra, tmp_ha, tmp_alt, tmp_rms)
-        # if you want to plot the 95th pctile instead of rms
-        # plot_ha_rms(dec1, tmp_ra, tmp_ha, tmp_alt, tmp_95pct, ifplot_pctile=True)
+        # plot_ha_rms(dec1, tmp_ra, tmp_ha, tmp_alt, tmp_rms)
+        # if you want to plot the 95th or Nth pctile instead of rms
+        plot_ha_rms(dec1, tmp_ra, tmp_ha, tmp_alt, tmp_pct, ifplot_pctile=True)
+        all_ra  = np.append(all_ra, tmp_ra)
+        all_dec = np.append(all_dec, tmp_dec)
+        all_ha  = np.append(all_ha, tmp_ha)
+        all_alt = np.append(all_alt, tmp_alt)
+        all_rms = np.append(all_rms, tmp_rms)
+        all_pct = np.append(all_pct, tmp_pct)
+        # This writes a separate table for each declination
+        # but is a quick way of saving the data.
+        outtable = Table([tmp_ra, tmp_dec, tmp_ha, tmp_alt, tmp_rms, tmp_pct],
+                         names=('ra', 'dec', 'hourangle', 'alt', 'sep_rms', 'sep_pctile') )
+        fname_dec = 'hourang_sep_{:04d}.csv'.format(int(dec1.deg))
+        ascii.write(outtable, fname_dec, format='csv', overwrite=True)
+        
         
     # finish looping over dec
-    # save the output table as a csv file
+    # save the output table for all as a csv file using fname
+    out_alltable = Table([all_ra, all_dec, all_ha, all_alt, all_rms, all_pct], names=('ra', 'dec', 'hourangle', 'alt', 'sep_rms', 'sep_pctile') )
+    ascii.write(out_alltable, fname, format='csv', overwrite=True)
     # return ra1, dec1, az, alt, sep_rms
     # or return table
     return
@@ -1067,8 +1115,8 @@ def do_interactive():
             break
         tstart, tend, exptime = get_times()
         # plt.close()
-        nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, angle_list, sep_rms, sep_95pct = calc_exposure_offsets(fieldcen, tstart, tend)
-        plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms, sep_95pct, textnote=notelabel)
+        nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, angle_list, sep_rms, sep_pct = calc_exposure_offsets(fieldcen, tstart, tend)
+        plot_exposure_offsets(nra, ndec, index_cen1, xsep1, ysep1, xsep2, ysep2, az, alt, hourang, dec, exptime, angle_list, sep_rms, sep_pct, textnote=notelabel)
     print("quitting")
     return
 
@@ -1076,7 +1124,7 @@ def do_interactive():
 
 def do_loop():
     tstart, tend, exptime = get_times()
-    tmp1 = input('Output data file: ')
+    tmp1 = input('Output data csv filename: ')
     fname = tmp1.strip()
     calc_loop_coords(tstart, tend, exptime, fname)
 
